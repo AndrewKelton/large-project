@@ -1,0 +1,59 @@
+# GitHub Actions Deployment Workflow
+# Generated with the help of Claude Sonnet 4.5
+# Reviewed by Andrew Kelton
+
+
+name: Deploy to Digital Ocean
+
+on:
+  push:
+    branches:
+      - staging
+      - main
+      # - dev no longer deploying from dev,
+      # dev is used as a staging ground before
+      # being merged into main (not to be confused
+      # with the `staging` branch). See README.md.
+      
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Deploy to Digital Ocean
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SERVER_IP: ${{ secrets.SERVER_IP }}
+        BRANCH_NAME: ${{ github.ref_name }}
+      run: |
+        # Setup SSH
+        mkdir -p ~/.ssh
+        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
+        
+        # Deploy to server
+        ssh -o StrictHostKeyChecking=no root@$SERVER_IP << EOF
+          # Navigate to web root or create a project directory
+          cd /var/www/html
+
+          # Fix git ownership issue
+          git config --global --add safe.directory /var/www/html
+          
+          # Check if this is already a git repo
+          if [ -d ".git" ]; then
+            # Already a repo, just pull latest changes
+            git fetch origin $BRANCH_NAME
+            git reset --hard origin/$BRANCH_NAME
+          else
+            # Not a git repo yet - need to initialize
+            rm -rf /var/www/html/*
+            rm -rf /var/www/html/.*  2>/dev/null || true
+            git clone -b $BRANCH_NAME https://github.com/AndrewKelton/large-project.git .
+          
+          fi
+        EOF
