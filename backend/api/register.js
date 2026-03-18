@@ -15,7 +15,7 @@ router.post('/', [
         .notEmpty().withMessage('Username is required!')
         .trim(),
     body('Password')
-        .isLength({ min: 5 }).withMessage('Password must be at least 6 characters.'),
+        .isLength({ min: 5 }).withMessage('Password must be at least 5 characters.'),
     body('Email')
         .isEmail().withMessage('Must be a valid email!')
         .normalizeEmail()
