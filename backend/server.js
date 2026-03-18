@@ -7,6 +7,9 @@ const User = require('./models/user.js');
 const app = express();
 app.use(express.json());
 
+const registerRouter = require('.api/register.js');
+app.use('/register', registerRouter);
+
 // connect to database via mongoose
 const url = 'mongodb://localhost:27017/large_project';
 mongoose.connect(url)
