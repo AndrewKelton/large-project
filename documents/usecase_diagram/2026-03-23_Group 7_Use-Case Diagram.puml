@@ -1,0 +1,62 @@
+@startuml
+title Group 7 - Large Project\nUse-Case Diagram
+left to right direction
+
+actor "Registered User" as User
+actor Respondent
+
+rectangle "Course/Professor Assessment App" {
+
+  ' --- Core use cases ---
+  (Login) as UC_Login
+  (Logout) as UC_Logout
+  (Verify Username/Password) as UC_Validate
+  (Display Login Error Message) as UC_LoginError
+  (Select UCF Course and\nView Rating Summary and\nPast Questionnaires) as UC_SelectCourse
+  (Select UCF Course+Professor Pair and\nView Rating Summary and\nPast Questionnaires) as UC_SelectProfessor
+  (Search UCF Course\n[Partial Match]) as UC_SearchCourse
+  (Search UCF Professor\n[Partial Match]) as UC_SearchProfessor
+  (Search System Database) as UC_SearchDatabase
+  (Create Rating for\nUCF Course) as UC_RateCourse
+  (Create Rating for\nUCF Course+Professor Pair) as UC_RateProfessor
+  (Update Database and\nRating Summary) as UC_UpdateRatingSummary
+  (Create Questionnaire for\nUCF Course) as UC_CourseQuestionnaire
+  (Create Questionnaire for\nUCF Course+Professor Pair) as UC_ProfessorQuestionnaire
+  (Send Questionnaire to relevant Users) as UC_SendQuestionnaire
+  (Respond to Questionnaires) as UC_RespondToQuestionnaire
+  (Update Database and\nPast Questionnaire Summary) as UC_UpdateQuestionnaire
+
+  ' --- Authentication ---
+  UC_Login ..> UC_Validate : <<include>>
+  UC_LoginError ..> UC_Login : <<extend>> ' only if failed login
+
+  ' --- Search behavior ---
+  UC_SearchCourse ..> UC_SelectCourse : <<extend>>  ' only if partial matches found
+  UC_SearchCourse ..> UC_SelectProfessor : <<extend>>  ' only if partial matches found
+  UC_SearchProfessor ..> UC_SelectProfessor : <<extend>>  ' only if partial matches found
+  UC_SearchCourse ..> UC_SearchDatabase : <<include>>
+  UC_SearchProfessor ..> UC_SearchDatabase : <<include>>
+
+  ' --- System interactions ---
+  UC_RateCourse ..> UC_UpdateRatingSummary : <<include>>
+  UC_RateProfessor ..> UC_UpdateRatingSummary : <<include>>
+  UC_CourseQuestionnaire ..> UC_SendQuestionnaire : <<include>>
+  UC_ProfessorQuestionnaire ..> UC_SendQuestionnaire : <<include>>
+  UC_RespondToQuestionnaire ..> UC_UpdateQuestionnaire : <<include>>
+  
+  ' --- User interactions ---
+  User --> UC_Login
+  User --> UC_Logout
+  User --> UC_SelectCourse
+  User --> UC_SelectProfessor
+  User --> UC_SearchCourse
+  User --> UC_SearchProfessor
+  User --> UC_RateCourse
+  User --> UC_RateProfessor
+  User --> UC_CourseQuestionnaire
+  User --> UC_ProfessorQuestionnaire
+  Respondent --> UC_RespondToQuestionnaire
+  Respondent --|> User
+}
+
+@enduml
