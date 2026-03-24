@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 // Plug in enviroment variable here
 const JWT_SECRET = '<<PLACEHOLDER>>';
 
-const User = require('./user'); // Replace with user model location
+const User = require('../models/user.js'); // User model location
 
 // POST - Login
 router.post('/login', async (req, res) => {
