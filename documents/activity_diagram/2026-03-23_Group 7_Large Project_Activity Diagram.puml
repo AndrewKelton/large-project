@@ -12,12 +12,31 @@ backward: Login Error Message Displayed;
 repeat while (Username/Password Valid?) is (No) not (Yes)
 
 repeat
-  :User's Home Page Displayed;
-  :Choose Course from Dropdown List;
-  split
-    :Choose Professor from Dropdown List;
-  split again
-  end split
+  repeat
+    :User's Home Page Displayed;
+    :Choose Course from Dropdown List;
+    split
+      :Choose Professor from Dropdown List;
+    split again
+    end split
+    split
+      :Respond to\nMultiple-Choice\nQuestionnaires;
+      if (Professor Selected?) is (No) then
+        if(Has User rated Course?) is (No) then
+          :User cannot\nanswer questionnaire;
+        else (Yes)
+          :User's response is valid;
+        endif
+      else (Yes)
+        if (Has User rated\nCourse+Professor Pair?) is (No) then
+          :User cannot\nanswer questionnaire;
+        else (Yes)
+          :User's response is valid;
+        endif
+      endif
+    split again
+    end split
+  repeat while()
   split
     :Press Button "Create a Questionnaire";
     :Questionnaire Page Displayed;
@@ -25,13 +44,14 @@ repeat
     :Press Button "Send";
     
     if (Professor Selected from\nUser's Home Page?) is (No) then
-      :System sends Questionnaire
-      to Users who have reviewed
-      this Course;
+      :Questionnaire is posted on
+      Home Page when the 
+      course is selected.;
     else (Yes)
-      :System sends Questionnaire
-      to Users who have reviewed
-      this Course+Professor pair;
+      :Questionnaire is posted on 
+      Home Page when the 
+      course+professor pair
+      is selected.;
     endif
   split again
     :Press Button "Create Rating";
