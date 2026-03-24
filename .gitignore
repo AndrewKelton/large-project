@@ -6,11 +6,3 @@ build/
 logs/
 *.log
 **/.DS_Store
-
-package.json
-package-lock.json
-tsconfig.app.json
-tsconfig.json
-tsconfig.node.json
-vite.config.ts
-eslint.config.js

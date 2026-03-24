@@ -14,16 +14,29 @@ on:
       # dev is used as a staging ground before
       # being merged into main (not to be confused
       # with the `staging` branch). See README.md.
-      
+
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install frontend dependencies
+      working-directory: frontend
+      run: npm install
+
+    - name: Build React app
+      working-directory: frontend
+      run: npm run build
+
     - name: Deploy to Digital Ocean
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -35,25 +48,45 @@ jobs:
         echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
-        
-        # Deploy to server
+
+        # Copy built React app to server
+        rsync -avz --delete \
+          -e "ssh -o StrictHostKeyChecking=no" \
+          frontend/dist/ \
+          root@$SERVER_IP:/var/www/html/
+
+        # Deploy backend and restart server
         ssh -o StrictHostKeyChecking=no root@$SERVER_IP << EOF
-          # Navigate to web root or create a project directory
-          cd /var/www/html
+          # Ensure project directory exists
+          mkdir -p /large-project
 
           # Fix git ownership issue
-          git config --global --add safe.directory /var/www/html
-          
-          # Check if this is already a git repo
-          if [ -d ".git" ]; then
-            # Already a repo, just pull latest changes
+          git config --global --add safe.directory /large-project
+
+          # Pull latest backend code
+          if [ -d "/large-project/.git" ]; then
+            cd /large-project
             git fetch origin $BRANCH_NAME
             git reset --hard origin/$BRANCH_NAME
           else
-            # Not a git repo yet - need to initialize
-            rm -rf /var/www/html/*
-            rm -rf /var/www/html/.*  2>/dev/null || true
-            git clone -b $BRANCH_NAME https://github.com/AndrewKelton/large-project.git .
-          
+            rm -rf /large-project/*
+            rm -rf /large-project/.* 2>/dev/null || true
+            git clone -b $BRANCH_NAME https://github.com/AndrewKelton/large-project.git /large-project
+            cd /large-project
           fi
+
+          # Install backend dependencies
+          cd /large-project/backend
+          npm install --production
+
+          # Restart backend with PM2 (installs PM2 if not present)
+          if ! command -v pm2 &> /dev/null; then
+            npm install -g pm2
+          fi
+
+          pm2 describe large-project-backend > /dev/null 2>&1 \
+            && pm2 restart large-project-backend \
+            || pm2 start server.js --name large-project-backend
+
+          pm2 save
         EOF
