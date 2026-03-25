@@ -23,7 +23,7 @@ mongoose.connect(url)
 // Joshua here, added this to make sure the NodeMailer stuff works.
 // You can find all the API files in /backend/api/NodeMailerTesting
 const authRoutes = require('./api/NodeMailerTesting/routes/auth.js');
-app.use('./api/NodeMailerTesting/routes/auth', authRoutes);
+app.use('/api/NodeMailerTesting/routes/auth', authRoutes);
 
 // example API no input simple response, send GET request on postman to http://137.184.68.139:3000/ping
 app.get('/ping', (req, res) => {
