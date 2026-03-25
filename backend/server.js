@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 
@@ -7,8 +8,14 @@ const User = require('./models/user.js');
 const app = express();
 app.use(express.json());
 
+const registerRouter = require('./api/register.js');
+app.use('/api/register', registerRouter);
+
+const loginRouter = require('./api/login.js');
+app.use('/api', loginRouter);
+
 // connect to database via mongoose
-const url = 'mongodb://localhost:27017/large_project';
+const url = process.env.MONGO_URI;
 mongoose.connect(url)
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.log(err));
@@ -31,5 +38,6 @@ app.post('/user', async (req, res) => {
 });
 
 // open port for express to listen to
-app.listen(3000, () => console.log('Server running on port 3000'));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
