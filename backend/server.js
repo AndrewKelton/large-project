@@ -10,12 +10,15 @@ const app = express();
 app.use(express.json());
 
 // allow requests from the front-end origin
-app.use(cors({
+const corsOptions = {
     origin: ['http://leandrovivares.com', 'https://leandrovivares.com'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
-}));
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // handle preflight requests for all routes
+
 const registerRouter = require('./api/register.js');
 app.use('/api/register', registerRouter);
 
