@@ -1,11 +1,20 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 // mongoose schemas
 const User = require('./models/user.js');
 
 const app = express();
 app.use(express.json());
+
+// allow requests from the front-end origin
+app.use(cors({
+    origin: ['http://leandrovivares.com', 'https://leandrovivares.com'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
 
 // connect to database via mongoose
 const url = 'mongodb://localhost:27017/large_project';
