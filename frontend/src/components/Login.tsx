@@ -10,7 +10,7 @@ function Login()
     {
         event.preventDefault();
         
-        var obj = {Username: username, Password: userPassword};
+        var obj = {"Username": username, "Password": userPassword};
         var js = JSON.stringify(obj);
 
         try {
