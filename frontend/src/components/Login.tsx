@@ -23,7 +23,7 @@ function Login()
             } else {
                 localStorage.setItem('token', res.token);
                 setMessage('');
-                window.location.href = '/userHomePage'; // doesn't exist yet!
+                window.location.href = '/HomePage'; // doesn't exist yet!
             }
         } catch(error: any) {
             alert(error.toString());
