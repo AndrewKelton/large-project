@@ -9,10 +9,10 @@ const app = express();
 app.use(express.json());
 
 const registerRouter = require('./api/register.js');
-app.use('/register', registerRouter);
+app.use('/api/register', registerRouter);
 
 const loginRouter = require('./api/login.js');
-app.use('/login', loginRouter);
+app.use('/api', loginRouter);
 
 // connect to database via mongoose
 const url = process.env.MONGO_URI;
