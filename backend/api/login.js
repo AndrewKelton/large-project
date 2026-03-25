@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 // Plug in enviroment variable here
-const JWT_SECRET = '<<PLACEHOLDER>>';
+const JWT_SECRET = process.env.JWT_SECRET || 'secret_key_here';
 
 const User = require('../models/user.js'); // User model location
 
