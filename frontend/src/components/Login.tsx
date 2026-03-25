@@ -14,7 +14,11 @@ function Login()
         var js = JSON.stringify(obj);
 
         try {
-            const response = await fetch('http://137.184.68.139:3000/api/login', {method: 'POST', body: js, headers:{'Content-Type': 'application/json'}});
+            const response = await fetch('https://leandrovivares.com/api/login', {
+                method: 'POST',
+                body: js,
+                headers: { 'Content-Type': 'application/json' }
+            });
 
             var res = JSON.parse(await response.text());
 
