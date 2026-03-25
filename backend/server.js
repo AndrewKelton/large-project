@@ -20,6 +20,11 @@ mongoose.connect(url)
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.log(err));
 
+// Joshua here, added this to make sure the NodeMailer stuff works.
+// You can find all the API files in /backend/api/NodeMailerTesting
+const authRoutes = require('./api/NodeMailerTesting/routes/auth.js');
+app.use('./api/NodeMailerTesting/routes/auth', authRoutes);
+
 // example API no input simple response, send GET request on postman to http://137.184.68.139:3000/ping
 app.get('/ping', (req, res) => {
     const dbState = mongoose.connection.readyState === 1 ? 'Database OK' : 'Database NOT OK';
@@ -40,4 +45,3 @@ app.post('/user', async (req, res) => {
 // open port for express to listen to
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-

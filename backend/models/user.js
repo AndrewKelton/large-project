@@ -20,7 +20,11 @@ const UserSchema = new Schema({
     Date_Created: {
         type: Date,
         default: Date.now
-    }
+    },
+
+    // 2FA Fields required for NodeMailer
+    otpCode: { type: String },
+    otpExpires: { type: Date }
 });
 
 const User = mongoose.model('User', UserSchema, 'Users');
