@@ -6,6 +6,7 @@ function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   function handleSetFirstName(e: any): void {
     setFirstName(e.target.value);
@@ -23,15 +24,25 @@ function Register() {
     setPassword(e.target.value);
   }
 
+  function handleConfirmPassword(e: any): void {
+    setConfirmPassword(e.target.value);
+  }
+
+
   function doRegistration(): void {
-    if (firstName === "" || lastName === "" || username === "" || password === "")
+    if (firstName === "" || lastName === "" || username === "" || password === "" || confirmPassword === "")
     {
       setMessage("Please fill out all fields.");
       return;
     }
 
-    setMessage("");
-    console.log(firstName, lastName, username, password);
+    if(password !== confirmPassword)
+    {
+      setMessage("Inputted passwords do not match.");
+      return;
+    }
+
+    setMessage("Account created!");
   }
 
   return (
@@ -67,6 +78,8 @@ function Register() {
         placeholder="Password"
         onChange={handleSetPassword}
       />
+      <br></br>
+      <input type = "password" id = "confirmPassword" placeholder = "Re-enter your password" onChange={handleConfirmPassword}></input>
       <br></br>
       <input
         type="submit"
