@@ -5,6 +5,7 @@ function Register() {
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
 
   function handleSetFirstName(e: any): void {
     setFirstName(e.target.value);
@@ -23,6 +24,13 @@ function Register() {
   }
 
   function doRegistration(): void {
+    if (firstName === "" || lastName === "" || username === "" || password === "")
+    {
+      setMessage("Please fill out all fields.");
+      return;
+    }
+
+    setMessage("");
     console.log(firstName, lastName, username, password);
   }
 
@@ -36,7 +44,6 @@ function Register() {
         placeholder="First Name"
         onChange={handleSetFirstName}
       />
-      <span>{firstName}</span>
       <br></br>
       <input
         type="text"
@@ -44,7 +51,6 @@ function Register() {
         placeholder="Last Name"
         onChange={handleSetLastName}
       />
-      <span>{lastName}</span>
       <br></br>
 
       <input
@@ -53,7 +59,6 @@ function Register() {
         placeholder="Username"
         onChange={handleSetUsername}
       />
-      <span>{username}</span>
       <br></br>
 
       <input
@@ -62,10 +67,15 @@ function Register() {
         placeholder="Password"
         onChange={handleSetPassword}
       />
-      <span>{password}</span>
       <br></br>
-      <input type="submit" id="registerButton" value="Sign Me Up!" onClick={doRegistration} />
+      <input
+        type="submit"
+        id="registerButton"
+        value="Sign Me Up!"
+        onClick={doRegistration}
+      />
       <br></br>
+      <span id="registerResult">{message}</span>
     </div>
   );
 }
