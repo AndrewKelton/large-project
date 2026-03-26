@@ -14,7 +14,7 @@ function Login()
         var js = JSON.stringify(obj);
 
         try {
-            const response = await fetch('https://leandrovivares.com/api/login', {
+            const response = await fetch('http://leandrovivares.com/api/login', {
                 method: 'POST',
                 body: js,
                 headers: { 'Content-Type': 'application/json' }
