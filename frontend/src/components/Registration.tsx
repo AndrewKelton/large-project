@@ -1,12 +1,12 @@
 import { useState } from "react";
 
 function Register() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [FirstName, setFirstName] = useState("");
+  const [LastName, setLastName] = useState("");
+  const [Username, setUsername] = useState("");
+  const [Password, setPassword] = useState("");
+  const [Message, setMessage] = useState("");
+  const [ConfirmPassword, setConfirmPassword] = useState('');
 
   function handleSetFirstName(e: any): void {
     setFirstName(e.target.value);
@@ -30,13 +30,13 @@ function Register() {
 
 
   function doRegistration(): void {
-    if (firstName === "" || lastName === "" || username === "" || password === "" || confirmPassword === "")
+    if (FirstName === "" || LastName === "" || Username === "" || Password === "" || ConfirmPassword === "")
     {
       setMessage("Please fill out all fields.");
       return;
     }
 
-    if(password !== confirmPassword)
+    if(Password !== ConfirmPassword)
     {
       setMessage("Inputted passwords do not match.");
       return;
@@ -51,14 +51,14 @@ function Register() {
       <br />
       <input
         type="text"
-        id="firstName"
+        id="FirstName"
         placeholder="First Name"
         onChange={handleSetFirstName}
       />
       <br></br>
       <input
         type="text"
-        id="lastName"
+        id="LastName"
         placeholder="Last Name"
         onChange={handleSetLastName}
       />
@@ -66,7 +66,7 @@ function Register() {
 
       <input
         type="text"
-        id="username"
+        id="Username"
         placeholder="Username"
         onChange={handleSetUsername}
       />
@@ -74,12 +74,12 @@ function Register() {
 
       <input
         type="password"
-        id="password"
+        id="Password"
         placeholder="Password"
         onChange={handleSetPassword}
       />
       <br></br>
-      <input type = "password" id = "confirmPassword" placeholder = "Re-enter your password" onChange={handleConfirmPassword}></input>
+      <input type = "password" id = "Confirmpassword" placeholder = "Re-enter your password" onChange={handleConfirmPassword}></input>
       <br></br>
       <input
         type="submit"
@@ -88,7 +88,7 @@ function Register() {
         onClick={doRegistration}
       />
       <br></br>
-      <span id="registerResult">{message}</span>
+      <span id="registerResult">{Message}</span>
     </div>
   );
 }
