@@ -1,12 +1,23 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 // mongoose schemas
 const User = require('./models/user.js');
 
 const app = express();
+
 app.use(express.json());
+
+// allow requests from the front-end origin
+const corsOptions = {
+        origin: ['http://leandrovivares.com', 'http://localhost', 'http://localhost:5173'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        credentials: true
+};
+app.use(cors(corsOptions));
 
 const registerRouter = require('./api/register.js');
 app.use('/api/register', registerRouter);
@@ -22,7 +33,8 @@ mongoose.connect(url)
 
 // example API no input simple response, send GET request on postman to http://137.184.68.139:3000/ping
 app.get('/ping', (req, res) => {
-    const dbState = mongoose.connection.readyState === 1 ? 'Database OK' : 'Database NOT OK';
+    const dbStates = ['disconnected', 'connected', 'connecting', 'disconnecting', 'uninitialized'];
+    const dbState = dbStates[mongoose.connection.readyState] || 'Something is very wrong';
     res.json({message: 'Hello Group 7', status: 'Server OK', database: dbState});
 });
 
@@ -40,4 +52,3 @@ app.post('/user', async (req, res) => {
 // open port for express to listen to
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
