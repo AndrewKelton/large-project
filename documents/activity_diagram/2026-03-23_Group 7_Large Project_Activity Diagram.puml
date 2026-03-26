@@ -1,0 +1,75 @@
+@startuml
+title Group 7 - Large Project\nActivity Diagram
+
+start
+
+repeat
+  :Login Page Displayed;
+  :User Enters Username and Password;
+  :User Clicks Signin Button;
+  :Username/Password Validation;
+backward: Login Error Message Displayed;
+repeat while (Username/Password Valid?) is (No) not (Yes)
+
+repeat
+  repeat
+    :User's Home Page Displayed;
+    :Choose Course from Dropdown List;
+    split
+      :Choose Professor from Dropdown List;
+    split again
+    end split
+    split
+      :Respond to\nMultiple-Choice\nQuestionnaires;
+      if (Professor Selected?) is (No) then
+        if(Has User rated Course?) is (No) then
+          :User cannot\nanswer questionnaire;
+        else (Yes)
+          :User's response is valid;
+        endif
+      else (Yes)
+        if (Has User rated\nCourse+Professor Pair?) is (No) then
+          :User cannot\nanswer questionnaire;
+        else (Yes)
+          :User's response is valid;
+        endif
+      endif
+    split again
+    end split
+  repeat while()
+  split
+    :Press Button "Create a Questionnaire";
+    :Questionnaire Page Displayed;
+    :Create a Multiple-Choice Questionnaire;
+    :Press Button "Send";
+    
+    if (Professor Selected from\nUser's Home Page?) is (No) then
+      :Questionnaire is posted on
+      Home Page when the 
+      course is selected.;
+    else (Yes)
+      :Questionnaire is posted on 
+      Home Page when the 
+      course+professor pair
+      is selected.;
+    endif
+  split again
+    :Press Button "Create Rating";
+    if (Professor Selected from\nUser's Home Page?) is (No) then
+      :Course Rating Page Displayed;
+    else (Yes)
+      :Course+Professor Rating Page Displayed;
+    endif
+    
+    split
+      :Answer Questions\nSpecific to Course;
+    split again
+      :Answer Question\nSpecific to Course+Professor;
+    end split
+    :Press Button "Submit Rating";
+  end split
+repeat while ()
+
+stop
+
+@enduml
