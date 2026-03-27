@@ -3,19 +3,15 @@ import './App.css';
 
 import LoginPage from './pages/LoginPage.tsx';
 import HomePage from './pages/HomePage.tsx';
-import ProtectedRoute from './components/ProtectedRoute.tsx';
+// import ProtectedRoute from './components/ProtectedRoute.tsx'; // remove this
 
 function App()
 {
     return (
     <Router>
       <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/HomePage" element={
-            <ProtectedRoute>
-                <HomePage />
-            </ProtectedRoute>
-        } />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/auth" element={<LoginPage />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
