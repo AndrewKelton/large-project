@@ -70,7 +70,7 @@ function Register({ onSwitchToLogin }: RegisterProps) {
 
     // Try to send the JSON object to the API
     try {
-      const response = await fetch("http://leandrovivares.com/api/register", {
+      const response = await fetch("/api/register", {
         method: "POST",
         body: js,
         headers: { "Content-Type": "application/json" },

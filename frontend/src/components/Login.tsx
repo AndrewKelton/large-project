@@ -18,7 +18,7 @@ function Login({ onSwitchToRegister }: LoginProps)
         var js = JSON.stringify(obj);
 
         try {
-            const response = await fetch('http://leandrovivares.com/api/login', {
+            const response = await fetch('/api/login', {
                 method: 'POST',
                 body: js,
                 headers: { 'Content-Type': 'application/json' }
