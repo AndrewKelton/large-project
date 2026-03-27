@@ -194,12 +194,12 @@
   cursor: pointer;
   border: 1px solid #ccc;
   border-bottom: none;
-  background: #eee;
+  background: #4d64ca;
   font-size: 1rem;
 }
 
 .tab-button.active {
-  background: #fff;
+  background: #210a9f;
   font-weight: bold;
   border-bottom: 2px solid #fff;
 }
