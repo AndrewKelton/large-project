@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 function Login()
 {
@@ -55,6 +56,10 @@ function Login()
                 onChange={handleSetPassword} />
             <input type="submit" id="loginButton" className="buttons" value = "Do It" onClick={doLogin} />
             <span id="loginResult">{message}</span>
+            <br />
+            <p style = {{display: 'inline'}}>Don't have an account? Click </p>
+            <Link to ="/register">here</Link>
+            <p style = {{display: 'inline'}}> to make one! </p>
         </div>
     );
 };

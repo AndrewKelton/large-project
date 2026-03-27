@@ -3,6 +3,7 @@ import './App.css';
 
 import LoginPage from './pages/LoginPage.tsx';
 import HomePage from './pages/HomePage.tsx';
+import RegistrationPage  from './pages/RegistrationPage.tsx';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
 
 function App()
@@ -17,6 +18,7 @@ function App()
             </ProtectedRoute>
         } />
         <Route path="*" element={<Navigate to="/" />} />
+        <Route path = "/register" element = {<RegistrationPage />} />
       </Routes>
     </Router>
   );

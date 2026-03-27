@@ -1,5 +1,6 @@
 import PageTitle from '../components/PageTitle.tsx';
 import WelcomeMessage from '../components/WelcomeMessage.tsx';
+import Logout from '../components/Logout.tsx';
 
 const HomePage = () =>
 {
@@ -7,6 +8,7 @@ const HomePage = () =>
         <div>
             <PageTitle />
             <WelcomeMessage />
+            <Logout/>
         </div>
     );
 };
