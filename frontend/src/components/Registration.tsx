@@ -1,7 +1,13 @@
+// Code Written by Adam Betinsky with assistance from ChatGPT. See the AI Disclosure for relevant information
+
+// Import required helper libraries
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+// Main function for completing the registration
 function Register() {
+
+  // Declare and initialize useState variables to keep track of user inputs
   const [FirstName, setFirstName] = useState("");
   const [LastName, setLastName] = useState("");
   const [Username, setUsername] = useState("");
@@ -10,6 +16,7 @@ function Register() {
   const [ConfirmPassword, setConfirmPassword] = useState("");
   const [Email, setEmail] = useState("");
 
+  // Handler functions to handle input from the user and update the respective variables
   function handleSetFirstName(e: any): void {
     setFirstName(e.target.value);
   }
@@ -37,14 +44,7 @@ function Register() {
   async function doRegistration(event: any): Promise<void> {
     event.preventDefault();
 
-    if (
-      FirstName === "" ||
-      LastName === "" ||
-      Username === "" ||
-      Password === "" ||
-      ConfirmPassword === "" ||
-      Email === ""
-    ) {
+    if (FirstName === "" || LastName === "" || Username === "" || Password === "" || ConfirmPassword === "" ||Email === "") {
       setMessage("Please fill out all fields.");
       return;
     }
@@ -54,6 +54,7 @@ function Register() {
       return;
     }
 
+    // Make object variable and stringify for the API
     var obj = {
       FirstName: FirstName,
       LastName: LastName,
@@ -61,10 +62,10 @@ function Register() {
       Username: Username,
       Password: Password,
     };
+
     var js = JSON.stringify(obj);
 
-    console.log(obj);
-
+    // Try to send the JSON object to the API
     try {
       const response = await fetch("http://leandrovivares.com/api/register", {
         method: "POST",
@@ -72,21 +73,26 @@ function Register() {
         headers: { "Content-Type": "application/json" },
       });
 
+      // Await response from the API
       var res = JSON.parse(await response.text());
-      console.log(res);
 
+      // If the API gives an error, display the message properly
       if (!response.ok) {
         if (res.errors && res.errors.length > 0) {
           setMessage(res.errors[0].msg);
         } else if (res.message) {
           setMessage(res.message);
         } else {
-          setMessage("ERROR! Registration failed.");
+          setMessage("ERROR! Registration failed for unknown reason.");
         }
+        
+      // If here, the API was successful  
       } else {
+
+        // Print the success message
         setMessage(res.message);
 
-        // After 2 seconds → clear fields
+        // Wait two seconds and clear the text boxes. Show user going to Login screen
         setTimeout(() => {
           setFirstName("");
           setLastName("");
@@ -97,18 +103,21 @@ function Register() {
           setMessage("Redirecting to Login Screen...");
         }, 2000);
 
-        // After 3 seconds → redirect
-
+        
+        // After another 1.5 seconds, redirect to login screen
         setTimeout(() => {
           window.location.href = "/";
         }, 3500);
       }
+
+    // Catch any errors and display  
     } catch (error: any) {
       alert(error.toString());
       return;
     }
   }
 
+   //Visual elements. For each variable, display it's respective element, and update based on user actions
   return (
     <div id="registerDiv">
       <span id="inner-title">REGISTER</span>
@@ -137,7 +146,6 @@ function Register() {
         onChange={handleSetEmail}
       />
       <br></br>
-
       <input
         type="text"
         id="Username"
@@ -146,7 +154,6 @@ function Register() {
         onChange={handleSetUsername}
       />
       <br></br>
-
       <input
         type="password"
         id="Password"
@@ -180,4 +187,4 @@ function Register() {
   );
 }
 
-export default Register;
+export default Register; //Return to use in other files
