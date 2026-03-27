@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import PageTitle from '../components/PageTitle.tsx';
 import Login from '../components/Login.tsx';
 import Register from '../components/Registration.tsx';
@@ -8,6 +9,10 @@ const LoginPage = () => {
 
     return (
         <div>
+            <div style={{ position: 'absolute', top: '1rem', right: '1rem' }}>
+                {<Link to="/">Use without an Account</Link>}
+            </div>
+
             <PageTitle />
             <div id="tab-container">
                 <div id="tab-buttons">
