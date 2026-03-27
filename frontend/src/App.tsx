@@ -1,9 +1,8 @@
 import { BrowserRouter as Router, Route, Navigate, Routes } from 'react-router-dom';
 import './App.css';
 
-import LoginPage from './pages/LoginPage.tsx';
+import LoginPage from './pages/AuthPage.tsx';
 import HomePage from './pages/HomePage.tsx';
-// import ProtectedRoute from './components/ProtectedRoute.tsx'; // remove this
 
 function App()
 {
