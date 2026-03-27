@@ -6,7 +6,7 @@ function Register() {
   const [Username, setUsername] = useState("");
   const [Password, setPassword] = useState("");
   const [Message, setMessage] = useState("");
-  const [ConfirmPassword, setConfirmPassword] = useState('');
+  const [ConfirmPassword, setConfirmPassword] = useState("");
   const [Email, setEmail] = useState("");
 
   function handleSetFirstName(e: any): void {
@@ -33,56 +33,70 @@ function Register() {
     setEmail(e.target.value);
   }
 
-
-
-  async function doRegistration(event: any) : Promise<void>
-{
+  async function doRegistration(event: any): Promise<void> {
     event.preventDefault();
 
-    if(FirstName === '' || LastName === '' || Username === '' || Password === '' || ConfirmPassword === '' || Email === '')
-    {
-        setMessage('Please fill out all fields.');
-        return;
+    if (
+      FirstName === "" ||
+      LastName === "" ||
+      Username === "" ||
+      Password === "" ||
+      ConfirmPassword === "" ||
+      Email === ""
+    ) {
+      setMessage("Please fill out all fields.");
+      return;
     }
 
-    if(Password !== ConfirmPassword)
-    {
-        setMessage('Passwords do not match.');
-        return;
+    if (Password !== ConfirmPassword) {
+      setMessage("Passwords do not match.");
+      return;
     }
 
-    var obj = {"FirstName": FirstName, "LastName": LastName, "Email": Email, "Username": Username, "Password": Password};
+    var obj = {
+      FirstName: FirstName,
+      LastName: LastName,
+      Email: Email,
+      Username: Username,
+      Password: Password,
+    };
     var js = JSON.stringify(obj);
-
 
     console.log(obj);
 
-    try
-    {
-        const response = await fetch('http://leandrovivares.com/api/register', {
-            method: 'POST',
-            body: js,
-            headers: { 'Content-Type': 'application/json' }
-        });
+    try {
+      const response = await fetch("http://leandrovivares.com/api/register", {
+        method: "POST",
+        body: js,
+        headers: { "Content-Type": "application/json" },
+      });
 
-        var res = JSON.parse(await response.text());
-        console.log(res);
+      var res = JSON.parse(await response.text());
+      console.log(res);
 
-        if(res.error)
-        {
-            setMessage(res.error[0].msg);
+      if (!response.ok) {
+        if (res.errors && res.errors.length > 0) {
+          setMessage(res.errors[0].msg);
+        } else if (res.message) {
+          setMessage(res.message);
+        } else {
+          setMessage("ERROR! Registration failed.");
         }
-        else
-        {
-            setMessage('Account created! Yay! :)');
-        }
+      } else {
+        setMessage(res.message || "Account created! Yay! :)");
+
+        setFirstName("");
+        setLastName("");
+        setUsername("");
+        setPassword("");
+        setConfirmPassword("");
+        setEmail("");
+      }
+    } catch (error: any) {
+      alert(error.toString());
+      return;
     }
-    catch(error: any)
-    {
-        alert(error.toString());
-        return;
-    }
-}
+  }
 
   return (
     <div id="registerDiv">
@@ -102,7 +116,7 @@ function Register() {
         onChange={handleSetLastName}
       />
       <br></br>
-       <input
+      <input
         type="text"
         id="Email"
         placeholder="Email Address"
@@ -125,7 +139,12 @@ function Register() {
         onChange={handleSetPassword}
       />
       <br></br>
-      <input type = "password" id = "Confirmpassword" placeholder = "Re-enter your password" onChange={handleConfirmPassword}></input>
+      <input
+        type="password"
+        id="Confirmpassword"
+        placeholder="Re-enter your password"
+        onChange={handleConfirmPassword}
+      ></input>
       <br></br>
       <input
         type="submit"
