@@ -83,14 +83,24 @@ function Register() {
           setMessage("ERROR! Registration failed.");
         }
       } else {
-        setMessage(res.message || "Account created! Yay! :)");
+        setMessage(res.message);
 
-        setFirstName("");
-        setLastName("");
-        setUsername("");
-        setPassword("");
-        setConfirmPassword("");
-        setEmail("");
+        // After 2 seconds → clear fields
+        setTimeout(() => {
+          setFirstName("");
+          setLastName("");
+          setUsername("");
+          setPassword("");
+          setConfirmPassword("");
+          setEmail("");
+          setMessage("Redirecting to Login Screen...");
+        }, 2000);
+
+        // After 3 seconds → redirect
+
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 3500);
       }
     } catch (error: any) {
       alert(error.toString());
@@ -106,6 +116,7 @@ function Register() {
         type="text"
         id="FirstName"
         placeholder="First Name"
+        value = {FirstName}
         onChange={handleSetFirstName}
       />
       <br></br>
@@ -113,6 +124,7 @@ function Register() {
         type="text"
         id="LastName"
         placeholder="Last Name"
+        value = {LastName}
         onChange={handleSetLastName}
       />
       <br></br>
@@ -120,6 +132,7 @@ function Register() {
         type="text"
         id="Email"
         placeholder="Email Address"
+        value = {Email}
         onChange={handleSetEmail}
       />
       <br></br>
@@ -128,6 +141,7 @@ function Register() {
         type="text"
         id="Username"
         placeholder="Username"
+        value = {Username}
         onChange={handleSetUsername}
       />
       <br></br>
@@ -136,6 +150,7 @@ function Register() {
         type="password"
         id="Password"
         placeholder="Password"
+        value = {Password}
         onChange={handleSetPassword}
       />
       <br></br>
@@ -143,6 +158,7 @@ function Register() {
         type="password"
         id="Confirmpassword"
         placeholder="Re-enter your password"
+        value = {ConfirmPassword}
         onChange={handleConfirmPassword}
       ></input>
       <br></br>
