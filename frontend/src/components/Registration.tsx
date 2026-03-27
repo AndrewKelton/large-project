@@ -7,6 +7,7 @@ function Register() {
   const [Password, setPassword] = useState("");
   const [Message, setMessage] = useState("");
   const [ConfirmPassword, setConfirmPassword] = useState('');
+  const [Email, setEmail] = useState("");
 
   function handleSetFirstName(e: any): void {
     setFirstName(e.target.value);
@@ -28,22 +29,60 @@ function Register() {
     setConfirmPassword(e.target.value);
   }
 
+  function handleSetEmail(e: any): void {
+    setEmail(e.target.value);
+  }
 
-  function doRegistration(): void {
-    if (FirstName === "" || LastName === "" || Username === "" || Password === "" || ConfirmPassword === "")
+
+
+  async function doRegistration(event: any) : Promise<void>
+{
+    event.preventDefault();
+
+    if(FirstName === '' || LastName === '' || Username === '' || Password === '' || ConfirmPassword === '' || Email === '')
     {
-      setMessage("Please fill out all fields.");
-      return;
+        setMessage('Please fill out all fields.');
+        return;
     }
 
     if(Password !== ConfirmPassword)
     {
-      setMessage("Inputted passwords do not match.");
-      return;
+        setMessage('Passwords do not match.');
+        return;
     }
 
-    setMessage("Account created!");
-  }
+    var obj = {"FirstName": FirstName, "LastName": LastName, "Email": Email, "Username": Username, "Password": Password};
+    var js = JSON.stringify(obj);
+
+
+    console.log(obj);
+
+    try
+    {
+        const response = await fetch('http://leandrovivares.com/api/register', {
+            method: 'POST',
+            body: js,
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        var res = JSON.parse(await response.text());
+        console.log(res);
+
+        if(res.error)
+        {
+            setMessage(res.error[0].msg);
+        }
+        else
+        {
+            setMessage('Account created! Yay! :)');
+        }
+    }
+    catch(error: any)
+    {
+        alert(error.toString());
+        return;
+    }
+}
 
   return (
     <div id="registerDiv">
@@ -61,6 +100,13 @@ function Register() {
         id="LastName"
         placeholder="Last Name"
         onChange={handleSetLastName}
+      />
+      <br></br>
+       <input
+        type="text"
+        id="Email"
+        placeholder="Email Address"
+        onChange={handleSetEmail}
       />
       <br></br>
 
