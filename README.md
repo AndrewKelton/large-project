@@ -107,7 +107,7 @@ Our `staging` branch is used for live deployment testing. Here's how to test you
    ```
 
 2. **Test your changes on the live server:**
-   - Visit `<large project server address or link here>` to see your changes deployed
+   - Visit `<http://leandrovivares.com/>` to see your changes deployed
    - The deployment happens automatically via GitHub Actions
 
 3. **Once testing is complete, reset staging:**

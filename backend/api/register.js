@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/user');
@@ -41,8 +42,9 @@ router.post('/', [
             return res.status(400).json({ message: 'Email already registered!' });
         }
  
-        // Create the user
-        const user = await User.create({ Username, Password, Email });
+        // Hash password and create the user
+        const hashedPassword = await bcrypt.hash(Password, 10);
+        const user = await User.create({ Username, Password: hashedPassword, Email });
  
         res.status(201).json({
             message: 'Account created successfully',
