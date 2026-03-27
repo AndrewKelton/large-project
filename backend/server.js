@@ -25,9 +25,6 @@ app.use('/api/register', registerRouter);
 const loginRouter = require('./api/login.js');
 app.use('/api', loginRouter);
 
-const courseRouter = require('./api/courses');
-app.use('/api/courses', courseRouter);
-
 // connect to database via mongoose
 const url = process.env.MONGO_URI;
 mongoose.connect(url)
