@@ -1,7 +1,10 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 
-function Login()
+interface LoginProps {
+    onSwitchToRegister?: () => void;
+}
+
+function Login({ onSwitchToRegister }: LoginProps)
 {
     const [message, setMessage] = useState('');
     const [username, setUsername] = useState('');
@@ -58,7 +61,7 @@ function Login()
             <span id="loginResult">{message}</span>
             <br />
             <p style = {{display: 'inline'}}>Don't have an account? Click </p>
-            <Link to ="/register">here</Link>
+            <button className="link-button" onClick={onSwitchToRegister}>here</button>
             <p style = {{display: 'inline'}}> to make one! </p>
         </div>
     );

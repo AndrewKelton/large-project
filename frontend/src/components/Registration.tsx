@@ -2,10 +2,13 @@
 
 // Import required helper libraries
 import { useState } from "react";
-import { Link } from "react-router-dom";
+
+interface RegisterProps {
+  onSwitchToLogin?: () => void;
+}
 
 // Main function for completing the registration
-function Register() {
+function Register({ onSwitchToLogin }: RegisterProps) {
 
   // Declare and initialize useState variables to keep track of user inputs
   const [FirstName, setFirstName] = useState("");
@@ -104,9 +107,9 @@ function Register() {
         }, 2000);
 
         
-        // After another 1.5 seconds, redirect to login screen
+        // After another 1.5 seconds, switch to login tab
         setTimeout(() => {
-          window.location.href = "/";
+          onSwitchToLogin?.();
         }, 3500);
       }
 
@@ -180,7 +183,7 @@ function Register() {
       <span id="registerResult">{Message}</span>
       <br />
       <p style = {{display: 'inline'}}>Already have an account? Click </p>
-      <Link to ="/">here</Link>
+      <button className="link-button" onClick={onSwitchToLogin}>here</button>
       <p style = {{display: 'inline'}}> to Login. </p>
       <br></br>
     </div>
