@@ -112,10 +112,6 @@ function Register() {
   return (
     <div id="registerDiv">
       <span id="inner-title">REGISTER</span>
-      <br />
-      <p style = {{display: 'inline'}}>Already have an account? Click </p>
-      <Link to ="/">here</Link>
-      <p style = {{display: 'inline'}}> to Login. </p>
       <br></br>
       <input
         type="text"
@@ -175,6 +171,11 @@ function Register() {
       />
       <br></br>
       <span id="registerResult">{Message}</span>
+      <br />
+      <p style = {{display: 'inline'}}>Already have an account? Click </p>
+      <Link to ="/">here</Link>
+      <p style = {{display: 'inline'}}> to Login. </p>
+      <br></br>
     </div>
   );
 }
