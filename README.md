@@ -45,7 +45,7 @@ git checkout -b database/<feature-name>
 Replace `<feature-name>` with a descriptive name for the feature you're implementing (e.g., `front-end/user-authentication`, `api/database-optimization`, `database/user-table`).
 
 ### 3. Commit Changes Regularly
-
+ 
 > 💡 **Before committing, always verify you're on the correct branch!** Run the following in your terminal to confirm:
 > ```bash
 > git branch
