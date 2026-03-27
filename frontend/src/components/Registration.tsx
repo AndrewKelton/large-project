@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 function Register() {
   const [FirstName, setFirstName] = useState("");
@@ -112,6 +113,10 @@ function Register() {
     <div id="registerDiv">
       <span id="inner-title">REGISTER</span>
       <br />
+      <p style = {{display: 'inline'}}>Already have an account? Click </p>
+      <Link to ="/">here</Link>
+      <p style = {{display: 'inline'}}> to Login. </p>
+      <br></br>
       <input
         type="text"
         id="FirstName"
