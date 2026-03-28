@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const CourseSchema = new Schema({
-    Code: {
+const ProfessorSchema = new Schema({
+    First_Name: {
         type: String,
         required: true
     },
-    Title: {
+    Last_Name: {
         type: String,
         required: true
     }
 });
 
-const Course = mongoose.model('Course', CourseSchema, 'Courses')
+const Professor = mongoose.model('Professor', ProfessorSchema, 'Professors')
