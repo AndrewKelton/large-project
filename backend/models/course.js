@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const CourseSchema = new Schema({
     
+    // Course information
     Code: {
         type: String,
         required: true

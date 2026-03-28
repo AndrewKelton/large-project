@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
     
+    // User information
     Username: {
         type: String,
         required: true
@@ -21,10 +22,14 @@ const UserSchema = new Schema({
     Last_Name: {
         type: String
     },
+
+    // Reference Entries
     Answered_Questionnaires: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Questionnaire'
     }],
+
+    // User metadata
     Date_Created: {
         type: Date,
         default: Date.now
