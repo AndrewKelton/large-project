@@ -19,7 +19,7 @@ const RatingSchema = new Schema({
         required: true
     },
 
-    // Rating information -- question agnostic, static on frontend (5 max)
+    // COURSE rating information -- question agnostic, static on frontend (5 max)
     Option_A_Count: {
         type: Number,
         min: [1, 'Rating must be at least 1'],
@@ -57,6 +57,58 @@ const RatingSchema = new Schema({
         }
     },
     Option_E_Count: {
+        type: Number,
+        min: [1, 'Rating must be at least 1'],
+        max: [5, 'Rating must be at most 5'],
+        validate: {
+            validator: Number.isInteger,
+            message: 'Rating must be an integer'
+        }
+    },
+
+    // PROFESSOR rating information
+    // whether or not the professor was rated
+    Professor_Rated: {
+        type: Boolean,
+        default: false
+    },
+    Option_F_Count: {
+        type: Number,
+        min: [1, 'Rating must be at least 1'],
+        max: [5, 'Rating must be at most 5'],
+        validate: {
+            validator: Number.isInteger,
+            message: 'Rating must be an integer'
+        }
+    },
+    Option_G_Count: {
+        type: Number,
+        min: [1, 'Rating must be at least 1'],
+        max: [5, 'Rating must be at most 5'],
+        validate: {
+            validator: Number.isInteger,
+            message: 'Rating must be an integer'
+        }
+    },
+    Option_H_Count: {
+        type: Number,
+        min: [1, 'Rating must be at least 1'],
+        max: [5, 'Rating must be at most 5'],
+        validate: {
+            validator: Number.isInteger,
+            message: 'Rating must be an integer'
+        }
+    },
+    Option_I_Count: {
+        type: Number,
+        min: [1, 'Rating must be at least 1'],
+        max: [5, 'Rating must be at most 5'],
+        validate: {
+            validator: Number.isInteger,
+            message: 'Rating must be an integer'
+        }
+    },
+    Option_J_Count: {
         type: Number,
         min: [1, 'Rating must be at least 1'],
         max: [5, 'Rating must be at most 5'],
