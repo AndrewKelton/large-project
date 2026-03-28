@@ -84,9 +84,9 @@ jobs:
             npm install -g pm2
           fi
 
-          pm2 describe large-project-backend > /dev/null 2>&1 \
-            && pm2 restart large-project-backend \
-            || pm2 start server.js --name large-project-backend
+          pm2 describe large-project > /dev/null 2>&1 \
+            && pm2 restart large-project \
+            || pm2 start server.js --name large-project
 
           pm2 save
         EOF
