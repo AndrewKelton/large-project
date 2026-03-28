@@ -15,7 +15,8 @@ const QuestionnaireSchema = new Schema({
     },
     User: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User',
+        required: true
     },
     
     // Questionnaire options + counters
