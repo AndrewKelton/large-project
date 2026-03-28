@@ -14,4 +14,5 @@ const ProfessorSchema = new Schema({
     }
 });
 
-const Professor = mongoose.model('Professor', ProfessorSchema, 'Professors')
+const Professor = mongoose.model('Professor', ProfessorSchema, 'Professors');
+module.exports = Professor;

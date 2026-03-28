@@ -61,4 +61,5 @@ const QuestionnaireSchema = new Schema({
     }
 });
 
-const Professor = mongoose.model('Questionnaire', QuestionnaireSchema, 'Questionnaires')
+const Questionnaire = mongoose.model('Questionnaire', QuestionnaireSchema, 'Questionnaires');
+module.exports = Questionnaire;
