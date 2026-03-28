@@ -32,7 +32,7 @@ mongoose.connect(url)
 .catch(err => console.log(err));
 
 // example API no input simple response, send GET request on postman to http://137.184.68.139:3000/ping
-app.get('/ping', (req, res) => {
+app.get('/api/ping', (req, res) => {
     const dbStates = ['disconnected', 'connected', 'connecting', 'disconnecting', 'uninitialized'];
     const dbState = dbStates[mongoose.connection.readyState] || 'Something is very wrong';
     res.json({message: 'Hello Group 7', status: 'Server OK', database: dbState});
