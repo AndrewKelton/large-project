@@ -14,7 +14,10 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
-    Name: {
+    First_Name: {
+        type: String
+    },
+    Last_Name: {
         type: String
     },
     Answered_Questionnaires: [{
