@@ -17,6 +17,10 @@ const UserSchema = new Schema({
     Name: {
         type: String
     },
+    Answered_Questionnaires: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Questionnaire'
+    }],
     Date_Created: {
         type: Date,
         default: Date.now
