@@ -1,6 +1,6 @@
 
 // Course interface, stores what's in a course durr
-interface Course {
+export interface Course {
     _id: string;
     Code: string;
     Title: string;
