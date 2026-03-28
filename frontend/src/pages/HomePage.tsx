@@ -3,6 +3,7 @@ import PageTitle from '../components/PageTitle.tsx';
 import WelcomeMessage from '../components/WelcomeMessage.tsx';
 import Logout from '../components/Logout.tsx';
 import CourseDropdown from '../components/CourseDropdown.tsx';
+import ProfessorDropdown from '../components/ProfessorDropdown.tsx';
 
 const HomePage = () => {
   const token = localStorage.getItem('token'); // save token
@@ -17,6 +18,7 @@ const HomePage = () => {
       <WelcomeMessage />
 
       <CourseDropdown />
+      <ProfessorDropdown />
 
       {token && <Logout/>}
     </div>
