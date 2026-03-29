@@ -5,6 +5,7 @@ import WelcomeMessage from '../components/WelcomeMessage.tsx';
 import Logout from '../components/Logout.tsx';
 import CourseDropdown from '../components/CourseDropdown.tsx';
 import ProfessorDropdown from '../components/ProfessorDropdown.tsx';
+import CourseSummary from '../components/CourseSummary.tsx';
 import type { Course } from '../types/index.ts';
 
 const HomePage = () => {
@@ -22,6 +23,8 @@ const HomePage = () => {
 
       <CourseDropdown onSelect={(course) => setSelectedCourse(course)} />
       <ProfessorDropdown />
+
+      <CourseSummary course={(selectedCourse)} />
 
       {token && <Logout/>}
     </div>
