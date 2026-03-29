@@ -45,7 +45,7 @@ git checkout -b database/<feature-name>
 Replace `<feature-name>` with a descriptive name for the feature you're implementing (e.g., `front-end/user-authentication`, `api/database-optimization`, `database/user-table`).
 
 ### 3. Commit Changes Regularly
-
+ 
 > 💡 **Before committing, always verify you're on the correct branch!** Run the following in your terminal to confirm:
 > ```bash
 > git branch
@@ -107,7 +107,7 @@ Our `staging` branch is used for live deployment testing. Here's how to test you
    ```
 
 2. **Test your changes on the live server:**
-   - Visit `<large project server address or link here>` to see your changes deployed
+   - Visit `<http://leandrovivares.com/>` to see your changes deployed
    - The deployment happens automatically via GitHub Actions
 
 3. **Once testing is complete, reset staging:**
