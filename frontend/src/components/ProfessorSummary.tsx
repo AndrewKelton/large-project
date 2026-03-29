@@ -19,8 +19,8 @@ function ProfessorSummary({ professor }: ProfessorSummaryProps) {
   return (
     <div>
       <h3>Professor Summary</h3>
-      <p>Title: {professor.First_Name}</p>
-      <p>Code: {professor.Last_Name}</p>
+      <p>Firstname: {professor.First_Name}</p>
+      <p>Lastname: {professor.Last_Name}</p>
     </div>
   );
 };
