@@ -18,6 +18,7 @@ const HomePage = () => {
     <div>
       <div style={{ position: 'absolute', top: '1rem', right: '1rem' }}>
         {!token && <Link to="/auth">Login / Sign Up</Link>}
+        {token && <Logout/>}
       </div>
 
       <PageTitle />
@@ -29,8 +30,6 @@ const HomePage = () => {
       <CourseSummary course={(selectedCourse)} />
 
       <ProfessorSummary professor={(selectedProfessor)}/>
-
-      {token && <Logout/>}
     </div>
   );
 };
