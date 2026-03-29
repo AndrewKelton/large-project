@@ -24,7 +24,7 @@ const HomePage = () => {
       <WelcomeMessage />
 
       <CourseDropdown onSelect={(course) => setSelectedCourse(course)} />
-      <ProfessorDropdown />
+      <ProfessorDropdown onSelect={(professor) => setSelectedProfessor(professor)}/>
 
       <CourseSummary course={(selectedCourse)} />
 

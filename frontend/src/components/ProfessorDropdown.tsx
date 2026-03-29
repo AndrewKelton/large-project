@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import type { Professor } from '../types/index.ts';
 
-function ProfessorDropdown() {
+interface ProfessorDropdownProps {
+  onSelect: (professor: Professor | null) => void;
+}
+
+function ProfessorDropdown({ onSelect }: ProfessorDropdownProps) {
 
   const [professorsList, setProfessorsList] = useState<Professor[]>([]);
   const [selectedProfessorId, setSelectedProfessorId] = useState<string>("");
@@ -24,11 +28,13 @@ function ProfessorDropdown() {
   }, []); // empty array = run once when component mounts
 
   function handleSelectedProfessor(e: any) : void {
-    setSelectedProfessorId(e.target.value);
-  }
+    const id = e.target.value;
+    setSelectedProfessorId(id);
 
-  // get full selected course
-  const selectedProfessor = professorsList.find(course => course._id === selectedProfessorId) ?? null;
+    // update professor selected
+    const professor = professorsList.find(p => p._id === id) ?? null;
+    onSelect(professor);
+  }
 
   return (
     <div>

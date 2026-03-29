@@ -31,7 +31,7 @@ function CourseDropdown({ onSelect }: CourseDropdownProps) {
     const id = e.target.value;
     setSelectedCourseId(id);
 
-    // update select
+    // update course selected
     const course = coursesList.find(c => c._id === id) ?? null;
     onSelect(course);
   }
