@@ -10,13 +10,8 @@ const CourseSchema = new Schema({
     // Course Code
     Code: {
         type: String,
-        required: true,
-        unique: true
-    },
-    Questionnaires: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Questionnaire'
-    }]
+        required: true
+    }
 });
 
 const Course = mongoose.model('Course', CourseSchema, 'Courses');

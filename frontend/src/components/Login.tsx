@@ -18,7 +18,7 @@ function Login({ onSwitchToRegister }: LoginProps)
         var js = JSON.stringify(obj);
 
         try {
-            const response = await fetch('http://leandrovivares.com/api/login', {
+            const response = await fetch('/api/login', {
                 method: 'POST',
                 body: js,
                 headers: { 'Content-Type': 'application/json' }
@@ -55,9 +55,11 @@ function Login({ onSwitchToRegister }: LoginProps)
             <span id="inner-title">PLEASE LOG IN</span><br />
             <input type="text" id="username" placeholder="Username"
                 onChange={handleSetUsername} />
+            <br></br>
             <input type="password" id="userPassword" placeholder="Password"
                 onChange={handleSetPassword} />
-            <input type="submit" id="loginButton" className="buttons" value = "Do It" onClick={doLogin} />
+            <br></br>
+            <input type="submit" id="loginButton" className="buttons" value = "Login" onClick={doLogin} />
             <span id="loginResult">{message}</span>
             <br />
             <p style = {{display: 'inline'}}>Don't have an account? Click </p>
