@@ -5,7 +5,7 @@ function ProfessorDropdown() {
 
   const [professorsList, setProfessorsList] = useState<Professor[]>([]);
   const [selectedProfessorId, setSelectedProfessorId] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const loadProfessors = async() => {
