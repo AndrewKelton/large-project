@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
 import type { Course } from '../types/index.ts';
 
-function CourseDropdown() {
+interface CourseDropdownProps {
+  onSelect: (course: Course | null) => void;
+}
+
+function CourseDropdown({ onSelect }: CourseDropdownProps) {
 
   const [coursesList, setCoursesList] = useState<Course[]>([]);
   const [selectedCourseId, setSelectedCourseId] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const loadCourses = async() => {
@@ -24,11 +28,13 @@ function CourseDropdown() {
   }, []); // empty array = run once when component mounts
 
   function handleSelectedCourse(e: any) : void {
-    setSelectedCourseId(e.target.value);
-  }
+    const id = e.target.value;
+    setSelectedCourseId(id);
 
-  // get full selected course
-  const selectedCourse = coursesList.find(course => course._id === selectedCourseId) ?? null;
+    // update select
+    const course = coursesList.find(c => c._id === id) ?? null;
+    onSelect(course);
+  }
 
   return (
     <div>

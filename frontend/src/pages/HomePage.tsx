@@ -1,12 +1,15 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import PageTitle from '../components/PageTitle.tsx';
 import WelcomeMessage from '../components/WelcomeMessage.tsx';
 import Logout from '../components/Logout.tsx';
 import CourseDropdown from '../components/CourseDropdown.tsx';
 import ProfessorDropdown from '../components/ProfessorDropdown.tsx';
+import type { Course } from '../types/index.ts';
 
 const HomePage = () => {
   const token = localStorage.getItem('token'); // save token
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
   return(
     <div>
@@ -17,7 +20,7 @@ const HomePage = () => {
       <PageTitle />
       <WelcomeMessage />
 
-      <CourseDropdown />
+      <CourseDropdown onSelect={(course) => setSelectedCourse(course)} />
       <ProfessorDropdown />
 
       {token && <Logout/>}
