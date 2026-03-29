@@ -6,11 +6,13 @@ import Logout from '../components/Logout.tsx';
 import CourseDropdown from '../components/CourseDropdown.tsx';
 import ProfessorDropdown from '../components/ProfessorDropdown.tsx';
 import CourseSummary from '../components/CourseSummary.tsx';
-import type { Course } from '../types/index.ts';
+import ProfessorSummary from '../components/ProfessorSummary.tsx';
+import type { Course, Professor } from '../types/index.ts';
 
 const HomePage = () => {
   const token = localStorage.getItem('token'); // save token
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [selectedProfessor, setSelectedProfessor] = useState<Professor | null>(null);
 
   return(
     <div>
@@ -25,6 +27,8 @@ const HomePage = () => {
       <ProfessorDropdown />
 
       <CourseSummary course={(selectedCourse)} />
+
+      <ProfessorSummary professor={(selectedProfessor)}/>
 
       {token && <Logout/>}
     </div>

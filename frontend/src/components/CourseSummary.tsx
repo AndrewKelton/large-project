@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import type { Course } from '../types/index.ts';
 
 interface CourseSummaryProps {
@@ -24,7 +23,6 @@ function CourseSummary({ course }: CourseSummaryProps) {
       <p>Code: {course.Code}</p>
     </div>
   );
-
 };
 
 export default CourseSummary;
