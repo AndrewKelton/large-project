@@ -25,6 +25,13 @@ app.use('/api/register', registerRouter);
 const loginRouter = require('./api/login.js');
 app.use('/api', loginRouter);
 
+//This SHOULD add the search functionality properly. Sorry about that!
+const courseRoutes = require('./api/routes/courseRoutes');
+app.use('/api/courses', courseRoutes);
+
+const professorRoutes = require('./api/routes/professorRoutes');
+app.use('/api/professors', professorRoutes);
+
 // connect to database via mongoose
 const url = process.env.MONGO_URI;
 mongoose.connect(url)
