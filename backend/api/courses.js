@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-// POST add a course
+// POST: add a course
 router.post('/', async (req, res) => {
     try {
         const { Name, Code } = req.body;
