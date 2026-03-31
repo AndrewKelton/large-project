@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import PageTitle from '../components/PageTitle.tsx';
 import WelcomeMessage from '../components/WelcomeMessage.tsx';
 import Logout from '../components/Logout.tsx';
@@ -13,6 +13,16 @@ const HomePage = () => {
   const token = localStorage.getItem('token'); // save token
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedProfessor, setSelectedProfessor] = useState<Professor | null>(null);
+  const navigate = useNavigate();
+
+  const handleRateClick = () => {
+    navigate('/create-rating', {
+      state: {
+        course: selectedCourse,
+        professor: selectedProfessor,
+      },
+    });
+  };
 
   return(
     <div>
@@ -26,6 +36,14 @@ const HomePage = () => {
 
       <CourseDropdown onSelect={(course) => setSelectedCourse(course)} />
       <ProfessorDropdown onSelect={(professor) => setSelectedProfessor(professor)}/>
+
+      {selectedCourse && (
+        <button onClick={handleRateClick}>
+          {selectedProfessor
+            ? `Rate ${selectedCourse.Code} with ${selectedProfessor.First_Name} ${selectedProfessor.Last_Name}`
+            : `Rate ${selectedCourse.Code}`}
+        </button>
+      )}
 
       <CourseSummary course={(selectedCourse)} />
 
