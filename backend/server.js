@@ -31,6 +31,9 @@ app.use('/api/courses', courseRouter);
 const professorRouter = require('./api/professors.js');
 app.use('/api/professors', professorRouter);
 
+const createRatingsRouter = require('./api/createRatings.js');
+app.use('/api/ratings', createRatingsRouter);
+
 // connect to database via mongoose
 const url = process.env.MONGO_URI;
 mongoose.connect(url)
