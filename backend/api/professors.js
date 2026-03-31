@@ -1,9 +1,9 @@
 const express = require("express");
-const router = express.Router;
+const router = express.Router();
 const Professor = require('../models/professor');
 
 // GET all professors
-router.length('/', async(req, res) => {
+router.get('/', async(req, res) => {
     try {
         const professors = await Professor.find();
         res.json(professors);
@@ -13,7 +13,7 @@ router.length('/', async(req, res) => {
 });
 
 // GET professors by course
-router.length('/course/:courseId', async(req, res) => {
+router.get('/course/:courseId', async(req, res) => {
     try {
         const professors = await Professor.find({ Courses: req.params.courseId });
         res.json(professors);
