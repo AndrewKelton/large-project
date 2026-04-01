@@ -13,9 +13,12 @@ const HomePage = () => {
   const token = localStorage.getItem('token'); // save token
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedProfessor, setSelectedProfessor] = useState<Professor | null>(null);
+  const [loginPrompt, setLoginPrompt] = useState(false);
   const navigate = useNavigate();
 
   const handleRateClick = () => {
+    if (!token) { setLoginPrompt(true); return; }
+    setLoginPrompt(false);
     navigate('/create-rating', {
       state: {
         course: selectedCourse,
@@ -25,6 +28,8 @@ const HomePage = () => {
   };
 
   const handleQuestionnaireClick = () => {
+    if (!token) { setLoginPrompt(true); return; }
+    setLoginPrompt(false);
     navigate('/create-questionnaire', {
       state: {
         course: selectedCourse,
@@ -64,6 +69,10 @@ const HomePage = () => {
               : `Create Questionnaire for ${selectedCourse.Code}`}
           </button>
         </div>
+      )}
+
+      {loginPrompt && (
+        <p>Please <Link to="/auth">log in</Link> to create a rating or questionnaire.</p>
       )}
 
       <CourseSummary course={(selectedCourse)} />
