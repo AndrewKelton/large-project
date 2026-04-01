@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { Course, CourseRatings } from '../types/index.ts';
+import { COURSE_QUESTIONS } from '../constants/ratingQuestions.ts';
 
 interface CourseSummaryProps {
   course: Course | null;
@@ -54,13 +55,16 @@ function CourseSummary({ course }: CourseSummaryProps) {
       <p>Code: {course.Code}</p>
 
       {courseRatings !== null ? (
-        <div>
-          <h4>Course Ratings ({courseRatings.totalRatings} total)</h4>
-          <p>Q1: {courseRatings.averageQ1}</p>
-          <p>Q2: {courseRatings.averageQ2}</p>
-          <p>Q3: {courseRatings.averageQ3}</p>
-          <p>Q4: {courseRatings.averageQ4}</p>
-          <p>Q5: {courseRatings.averageQ5}</p>
+        <div style={{ border: '1px solid #ccc', borderRadius: '6px', padding: '0.75rem' }}>
+          <h4 style={{ marginTop: 0 }}>Course Ratings ({courseRatings.totalRatings} total)</h4>
+          {(Object.keys(COURSE_QUESTIONS) as Array<keyof typeof COURSE_QUESTIONS>).map((key, idx, arr) => (
+            <div key={key} style={{ paddingBottom: '0.6rem', marginBottom: '0.6rem', borderBottom: idx < arr.length - 1 ? '1px solid #eee' : 'none' }}>
+              <p style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>{COURSE_QUESTIONS[key]}</p>
+              <p style={{ margin: 0 }}>
+                <strong>Average:</strong> {courseRatings[key]} / 5
+              </p>
+            </div>
+          ))}
         </div>
       ) : (
         <p>No ratings yet</p>
