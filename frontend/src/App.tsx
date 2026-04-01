@@ -3,6 +3,8 @@ import './App.css';
 
 import LoginPage from './pages/AuthPage.tsx';
 import HomePage from './pages/HomePage.tsx';
+import CreateRatingPage from './pages/CreateRatingPage.tsx';
+import CreateQuestionnairePage from './pages/CreateQuestionnairePage.tsx';
 
 function App()
 {
@@ -11,6 +13,8 @@ function App()
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/auth" element={<LoginPage />} />
+        <Route path="/create-rating" element={<CreateRatingPage />} />
+        <Route path="/create-questionnaire" element={<CreateQuestionnairePage />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
