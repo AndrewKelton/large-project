@@ -24,6 +24,15 @@ const HomePage = () => {
     });
   };
 
+  const handleQuestionnaireClick = () => {
+    navigate('/create-questionnaire', {
+      state: {
+        course: selectedCourse,
+        professor: selectedProfessor,
+      },
+    });
+  };
+
   return(
     <div>
       <div style={{ position: 'absolute', top: '1rem', right: '1rem' }}>
@@ -38,11 +47,23 @@ const HomePage = () => {
       <ProfessorDropdown onSelect={(professor) => setSelectedProfessor(professor)}/>
 
       {selectedCourse && (
-        <button onClick={handleRateClick}>
-          {selectedProfessor
-            ? `Rate ${selectedCourse.Code} with ${selectedProfessor.First_Name} ${selectedProfessor.Last_Name}`
-            : `Rate ${selectedCourse.Code}`}
-        </button>
+        <div>
+          <button onClick={handleRateClick}>
+            {selectedProfessor
+              ? `Rate ${selectedCourse.Code} with ${selectedProfessor.First_Name} ${selectedProfessor.Last_Name}`
+              : `Rate ${selectedCourse.Code}`}
+          </button>
+        </div>
+      )}
+
+      {selectedCourse && (
+        <div>
+          <button onClick={handleQuestionnaireClick}>
+            {selectedProfessor
+              ? `Create Questionnaire for ${selectedCourse.Code} with ${selectedProfessor.First_Name} ${selectedProfessor.Last_Name}`
+              : `Create Questionnaire for ${selectedCourse.Code}`}
+          </button>
+        </div>
       )}
 
       <CourseSummary course={(selectedCourse)} />
