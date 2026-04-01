@@ -3,7 +3,7 @@
 export interface Course {
   _id: string;
   Code: string;
-  Title: string;
+  Name: string;
 }
 
 // Professor interface, stores what's in a professor

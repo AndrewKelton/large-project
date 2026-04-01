@@ -26,7 +26,6 @@ function CourseSummary({ course }: CourseSummaryProps) {
         const data = await response.json();
         setCourseRatings(data);
 
-
       } catch (error: any) {
         console.error(error);
       } finally {
@@ -51,7 +50,7 @@ function CourseSummary({ course }: CourseSummaryProps) {
   return (
     <div>
       <h3>Course Summary</h3>
-      <p>Title: {course.Title}</p>
+      <p>Name: {course.Name}</p>
       <p>Code: {course.Code}</p>
 
       {courseRatings !== null ? (
