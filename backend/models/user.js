@@ -28,6 +28,14 @@ const UserSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Questionnaire'
     }],
+    Rated_Courses: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course'
+    }],
+    Rated_Courses_Professors: [{
+        Course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
+        Professor: { type: mongoose.Schema.Types.ObjectId, ref: 'Professor' }
+    }],
 
     // User metadata
     Date_Created: {
