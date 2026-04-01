@@ -62,5 +62,4 @@ router.get('/course/:courseId/professor/:professorId', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
-
 module.exports = router;
