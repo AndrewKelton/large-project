@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import type { Course, CourseQuestionnaireResults, QuestionnaireEntry } from '../types/index.ts';
+import { SingleBar } from './BarChart.tsx';
 
 interface CourseQuestionnaireResultsProps {
   course: Course | null;
 }
 
-// Returns the percentage string for a given count out of a total, or null if count is null
-function getPercent(count: number | null, total: number): string | null {
+// Returns the percentage (0–100) for a count out of total, or null if count is null
+function getPercent(count: number | null, total: number): number | null {
   if (count === null || total === 0) return null;
-  return `${((count / total) * 100).toFixed(1)}%`;
+  return (count / total) * 100;
 }
 
 const OPTION_LABELS: Array<'A' | 'B' | 'C' | 'D'> = ['A', 'B', 'C', 'D'];
@@ -27,9 +28,12 @@ function QuestionnaireEntryCard({ entry }: { entry: QuestionnaireEntry }) {
         const percent = getPercent(entry.Counts[key], total);
         if (option === null || percent === null) return null;
         return (
-          <p key={key} style={{ margin: '0.2rem 0' }}>
-            <strong>{key}:</strong> {option} — {percent}
-          </p>
+          <SingleBar
+            key={key}
+            label={key}
+            percent={percent}
+            displayValue={`${option} (${percent.toFixed(1)}%)`}
+          />
         );
       })}
     </div>
