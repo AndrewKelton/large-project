@@ -77,7 +77,7 @@ const HomePage = () => {
 
       <CourseSummary course={(selectedCourse)} />
 
-      <ProfessorSummary professor={(selectedProfessor)} courseSelected={!!selectedCourse}/>
+      <ProfessorSummary professor={(selectedProfessor)} course={selectedCourse}/>
     </div>
   );
 };
