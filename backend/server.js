@@ -37,6 +37,12 @@ app.use('/api/ratings', createRatingsRouter);
 const fetchRatingsRouter = require('./api/fetchRatings.js');
 app.use('/api/fetchRatings', fetchRatingsRouter);
 
+const fetchCAP = require('./api/fetchCAP.js');
+app.use('/api/fetchCAP', fetchCAP);
+
+const fetchCO = require('./api/fetchCO.js');
+app.use('/api/fetchCO', fetchCO);
+
 // connect to database via mongoose
 const url = process.env.MONGO_URI;
 mongoose.connect(url)
