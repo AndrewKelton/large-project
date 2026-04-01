@@ -32,3 +32,33 @@ export interface ProfessorRatings {
   averageQ9: number;
   averageQ10: number;
 }
+
+// A single questionnaire entry as returned by the API
+export interface QuestionnaireEntry {
+  Question: string;
+  Options: {
+    A: string | null;
+    B: string | null;
+    C: string | null;
+    D: string | null;
+  };
+  Counts: {
+    A: number | null;
+    B: number | null;
+    C: number | null;
+    D: number | null;
+  };
+}
+
+// CourseQuestionnaireResults interface, matches GET /api/fetchCO/course/:courseId
+export interface CourseQuestionnaireResults {
+  Course: Course;
+  Questionnaires: QuestionnaireEntry[];
+}
+
+// ProfessorQuestionnaireResults interface, matches GET /api/fetchCAP/course/:courseId/professor/:professorId
+export interface ProfessorQuestionnaireResults {
+  Course: Course;
+  Professor: Professor;
+  Questionnaires: QuestionnaireEntry[];
+}
