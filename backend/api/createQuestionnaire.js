@@ -8,15 +8,15 @@ router.post('/', async (req, res) => {
         const { User, Course, Professor, Question, Option_A, Option_B, Option_C, Option_D } = req.body;
 
         if (!Question) {
-            return res.status(400).json({ message: 'write a question' });
+            return res.status(400).json({ message: 'Write a question' });
         }
 
         if (!Option_A || !Option_B) {
-            return res.status(400).json({ message: 'add a MC option' });
+            return res.status(400).json({ message: 'Add a multiple-choice option' });
         }
 
         if (!User || !Course) {
-            return res.status(400).json({ message: 'User and Course are required' });
+            return res.status(400).json({ message: 'User and Course are required!' });
         }
 
         const questionnaire = await Questionnaire.create({
