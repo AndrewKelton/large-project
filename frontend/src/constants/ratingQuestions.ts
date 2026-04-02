@@ -6,7 +6,7 @@ export const COURSE_QUESTIONS: Record<keyof { averageQ1: number; averageQ2: numb
   averageQ1: 'Overall, how would you rate this course? (1–5)',
   averageQ2: 'How would you rate the course difficulty? (1–5)',
   averageQ3: 'How manageable was the course workload? (1–5)',
-  averageQ4: 'How useful were the course materials? (1–5)',
+  averageQ4: 'Do you feel that you will retain the material from the course? (1–5)',
   averageQ5: 'Would you recommend this course to others? (1–5)',
 };
 
