@@ -7,15 +7,20 @@ import CourseDropdown from '../components/CourseDropdown.tsx';
 import ProfessorDropdown from '../components/ProfessorDropdown.tsx';
 import CourseSummary from '../components/CourseSummary.tsx';
 import ProfessorSummary from '../components/ProfessorSummary.tsx';
+import CourseQuestionnaireResults from '../components/CourseQuestionnaireResults.tsx';
+import ProfessorQuestionnaireResults from '../components/ProfessorQuestionnaireResults.tsx';
 import type { Course, Professor } from '../types/index.ts';
 
 const HomePage = () => {
   const token = localStorage.getItem('token'); // save token
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedProfessor, setSelectedProfessor] = useState<Professor | null>(null);
+  const [loginPrompt, setLoginPrompt] = useState(false);
   const navigate = useNavigate();
 
   const handleRateClick = () => {
+    if (!token) { setLoginPrompt(true); return; }
+    setLoginPrompt(false);
     navigate('/create-rating', {
       state: {
         course: selectedCourse,
@@ -25,6 +30,8 @@ const HomePage = () => {
   };
 
   const handleQuestionnaireClick = () => {
+    if (!token) { setLoginPrompt(true); return; }
+    setLoginPrompt(false);
     navigate('/create-questionnaire', {
       state: {
         course: selectedCourse,
@@ -66,9 +73,15 @@ const HomePage = () => {
         </div>
       )}
 
-      <CourseSummary course={(selectedCourse)} />
+      {loginPrompt && (
+        <p>Please <Link to="/auth">log in</Link> to create a rating or questionnaire.</p>
+      )}
 
-      <ProfessorSummary professor={(selectedProfessor)} courseSelected={!!selectedCourse}/>
+      <CourseSummary course={(selectedCourse)} />
+      <CourseQuestionnaireResults course={selectedCourse} />
+
+      <ProfessorSummary professor={(selectedProfessor)} course={selectedCourse}/>
+      <ProfessorQuestionnaireResults course={selectedCourse} professor={selectedProfessor} />
     </div>
   );
 };

@@ -46,7 +46,7 @@ function CourseDropdown({ onSelect }: CourseDropdownProps) {
         <option value="">Select Course</option>
         {coursesList.map(course => (
           <option key={course._id} value={course._id}>
-            {course.Code} - {course.Title}
+            {course.Code} - {course.Name}
           </option>
         ))}
       </select>
