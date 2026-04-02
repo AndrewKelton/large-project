@@ -43,6 +43,9 @@ app.use('/api/fetchCAP', fetchCAP);
 const fetchCO = require('./api/fetchCO.js');
 app.use('/api/fetchCO', fetchCO);
 
+const createQuestionnaireRouter = require('./api/createQuestionnaire.js');
+app.use('/api/createQuestionnaire', createQuestionnaireRouter);
+
 // connect to database via mongoose
 const url = process.env.MONGO_URI;
 mongoose.connect(url)
