@@ -29,7 +29,7 @@ class _LoadingState extends State<Loading> {
       body: SafeArea(
         child: Column(
           children: <Widget> [
-            Text('test one two'),
+            Text('Loading Page'),
           ],
         )
       ),

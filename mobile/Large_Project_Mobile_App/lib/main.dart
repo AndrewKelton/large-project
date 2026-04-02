@@ -11,4 +11,8 @@ void main() => runApp(MaterialApp(
     '/login': (context) => LoginScreen(),
     '/user_home': (context) => UserHomeScreen(),
   },
+  navigatorObservers: [routeObserver],
 ));
+
+final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
+
