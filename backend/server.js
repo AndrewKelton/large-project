@@ -37,6 +37,9 @@ app.use('/api/ratings', createRatingsRouter);
 const fetchRatingsRouter = require('./api/fetchRatings.js');
 app.use('/api/fetchRatings', fetchRatingsRouter);
 
+const createQuestionnaireRouter = require('./api/createQuestionnaire.js');
+app.use('/api/createQuestionnaire', createQuestionnaireRouter);
+
 // connect to database via mongoose
 const url = process.env.MONGO_URI;
 mongoose.connect(url)
