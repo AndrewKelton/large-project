@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { Course, Professor } from '../types/index.ts';
+import CreateRating from '../components/CreateRating.tsx'
 
 interface CreateRatingState {
   course: Course;
@@ -30,7 +31,7 @@ const CreateRatingPage = () => {
       {professor && (
         <p><strong>Professor:</strong> {professor.First_Name} {professor.Last_Name}</p>
       )}
-      {/* Rating form will go here */}
+      <CreateRating course={course} professor={professor} />
       <button onClick={() => navigate('/')}>Back</button>
     </div>
   );
