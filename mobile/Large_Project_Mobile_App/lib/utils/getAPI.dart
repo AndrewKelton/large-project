@@ -28,6 +28,25 @@ class AppData {
   }
 }
 
+class DropdownData {
+
+  // static method to send http request (get method) and return json
+  static Future<String> getJSON(String url) async {
+
+    String ret = "";
+
+    try {
+      http.Response response = await http.get(Uri.parse(url));
+      ret = response.body;
+    }
+    catch (e) {
+      print(e.toString());
+    }
+
+    return ret;
+  }
+}
+
 class PingTest {
   // static method used during development to test api connection
   static Future<Map <String, dynamic>> getPing(String url) async {

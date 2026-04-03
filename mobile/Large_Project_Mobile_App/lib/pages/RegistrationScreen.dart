@@ -245,6 +245,15 @@ class _RegistrationPageState extends State<RegistrationPage> with RouteAware {
                   onPressed: () async {
                     newMessageText = "";
                     changeText();
+
+                    // checkout that the two password textfields match
+                    if (passwordController.text.trim() != confirmPasswordController.text.trim()) {
+
+                      newMessageText = "Password entries must match!";
+                      changeText();
+                      return;
+                    }
+
                     String payload = '{"FirstName":"${firstNameController.text.trim()}", '
                         '              "LastName":"${lastNameController.text.trim()}", '
                         '              "Email":"${emailAddressController.text.trim()}", '
