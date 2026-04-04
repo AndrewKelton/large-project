@@ -65,32 +65,32 @@ const CreateRating = ({ course, professor = null }: CreateRatingProps) => {
   }, [course]);
 
   const handleSubmit = () => {
-  setErrorMessage("");
-  setSuccessMessage("");
+    setErrorMessage("");
+    setSuccessMessage("");
 
-  // Check course answers
-  const courseValues = Object.values(courseAnswers);
-  if (courseValues.some((val) => val === 0)) {
-    setErrorMessage("Please answer all course questions.");
-    return;
-  }
-
-  // If professor rating is enabled
-  if (wantsProfessorRating) {
-    if (!selectedProfessor) {
-      setErrorMessage("Please select a professor.");
+    // Check course answers
+    const courseValues = Object.values(courseAnswers);
+    if (courseValues.some((val) => val === 0)) {
+      setErrorMessage("Please answer all course questions.");
       return;
     }
 
-    const professorValues = Object.values(professorAnswers);
-    if (professorValues.some((val) => val === 0)) {
-      setErrorMessage("Please answer all professor questions.");
-      return;
-    }
-  }
+    // If professor rating is enabled
+    if (wantsProfessorRating) {
+      if (!selectedProfessor) {
+        setErrorMessage("Please select a professor.");
+        return;
+      }
 
-  setSuccessMessage("Validation passed! Ready to submit.");
-};
+      const professorValues = Object.values(professorAnswers);
+      if (professorValues.some((val) => val === 0)) {
+        setErrorMessage("Please answer all professor questions.");
+        return;
+      }
+    }
+
+    setSuccessMessage("Validation passed! Ready to submit.");
+  };
 
   return (
     <div>
@@ -116,6 +116,15 @@ const CreateRating = ({ course, professor = null }: CreateRatingProps) => {
         />
         Would you like to also rate a professor?
       </label>
+
+      {wantsProfessorRating && (
+        <p>
+          <strong>Professor:</strong>{" "}
+          {selectedProfessor
+            ? `${selectedProfessor.First_Name} ${selectedProfessor.Last_Name}`
+            : "Not Selected"}
+        </p>
+      )}
 
       <div>
         <h4>Course Rating Questions</h4>
@@ -206,7 +215,12 @@ const CreateRating = ({ course, professor = null }: CreateRatingProps) => {
         </div>
       )}
 
-      <button type="button" onClick = {handleSubmit}>Submit Rating</button>
+      {errorMessage && <p style = {{color: "red"}}>{errorMessage}</p>}
+      {successMessage && <p style = {{color: "green"}}>{successMessage}</p>}
+
+      <button type="button" onClick={handleSubmit}>
+        Submit Rating
+      </button>
     </div>
   );
 };

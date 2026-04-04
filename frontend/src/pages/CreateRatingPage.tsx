@@ -28,9 +28,6 @@ const CreateRatingPage = () => {
     <div>
       <h2>Create Rating</h2>
       <p><strong>Course:</strong> {course.Code} – {course.Name}</p>
-      {professor && (
-        <p><strong>Professor:</strong> {professor.First_Name} {professor.Last_Name}</p>
-      )}
       <CreateRating course={course} professor={professor} />
       <button onClick={() => navigate('/')}>Back</button>
     </div>
