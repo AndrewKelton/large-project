@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Course, Professor } from "../types/index.ts";
 import {
   COURSE_QUESTIONS,
@@ -15,9 +15,11 @@ const CreateRating = ({ course, professor = null }: CreateRatingProps) => {
   const [selectedProfessor, setSelectedProfessor] = useState<Professor | null>(
     professor,
   );
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [professors, setProfessors] = useState<Professor[]>([]);
 
   const resetProfessorAnswers = () => {
     setProfessorAnswers({
@@ -44,6 +46,51 @@ const CreateRating = ({ course, professor = null }: CreateRatingProps) => {
     averageQ9: 0,
     averageQ10: 0,
   });
+
+  useEffect(() => {
+    const fetchProfessors = async () => {
+      try {
+        const response = await fetch(`/api/professors`);
+        const data = await response.json();
+        setProfessors(data);
+        console.log("professors returned:", data);
+        console.log("course object:", course);
+        console.log("fetching:", `/api/professors/course/${course._id}`);
+      } catch (error) {
+        console.error("Error fetching professors:", error);
+      }
+    };
+
+    fetchProfessors();
+  }, [course]);
+
+  const handleSubmit = () => {
+  setErrorMessage("");
+  setSuccessMessage("");
+
+  // Check course answers
+  const courseValues = Object.values(courseAnswers);
+  if (courseValues.some((val) => val === 0)) {
+    setErrorMessage("Please answer all course questions.");
+    return;
+  }
+
+  // If professor rating is enabled
+  if (wantsProfessorRating) {
+    if (!selectedProfessor) {
+      setErrorMessage("Please select a professor.");
+      return;
+    }
+
+    const professorValues = Object.values(professorAnswers);
+    if (professorValues.some((val) => val === 0)) {
+      setErrorMessage("Please answer all professor questions.");
+      return;
+    }
+  }
+
+  setSuccessMessage("Validation passed! Ready to submit.");
+};
 
   return (
     <div>
@@ -105,37 +152,29 @@ const CreateRating = ({ course, professor = null }: CreateRatingProps) => {
           <label>
             Select Professor:
             <select
-              value={
-                selectedProfessor
-                  ? `${selectedProfessor.First_Name} ${selectedProfessor.Last_Name}`
-                  : ""
-              }
+              value={selectedProfessor?._id ?? ""}
               onChange={(e) => {
-                const selectedName = e.target.value;
+                const selectedId = e.target.value;
 
-                if (!selectedName) {
+                if (!selectedId) {
                   setSelectedProfessor(null);
                   resetProfessorAnswers();
                   return;
                 }
 
-                if (
-                  professor &&
-                  `${professor.First_Name} ${professor.Last_Name}` ===
-                    selectedName
-                ) {
-                  setSelectedProfessor(professor);
-                }
+                const matchedProfessor =
+                  professors.find((prof) => prof._id === selectedId) ?? null;
+
+                setSelectedProfessor(matchedProfessor);
               }}
             >
               <option value="">Select a professor</option>
-              {professor && (
-                <option
-                  value={`${professor.First_Name} ${professor.Last_Name}`}
-                >
-                  {professor.First_Name} {professor.Last_Name}
+
+              {professors.map((prof) => (
+                <option key={prof._id} value={prof._id}>
+                  {prof.First_Name} {prof.Last_Name}
                 </option>
-              )}
+              ))}
             </select>
           </label>
 
@@ -167,7 +206,7 @@ const CreateRating = ({ course, professor = null }: CreateRatingProps) => {
         </div>
       )}
 
-      <button type="button">Submit Rating</button>
+      <button type="button" onClick = {handleSubmit}>Submit Rating</button>
     </div>
   );
 };
