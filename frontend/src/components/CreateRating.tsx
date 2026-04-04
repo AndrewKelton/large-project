@@ -8,9 +8,14 @@ import {
 interface CreateRatingProps {
   course: Course;
   professor?: Professor | null;
+  onSuccess: () => void;
 }
 
-const CreateRating = ({ course, professor = null }: CreateRatingProps) => {
+const CreateRating = ({
+  course,
+  professor = null,
+  onSuccess,
+}: CreateRatingProps) => {
   const [wantsProfessorRating, setWantsProfessorRating] = useState(!!professor);
   const [selectedProfessor, setSelectedProfessor] = useState<Professor | null>(
     professor,
@@ -89,7 +94,11 @@ const CreateRating = ({ course, professor = null }: CreateRatingProps) => {
       }
     }
 
-    setSuccessMessage("Validation passed! Ready to submit.");
+    setSuccessMessage("Rating Submitted! Thank you for your feedback!");
+
+    setTimeout(() => {
+      onSuccess();
+    }, 2000);
   };
 
   return (
@@ -215,8 +224,8 @@ const CreateRating = ({ course, professor = null }: CreateRatingProps) => {
         </div>
       )}
 
-      {errorMessage && <p style = {{color: "red"}}>{errorMessage}</p>}
-      {successMessage && <p style = {{color: "green"}}>{successMessage}</p>}
+      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
 
       <button type="button" onClick={handleSubmit}>
         Submit Rating

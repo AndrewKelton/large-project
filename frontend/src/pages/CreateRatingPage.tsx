@@ -28,7 +28,7 @@ const CreateRatingPage = () => {
     <div>
       <h2>Create Rating</h2>
       <p><strong>Course:</strong> {course.Code} – {course.Name}</p>
-      <CreateRating course={course} professor={professor} />
+      <CreateRating course={course} professor={professor} onSuccess={() => navigate("/")} />
       <button onClick={() => navigate('/')}>Back</button>
     </div>
   );
