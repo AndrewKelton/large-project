@@ -69,18 +69,16 @@ const CreateRating = ({
     fetchProfessors();
   }, [course]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setErrorMessage("");
     setSuccessMessage("");
 
-    // Check course answers
     const courseValues = Object.values(courseAnswers);
     if (courseValues.some((val) => val === 0)) {
       setErrorMessage("Please answer all course questions.");
       return;
     }
 
-    // If professor rating is enabled
     if (wantsProfessorRating) {
       if (!selectedProfessor) {
         setErrorMessage("Please select a professor.");
@@ -94,16 +92,106 @@ const CreateRating = ({
       }
     }
 
-    setSuccessMessage("Rating Submitted! Thank you for your feedback!");
+    const userId = "69c33e0eb4992405512df29f";
 
-    setTimeout(() => {
-      onSuccess();
-    }, 2000);
+    const payload = {
+      User: userId,
+      Course: course._id,
+      Professor:
+        wantsProfessorRating && selectedProfessor
+          ? selectedProfessor._id
+          : null,
+
+      Option_A_Count: courseAnswers.averageQ1,
+      Option_B_Count: courseAnswers.averageQ2,
+      Option_C_Count: courseAnswers.averageQ3,
+      Option_D_Count: courseAnswers.averageQ4,
+      Option_E_Count: courseAnswers.averageQ5,
+
+      Professor_Rated: wantsProfessorRating,
+
+      Option_F_Count: wantsProfessorRating ? professorAnswers.averageQ6 : 1,
+      Option_G_Count: wantsProfessorRating ? professorAnswers.averageQ7 : 1,
+      Option_H_Count: wantsProfessorRating ? professorAnswers.averageQ8 : 1,
+      Option_I_Count: wantsProfessorRating ? professorAnswers.averageQ9 : 1,
+      Option_J_Count: wantsProfessorRating ? professorAnswers.averageQ10 : 1,
+    };
+
+    try {
+      setIsSubmitting(true);
+
+      const response = await fetch("/api/ratings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrorMessage(data.message || "Failed to submit rating.");
+        return;
+      }
+
+      setSuccessMessage(
+        "Rating submitted successfully! Thank you for your feedback!",
+      );
+
+      setTimeout(() => {
+        onSuccess();
+      }, 3000);
+    } catch (error) {
+      setErrorMessage("An error occurred while submitting the rating.");
+      console.error("Submit error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div>
-      <label>
+      {wantsProfessorRating && (
+        <p>
+          <strong>Professor:</strong>{" "}
+          {selectedProfessor
+            ? `${selectedProfessor.First_Name} ${selectedProfessor.Last_Name}`
+            : "Not Selected"}
+        </p>
+      )}
+
+      <div>
+        <h4>Course Rating Questions</h4>
+        <h5>Please answer your responses on a scale of 1-5, with 1 being the lowest rating, and 5 being the highest rating</h5>
+
+        {Object.entries(COURSE_QUESTIONS).map(([key, questionText]) => (
+          <div key={key}>
+            <label>
+              {questionText}
+              <select
+                value={courseAnswers[key as keyof typeof courseAnswers]}
+                onChange={(e) => {
+                  setCourseAnswers({
+                    ...courseAnswers,
+                    [key]: Number(e.target.value),
+                  });
+                }}
+              >
+                <option value="">Select a rating</option>
+                <option value="1"> 1 - Very Poor</option>
+                <option value="2"> 2 - Poor</option>
+                <option value="3"> 3 - Average</option>
+                <option value="4"> 4 - Good</option>
+                <option value="5"> 5 - Excellent</option>
+              </select>
+            </label>
+          </div>
+        ))}
+      </div>
+
+        <br></br>
+       <label>
         <input
           type="checkbox"
           checked={wantsProfessorRating}
@@ -125,43 +213,8 @@ const CreateRating = ({
         />
         Would you like to also rate a professor?
       </label>
+      <br></br>
 
-      {wantsProfessorRating && (
-        <p>
-          <strong>Professor:</strong>{" "}
-          {selectedProfessor
-            ? `${selectedProfessor.First_Name} ${selectedProfessor.Last_Name}`
-            : "Not Selected"}
-        </p>
-      )}
-
-      <div>
-        <h4>Course Rating Questions</h4>
-
-        {Object.entries(COURSE_QUESTIONS).map(([key, questionText]) => (
-          <div key={key}>
-            <label>
-              {questionText} (1–5)
-              <select
-                value={courseAnswers[key as keyof typeof courseAnswers]}
-                onChange={(e) => {
-                  setCourseAnswers({
-                    ...courseAnswers,
-                    [key]: Number(e.target.value),
-                  });
-                }}
-              >
-                <option value="">Select a rating</option>
-                <option value="1"> 1 - Very Poor</option>
-                <option value="2"> 2 - Poor</option>
-                <option value="3"> 3 - Average</option>
-                <option value="4"> 4 - Good</option>
-                <option value="5"> 5 - Excellent</option>
-              </select>
-            </label>
-          </div>
-        ))}
-      </div>
 
       {wantsProfessorRating && (
         <div>
@@ -201,7 +254,7 @@ const CreateRating = ({
           {Object.entries(PROFESSOR_QUESTIONS).map(([key, questionText]) => (
             <div key={key}>
               <label>
-                {questionText} (1–5)
+                {questionText}
                 <select
                   value={professorAnswers[key as keyof typeof professorAnswers]}
                   onChange={(e) => {
@@ -227,8 +280,8 @@ const CreateRating = ({
       {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
 
-      <button type="button" onClick={handleSubmit}>
-        Submit Rating
+      <button type="button" onClick={handleSubmit} disabled={isSubmitting}>
+        {isSubmitting ? "Submitting..." : "Submit Rating"}
       </button>
     </div>
   );
