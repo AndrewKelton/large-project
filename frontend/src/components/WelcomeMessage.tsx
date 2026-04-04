@@ -1,7 +1,7 @@
 function WelcomeMessage()
 {
     return (
-        <h1 id="title">Welcome to UCF's Rate My Professor</h1>	
+        <h1 id="title">Welcome to KnightRate</h1>
     );
 };
 
