@@ -35,7 +35,7 @@ export interface ProfessorRatings {
 
 // A single questionnaire entry as returned by the API
 export interface QuestionnaireEntry {
-  _id?: string;
+  _id: string;
   Question: string;
   Options: {
     A: string | null;
