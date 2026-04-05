@@ -283,7 +283,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(
-                      width: 250,
+                      width: 300,
                       child: CreateRatingButton(
                         onPressed: () async {
                           newMessageText = "";
@@ -306,7 +306,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(
-                      width: 250,
+                      width: 300,
                       child: CreateQuestionnaireButton(
                         onPressed: () async {
                           newMessageText = "";
@@ -349,7 +349,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
                         "Course Summary",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 16.0,
+                          fontSize: 35.0,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
                         ),
@@ -359,18 +359,31 @@ class _HomePageState extends State<HomePage> with RouteAware {
                 ),
                 // row for course code-name title
                 SizedBox(height: 20.0),
-                Row(
+                Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: <Widget> [
-                    Expanded(
-                      child: Text(
-                        "${selectedCourse}\n${courseNameMap[selectedCourse]}",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
+                    // Holds course code title bar
+                    Container(
+                      width: 175,
+                      padding: EdgeInsets.symmetric(vertical: 5.0),
+                      decoration: BoxDecoration(
+                        color: Color(0xFF2575FF),
+                        borderRadius: BorderRadius.circular(7.5),
+                        border: Border.all(color: Color(0xFF2575FF), width: 5),
                       ),
+                      child: Text("${selectedCourse}", textAlign: TextAlign.center, style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.white)),
+                    ),
+                    SizedBox(height:10.0),
+                    // Holds course name title bar
+                    Container(
+                      width: 450,
+                      padding: EdgeInsets.symmetric(vertical: 5.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(7.5),
+                        border: Border.all(color: Colors.white, width: 1.5),
+                      ),
+                      child: Text("${courseNameMap[selectedCourse]}", textAlign: TextAlign.center, style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.black)),
                     ),
                   ],
                 ),
@@ -412,7 +425,7 @@ abstract class HomePageButton extends StatelessWidget {
       ),
       child: Text(
         getLabel(),
-        style: TextStyle(fontSize: 14.0),
+        style: TextStyle(fontSize: 15.0),
         textAlign: TextAlign.center,
       ),
     );
@@ -465,7 +478,6 @@ class CreateQuestionnaireButton extends HomePageButton {
   }
 }
 
-
 // widget for building the course rating summary section
 class CourseRatingsSummary extends StatefulWidget {
 
@@ -479,7 +491,7 @@ class CourseRatingsSummary extends StatefulWidget {
   State<CourseRatingsSummary> createState() => _CourseRatingsSummaryState();
 }
 
-// this widget holds the question, numeric rating value, and shaded stars
+// this widget holds the question, numeric rating value, and shaded stars for q1->q5
 Widget _RatingCard(String question, double rating) {
   double ParsedRating = rating ?? 0;
 
@@ -489,14 +501,14 @@ Widget _RatingCard(String question, double rating) {
     padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
     decoration: BoxDecoration(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(8.0),
+      borderRadius: BorderRadius.circular(7.5),
       border: Border.all(color: Colors.grey.shade300, width: 1.5),
     ),
     child: Column(
       children: [
-        Text(question, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+        Text(question, textAlign: TextAlign.center, style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),
         SizedBox(height: 4.0),
-        Text('$rating / 5', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, )),
+        Text('$rating / 5', textAlign: TextAlign.center, style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold, )),
         SizedBox(height: 4.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -555,6 +567,7 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
 
   @override
   Widget build(BuildContext context) {
+    // collect ratings for all courses
     double q1Rating = courseRatingsList.isNotEmpty ? courseRatingsList[0] : 0;
     double q2Rating = courseRatingsList.isNotEmpty ? courseRatingsList[1] : 0;
     double q3Rating = courseRatingsList.isNotEmpty ? courseRatingsList[2] : 0;
@@ -571,9 +584,9 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
                 'Course Ratings (${numCourseRatings} total)',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 16.0,
+                  fontSize: 25.0,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               ),
             ),
