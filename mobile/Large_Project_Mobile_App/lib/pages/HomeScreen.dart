@@ -167,7 +167,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
     return Align(
       alignment: Alignment.topCenter,
       child: Container(
-        width: 250,
+        width: 400,
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start, // center column contents vertically
@@ -176,6 +176,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
               SizedBox(height: 100.0),
               // row for course dropdown label
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget> [
                   Expanded(
                     child: Text(
@@ -192,6 +193,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
               ),
               // row for coursedropdown menu
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget> [
                   Container(
                     width: 250,
@@ -225,6 +227,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
               ),
               // row for professor dropdown label
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget> [
                   Expanded(
                     child: Text(
@@ -241,6 +244,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
               ),
               // row for professor dropdown menu
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget> [
                   Container(
                     width: 250,
@@ -475,6 +479,38 @@ class CourseRatingsSummary extends StatefulWidget {
   State<CourseRatingsSummary> createState() => _CourseRatingsSummaryState();
 }
 
+// this widget holds the question, numeric rating value, and shaded stars
+Widget _RatingCard(String question, double rating) {
+  double ParsedRating = rating ?? 0;
+
+  return Container(
+    width: double.infinity,
+    margin: EdgeInsets.symmetric(vertical: 6.0),
+    padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(8.0),
+      border: Border.all(color: Colors.grey.shade300, width: 1.5),
+    ),
+    child: Column(
+      children: [
+        Text(question, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+        SizedBox(height: 4.0),
+        Text('$rating / 5', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, )),
+        SizedBox(height: 4.0),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(5, (index) {
+            if (index < ParsedRating.floor()) return Icon(Icons.star, color: Colors.black);
+            if (index < ParsedRating) return Icon(Icons.star_half, color: Colors.black);
+            return Icon(Icons.star_border, color: Colors.black);
+          }),
+        )
+      ]
+    )
+  );
+}
+
 // custom class for the home page button
 class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
 
@@ -504,6 +540,7 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
       courseRatingsList.add(jsonObjectCourseRatings["averageQ2"]);
       courseRatingsList.add(jsonObjectCourseRatings["averageQ3"]);
       courseRatingsList.add(jsonObjectCourseRatings["averageQ4"]);
+      courseRatingsList.add(jsonObjectCourseRatings["averageQ5"]);
 
       print(numCourseRatings);
       print(courseRatingsList);
@@ -518,6 +555,12 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
 
   @override
   Widget build(BuildContext context) {
+    double q1Rating = courseRatingsList.isNotEmpty ? courseRatingsList[0] : 0;
+    double q2Rating = courseRatingsList.isNotEmpty ? courseRatingsList[1] : 0;
+    double q3Rating = courseRatingsList.isNotEmpty ? courseRatingsList[2] : 0;
+    double q4Rating = courseRatingsList.isNotEmpty ? courseRatingsList[3] : 0;
+    double q5Rating = courseRatingsList.isNotEmpty ? courseRatingsList[4] : 0;
+
     return Column(
       children: [
         // course summary title
@@ -537,69 +580,11 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
           ],
         ),
         // row for Q1 course ratings
-        Row(
-          children: <Widget> [
-            Expanded(
-              child: Text(
-                'Q1:  ${courseRatingsList.isNotEmpty ? courseRatingsList[0] : 'Loading...'}',
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ],
-        ),
-        // row for Q2 course ratings
-        Row(
-          children: <Widget> [
-            Expanded(
-              child: Text(
-                'Q2:  ${courseRatingsList.isNotEmpty ? courseRatingsList[1] : 'Loading...'}',
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ],
-        ),
-        // row for Q3 course ratings
-        Row(
-          children: <Widget> [
-            Expanded(
-              child: Text(
-                'Q3:  ${courseRatingsList.isNotEmpty ? courseRatingsList[2] : 'Loading...'}',
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ],
-        ),
-        // row for Q4 course ratings
-        Row(
-          children: <Widget> [
-            Expanded(
-              child: Text(
-                'Q4:  ${courseRatingsList.isNotEmpty ? courseRatingsList[3] : 'Loading...'}',
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ],
-        ),
+        _RatingCard('Overall, how would you rate this course?', q1Rating),
+        _RatingCard('How would you rate the course difficulty?', q2Rating),
+        _RatingCard('How manageable was the course workload?', q3Rating),
+        _RatingCard('How useful were the course materials?', q4Rating),
+        _RatingCard('Would you recommend this course to others?', q5Rating),
       ],
     );
   }
