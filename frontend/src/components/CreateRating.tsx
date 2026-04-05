@@ -92,7 +92,10 @@ const CreateRating = ({
       }
     }
 
-    const userId = "69c33e0eb4992405512df29f";
+    //const userId = "69c33e0eb4992405512df29f";
+    const storedUser = localStorage.getItem("user");
+    const currentUser = storedUser ? JSON.parse(storedUser) : null;
+    const userId = currentUser?._id;
 
     const payload = {
       User: userId,
@@ -163,7 +166,10 @@ const CreateRating = ({
 
       <div>
         <h4>Course Rating Questions</h4>
-        <h5>Please answer your responses on a scale of 1-5, with 1 being the lowest rating, and 5 being the highest rating</h5>
+        <h5>
+          Please answer your responses on a scale of 1-5, with 1 being the
+          lowest rating, and 5 being the highest rating
+        </h5>
 
         {Object.entries(COURSE_QUESTIONS).map(([key, questionText]) => (
           <div key={key}>
@@ -190,8 +196,8 @@ const CreateRating = ({
         ))}
       </div>
 
-        <br></br>
-       <label>
+      <br></br>
+      <label>
         <input
           type="checkbox"
           checked={wantsProfessorRating}
@@ -214,7 +220,6 @@ const CreateRating = ({
         Would you like to also rate a professor?
       </label>
       <br></br>
-
 
       {wantsProfessorRating && (
         <div>

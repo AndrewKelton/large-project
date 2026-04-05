@@ -33,8 +33,9 @@ router.post('/login', async (req, res) => {
         );
 
         res.json({
-            message: 'Login successful',
-            token
+            message: 'Login WORKING NOW',
+            token,
+            user: user
         });
 
     } catch (err) {
