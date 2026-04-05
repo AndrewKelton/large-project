@@ -1,7 +1,8 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:group7_mobile_app/main.dart';
+import 'package:group7_mobile_app/pages/HomePageButton.dart';
+import 'package:group7_mobile_app/pages/CourseRatingsSummary.dart';
 import 'package:group7_mobile_app/utils/getAPI.dart';
 import 'package:group7_mobile_app/utils/GlobalData.dart';
 
@@ -71,7 +72,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
     // get courses table from database
     try {
       String url = 'http://leandrovivares.com/api/courses';
-      String ret = await DropdownData.getJSON(url);
+      String ret = await AppDataGet.getJSON(url);
       jsonObjectCourses = json.decode(ret);
       List<dynamic> ids = jsonObjectCourses.map((item) => item["_id"] as String).toList();
       List<dynamic> names = jsonObjectCourses.map((item) => item["Name"] as String).toList();
@@ -92,7 +93,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
     // get professors table from database
     try {
       String url = 'http://leandrovivares.com/api/professors';
-      String ret = await DropdownData.getJSON(url);
+      String ret = await AppDataGet.getJSON(url);
       jsonObjectProfessors = json.decode(ret);
       List<dynamic> ids = jsonObjectProfessors.map((item) => item["_id"] as String).toList();
       List<dynamic> firstNames = jsonObjectProfessors.map((item) => item["First_Name"] as String).toList();
@@ -400,205 +401,3 @@ class _HomePageState extends State<HomePage> with RouteAware {
   }
 }
 
-// custom class for the home page button
-abstract class HomePageButton extends StatelessWidget {
-  // function initialized from constructor
-  final VoidCallback onPressed;
-
-  // constructor
-  const HomePageButton({required this.onPressed});
-
-  // abstract method - creates label for the button
-  String getLabel();
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        backgroundColor: Colors.brown[50],
-        foregroundColor: Colors.black,
-        padding: EdgeInsets.all(8.0),
-      ),
-      child: Text(
-        getLabel(),
-        style: TextStyle(fontSize: 15.0),
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
-}
-
-// custom class for the create rating button
-class CreateRatingButton extends HomePageButton {
-  // course selected
-  final String course;
-  // professor selected (if selected)
-  final String professor;
-  // constructor
-  const CreateRatingButton({required VoidCallback onPressed, required this.course, required this.professor}) : super(onPressed: onPressed);
-
-  // creates label for the button
-  @override
-  String getLabel() {
-
-    String label = 'Rate ' + course;
-
-    if (professor != '') {
-      List<String> parts = professor.split("-");
-      label += ' with ' + parts[1].trim() + ' ' + parts[0].trim();
-    }
-    return label;
-  }
-}
-
-// custom class for the create rating button
-class CreateQuestionnaireButton extends HomePageButton {
-  // course selected
-  final String course;
-  // professor selected (if selected)
-  final String professor;
-  // constructor
-  const CreateQuestionnaireButton({required VoidCallback onPressed, required this.course, required this.professor}) : super(onPressed: onPressed);
-
-  // creates label for the button
-  @override
-  String getLabel() {
-
-    String label = 'Create Questionnaire for ' + course;
-
-    if (professor != '') {
-      List<String> parts = professor.split("-");
-      label += ' with ' + parts[1].trim() + ' ' + parts[0].trim();
-    }
-    return label;
-  }
-}
-
-// widget for building the course rating summary section
-class CourseRatingsSummary extends StatefulWidget {
-
-  // course id
-  final String courseId;
-
-  // constructor
-  const CourseRatingsSummary({required this.courseId});
-
-  @override
-  State<CourseRatingsSummary> createState() => _CourseRatingsSummaryState();
-}
-
-// this widget holds the question, numeric rating value, and shaded stars for q1->q5
-Widget _RatingCard(String question, double rating) {
-  double ParsedRating = rating ?? 0;
-
-  return Container(
-    width: double.infinity,
-    margin: EdgeInsets.symmetric(vertical: 6.0),
-    padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(7.5),
-      border: Border.all(color: Colors.grey.shade300, width: 1.5),
-    ),
-    child: Column(
-      children: [
-        Text(question, textAlign: TextAlign.center, style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),
-        SizedBox(height: 4.0),
-        Text('$rating / 5', textAlign: TextAlign.center, style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold, )),
-        SizedBox(height: 4.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(5, (index) {
-            if (index < ParsedRating.floor()) return Icon(Icons.star, color: Colors.black);
-            if (index < ParsedRating) return Icon(Icons.star_half, color: Colors.black);
-            return Icon(Icons.star_border, color: Colors.black);
-          }),
-        )
-      ]
-    )
-  );
-}
-
-// custom class for the home page button
-class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
-
-  // total number of ratings
-  late int numCourseRatings = 0;
-  // course ratings summary data
-  late List<double> courseRatingsList = [];
-
-  @override initState() {
-    super.initState();
-    loadCourseRatings();
-    print(widget.courseId);
-  }
-
-  void loadCourseRatings() async {
-
-    var jsonObjectCourseRatings;
-
-    // get courses table from database
-    try {
-      String url = 'http://leandrovivares.com/api/fetchratings/course/';
-      String ret = await DropdownData.getJSON(url + widget.courseId.trim());
-      jsonObjectCourseRatings = json.decode(ret);
-
-      numCourseRatings = jsonObjectCourseRatings["totalRatings"];
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ1"]);
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ2"]);
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ3"]);
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ4"]);
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ5"]);
-
-      print(numCourseRatings);
-      print(courseRatingsList);
-    }
-    catch (e) {
-      print(e.toString());
-      return;
-    }
-
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // collect ratings for all courses
-    double q1Rating = courseRatingsList.isNotEmpty ? courseRatingsList[0] : 0;
-    double q2Rating = courseRatingsList.isNotEmpty ? courseRatingsList[1] : 0;
-    double q3Rating = courseRatingsList.isNotEmpty ? courseRatingsList[2] : 0;
-    double q4Rating = courseRatingsList.isNotEmpty ? courseRatingsList[3] : 0;
-    double q5Rating = courseRatingsList.isNotEmpty ? courseRatingsList[4] : 0;
-
-    return Column(
-      children: [
-        // course summary title
-        Row(
-          children: <Widget> [
-            Expanded(
-              child: Text(
-                'Course Ratings (${numCourseRatings} total)',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ],
-        ),
-        // row for Q1 course ratings
-        _RatingCard('Overall, how would you rate this course?', q1Rating),
-        _RatingCard('How would you rate the course difficulty?', q2Rating),
-        _RatingCard('How manageable was the course workload?', q3Rating),
-        _RatingCard('How useful were the course materials?', q4Rating),
-        _RatingCard('Would you recommend this course to others?', q5Rating),
-      ],
-    );
-  }
-}

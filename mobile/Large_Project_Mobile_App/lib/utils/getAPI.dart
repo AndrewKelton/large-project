@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class AppData {
+class AppDataPost {
 
   // static method to send http request (post method) and return json
   static Future<String> getJSON(String url, String outgoing) async {
@@ -28,7 +28,7 @@ class AppData {
   }
 }
 
-class DropdownData {
+class AppDataGet {
 
   // static method to send http request (get method) and return json
   static Future<String> getJSON(String url) async {

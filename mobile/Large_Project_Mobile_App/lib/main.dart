@@ -3,7 +3,7 @@ import 'package:group7_mobile_app/pages/LoginScreen.dart';
 import 'package:group7_mobile_app/pages/RegistrationScreen.dart';
 import 'package:group7_mobile_app/pages/UserHomeScreen.dart';
 import 'package:group7_mobile_app/pages/HomeScreen.dart';
-import 'package:group7_mobile_app/pages/loading.dart';
+import 'package:group7_mobile_app/pages/Loading.dart';
 
 void main() => runApp(MaterialApp(
   initialRoute: '/home',

@@ -265,7 +265,7 @@ class _RegistrationPageState extends State<RegistrationPage> with RouteAware {
 
                     try {
                       String url = 'http://leandrovivares.com/api/register';
-                      String ret = await AppData.getJSON(url, payload);
+                      String ret = await AppDataPost.getJSON(url, payload);
                       jsonObject = json.decode(ret);
                       print(jsonObject);
                       //userId = jsonObject['id'];
