@@ -83,12 +83,16 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
       String ret = await AppDataGet.getJSON(url + widget.courseId.trim());
       jsonObjectCourseRatings = json.decode(ret);
 
-      numCourseRatings = jsonObjectCourseRatings["totalRatings"];
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ1"].toDouble());
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ2"].toDouble());
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ3"].toDouble());
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ4"].toDouble());
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ5"].toDouble());
+      setState(() {
+        numCourseRatings = jsonObjectCourseRatings["totalRatings"];
+        courseRatingsList = [
+          jsonObjectCourseRatings["averageQ1"].toDouble(),
+          jsonObjectCourseRatings["averageQ2"].toDouble(),
+          jsonObjectCourseRatings["averageQ3"].toDouble(),
+          jsonObjectCourseRatings["averageQ4"].toDouble(),
+          jsonObjectCourseRatings["averageQ5"].toDouble(),
+        ];
+      });
 
       print(numCourseRatings);
       print(courseRatingsList);
@@ -97,8 +101,6 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
       print(e.toString());
       return;
     }
-
-    setState(() {});
   }
 
   @override

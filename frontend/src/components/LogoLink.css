@@ -1,0 +1,23 @@
+#logo-link {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 1000;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    line-height: 0;
+}
+
+#logo-img {
+    height: 125px;
+    width: auto;
+    border-radius: 8px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+#logo-link:hover #logo-img {
+    transform: scale(1.18);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
