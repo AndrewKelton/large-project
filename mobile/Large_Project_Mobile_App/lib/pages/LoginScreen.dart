@@ -125,7 +125,6 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                     '$message',
                     style: TextStyle(
                       fontSize: 14.0,
-                      color: Colors.black,
                       color: Colors.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -188,7 +187,7 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
 
                     try {
                       String url = 'http://leandrovivares.com/api/login';
-                      String ret = await AppData.getJSON(url, payload);
+                      String ret = await AppDataPost.getJSON(url, payload);
                       jsonObject = json.decode(ret);
                       print(jsonObject);
                       //userId = jsonObject['id'];
