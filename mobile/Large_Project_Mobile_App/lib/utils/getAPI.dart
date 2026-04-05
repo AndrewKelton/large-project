@@ -3,6 +3,7 @@ import 'dart:convert';
 
 class AppData {
 
+  // static method to send http request (post method) and return json
   static Future<String> getJSON(String url, String outgoing) async {
 
     String ret = "";
@@ -28,6 +29,7 @@ class AppData {
 }
 
 class PingTest {
+  // static method used during development to test api connection
   static Future<Map <String, dynamic>> getPing(String url) async {
 
     late Map <String, dynamic> ret;

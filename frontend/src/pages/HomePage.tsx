@@ -7,6 +7,8 @@ import CourseDropdown from '../components/CourseDropdown.tsx';
 import ProfessorDropdown from '../components/ProfessorDropdown.tsx';
 import CourseSummary from '../components/CourseSummary.tsx';
 import ProfessorSummary from '../components/ProfessorSummary.tsx';
+import CourseQuestionnaireResults from '../components/CourseQuestionnaireResults.tsx';
+import ProfessorQuestionnaireResults from '../components/ProfessorQuestionnaireResults.tsx';
 import type { Course, Professor } from '../types/index.ts';
 
 const HomePage = () => {
@@ -76,8 +78,10 @@ const HomePage = () => {
       )}
 
       <CourseSummary course={(selectedCourse)} />
+      <CourseQuestionnaireResults course={selectedCourse} />
 
-      <ProfessorSummary professor={(selectedProfessor)} courseSelected={!!selectedCourse}/>
+      <ProfessorSummary professor={(selectedProfessor)} course={selectedCourse}/>
+      <ProfessorQuestionnaireResults course={selectedCourse} professor={selectedProfessor} />
     </div>
   );
 };

@@ -26,7 +26,7 @@ const CreateQuestionnairePage = () => {
   return (
     <div>
       <h2>Create Questionnaire</h2>
-      <p><strong>Course:</strong> {course.Code} – {course.Title}</p>
+      <p><strong>Course:</strong> {course.Code} – {course.Name}</p>
       {professor && (
         <p><strong>Professor:</strong> {professor.First_Name} {professor.Last_Name}</p>
       )}
