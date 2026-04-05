@@ -2,6 +2,18 @@ import { useState } from 'react';
 import type { QuestionnaireEntry } from '../types/index.ts';
 import QuestionnaireEntryCard from './QuestionnaireEntryCard.tsx';
 
+// Decode the userId from the stored JWT without an external library
+function getUserIdFromToken(): string | null {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.userId ?? null;
+  } catch {
+    return null;
+  }
+}
+
 type OptionKey = 'A' | 'B' | 'C' | 'D';
 const OPTION_KEYS: OptionKey[] = ['A', 'B', 'C', 'D'];
 
@@ -16,41 +28,44 @@ interface QuestionnaireAnswerFormProps {
 interface SingleAnswerCardProps {
   entry: QuestionnaireEntry;
   questionIdx: number;
-  courseId: string;
   professorId: string | null;
 }
 
-function SingleAnswerCard({ entry, questionIdx, courseId, professorId }: SingleAnswerCardProps) {
+function SingleAnswerCard({ entry, questionIdx, professorId }: SingleAnswerCardProps) {
   const [selected, setSelected] = useState<OptionKey | null>(null);
   const [submitted, setSubmitted] = useState(false);
-  const [submitError, setSubmitError] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleSubmit = async () => {
     if (!selected) return;
     try {
-      const token = localStorage.getItem('token');
-      const payload = {
-        courseId,
-        professorId,
-        answers: [{ questionnaireId: entry._id, selectedOption: selected }],
-      };
+      const userId = getUserIdFromToken();
+      if (!userId) {
+        setSubmitError('Not logged in — please log in and try again.');
+        setSubmitted(true);
+        return;
+      }
 
-      const response = await fetch('/api/answerQuestionnaire', {
+      // Use respondToCAP when a professor is present, respondToCO otherwise
+      const endpoint = professorId
+        ? `/api/respondToCAP/${entry._id}/respond`
+        : `/api/respondToCO/${entry._id}/respond`;
+
+      const response = await fetch(endpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, response: selected }),
       });
 
       if (!response.ok) {
-        console.warn('Answer questionnaire API not available yet.');
-        setSubmitError(true);
+        const data = await response.json().catch(() => ({}));
+        const msg = data?.message ?? `Server returned ${response.status}`;
+        console.warn('Questionnaire respond error:', msg);
+        setSubmitError(msg);
       }
-    } catch {
-      console.warn('Answer questionnaire API not available yet.');
-      setSubmitError(true);
+    } catch (err) {
+      console.warn('Questionnaire respond request failed:', err);
+      setSubmitError('Network error — please try again.');
     }
 
     setSubmitted(true);
@@ -62,7 +77,7 @@ function SingleAnswerCard({ entry, questionIdx, courseId, professorId }: SingleA
       <div>
         {!submitError
           ? <p style={{ color: '#2a6db5', fontWeight: 'bold', marginBottom: '0.25rem' }}>✓ Answer submitted.</p>
-          : <p style={{ color: '#888', fontSize: '0.85rem', marginBottom: '0.25rem' }}>(Will sync once the API is available.)</p>
+          : <p style={{ color: '#c0392b', fontSize: '0.85rem', marginBottom: '0.25rem' }}>⚠ {submitError}</p>
         }
         <QuestionnaireEntryCard entry={entry} />
       </div>
@@ -118,7 +133,7 @@ function SingleAnswerCard({ entry, questionIdx, courseId, professorId }: SingleA
 }
 
 // Renders all questions — each answerable independently
-function QuestionnaireAnswerForm({ questionnaires, courseId, professorId, onDone }: QuestionnaireAnswerFormProps) {
+function QuestionnaireAnswerForm({ questionnaires, professorId, onDone }: QuestionnaireAnswerFormProps) {
   return (
     <div>
       <p style={{ color: '#555', marginBottom: '1rem' }}>
@@ -130,7 +145,6 @@ function QuestionnaireAnswerForm({ questionnaires, courseId, professorId, onDone
           key={idx}
           entry={entry}
           questionIdx={idx}
-          courseId={courseId}
           professorId={professorId}
         />
       ))}

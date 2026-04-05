@@ -2,6 +2,18 @@ import { useState } from 'react';
 import type { QuestionnaireEntry } from '../types/index.ts';
 import { SingleBar } from './BarChart.tsx';
 
+// Decode the userId from the stored JWT without an external library
+function getUserIdFromToken(): string | null {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.userId ?? null;
+  } catch {
+    return null;
+  }
+}
+
 type OptionKey = 'A' | 'B' | 'C' | 'D';
 const OPTION_LABELS: Array<OptionKey> = ['A', 'B', 'C', 'D'];
 
@@ -18,13 +30,12 @@ interface QuestionnaireEntryCardProps {
 }
 
 function QuestionnaireEntryCard({ entry, courseId, professorId }: QuestionnaireEntryCardProps) {
-  const token = localStorage.getItem('token');
-  const canAnswer = !!token && !!courseId;
+  const canAnswer = !!localStorage.getItem('token') && !!courseId;
 
   const [mode, setMode] = useState<'results' | 'answer'>('results');
   const [selected, setSelected] = useState<OptionKey | null>(null);
   const [submitted, setSubmitted] = useState(false);
-  const [submitError, setSubmitError] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const total = OPTION_LABELS.reduce((sum, key) => {
     const count = entry.Counts[key];
@@ -34,26 +45,34 @@ function QuestionnaireEntryCard({ entry, courseId, professorId }: QuestionnaireE
   const handleSubmit = async () => {
     if (!selected) return;
     try {
-      const payload = {
-        courseId,
-        professorId: professorId ?? null,
-        answers: [{ questionnaireId: entry._id, selectedOption: selected }],
-      };
-      const response = await fetch('/api/answerQuestionnaire', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(payload),
-      });
-      if (!response.ok) {
-        console.warn('Answer questionnaire API not available yet.');
-        setSubmitError(true);
+      const userId = getUserIdFromToken();
+      if (!userId) {
+        setSubmitError('Not logged in — please log in and try again.');
+        setSubmitted(true);
+        setMode('results');
+        return;
       }
-    } catch {
-      console.warn('Answer questionnaire API not available yet.');
-      setSubmitError(true);
+
+      // Use respondToCAP when a professor is present, respondToCO otherwise
+      const endpoint = professorId
+        ? `/api/respondToCAP/${entry._id}/respond`
+        : `/api/respondToCO/${entry._id}/respond`;
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, response: selected }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        const msg = data?.message ?? `Server returned ${response.status}`;
+        console.warn('Questionnaire respond error:', msg);
+        setSubmitError(msg);
+      }
+    } catch (err) {
+      console.warn('Questionnaire respond request failed:', err);
+      setSubmitError('Network error — please try again.');
     }
     setSubmitted(true);
     setMode('results');
@@ -119,8 +138,8 @@ function QuestionnaireEntryCard({ entry, courseId, professorId }: QuestionnaireE
         <p style={{ color: '#2a6db5', fontSize: '0.85rem', marginBottom: '0.4rem' }}>✓ Answer submitted.</p>
       )}
       {submitted && submitError && (
-        <p style={{ color: '#888', fontSize: '0.85rem', marginBottom: '0.4rem' }}>
-          (Will sync once the API is available.)
+        <p style={{ color: '#c0392b', fontSize: '0.85rem', marginBottom: '0.4rem' }}>
+          ⚠ {submitError}
         </p>
       )}
 
