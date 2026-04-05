@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const RatingSchema = new Schema({
-    
+
     // Reference entries
     Course: {
         type: mongoose.Schema.Types.ObjectId,
@@ -22,6 +22,7 @@ const RatingSchema = new Schema({
     // COURSE rating information -- question agnostic, static on frontend (5 max)
     Option_A_Count: {
         type: Number,
+        required: true,
         min: [1, 'Rating must be at least 1'],
         max: [5, 'Rating must be at most 5'],
         validate: {
@@ -31,6 +32,7 @@ const RatingSchema = new Schema({
     },
     Option_B_Count: {
         type: Number,
+        required: true,
         min: [1, 'Rating must be at least 1'],
         max: [5, 'Rating must be at most 5'],
         validate: {
@@ -40,6 +42,7 @@ const RatingSchema = new Schema({
     },
     Option_C_Count: {
         type: Number,
+        required: true,
         min: [1, 'Rating must be at least 1'],
         max: [5, 'Rating must be at most 5'],
         validate: {
@@ -49,6 +52,7 @@ const RatingSchema = new Schema({
     },
     Option_D_Count: {
         type: Number,
+        required: true,
         min: [1, 'Rating must be at least 1'],
         max: [5, 'Rating must be at most 5'],
         validate: {
@@ -58,6 +62,7 @@ const RatingSchema = new Schema({
     },
     Option_E_Count: {
         type: Number,
+        required: true,
         min: [1, 'Rating must be at least 1'],
         max: [5, 'Rating must be at most 5'],
         validate: {
@@ -67,7 +72,6 @@ const RatingSchema = new Schema({
     },
 
     // PROFESSOR rating information
-    // whether or not the professor was rated
     Professor_Rated: {
         type: Boolean,
         default: false
