@@ -125,7 +125,6 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                     '$message',
                     style: TextStyle(
                       fontSize: 14.0,
-                      color: Colors.black,
                       color: Colors.red,
                       fontWeight: FontWeight.bold,
                     ),

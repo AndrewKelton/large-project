@@ -86,13 +86,16 @@ class _ProfessorRatingsSummaryState extends State<ProfessorRatingsSummary> {
       String ret = await AppDataGet.getJSON(url + widget.courseId.trim() + '/professor/' + widget.professorId.trim());
       jsonObjectProfessorRatings = json.decode(ret);
 
-      numProfessorRatings = jsonObjectProfessorRatings["totalProfessorRatings"];
-      professorRatingsList.add(jsonObjectProfessorRatings["averageQ6"].toDouble());
-      professorRatingsList.add(jsonObjectProfessorRatings["averageQ7"].toDouble());
-      professorRatingsList.add(jsonObjectProfessorRatings["averageQ8"].toDouble());
-      professorRatingsList.add(jsonObjectProfessorRatings["averageQ9"].toDouble());
-      professorRatingsList.add(jsonObjectProfessorRatings["averageQ10"].toDouble());
-
+      setState (() {
+        numProfessorRatings = jsonObjectProfessorRatings["totalProfessorRatings"];
+        professorRatingsList = [
+          jsonObjectProfessorRatings["averageQ6"].toDouble(),
+          jsonObjectProfessorRatings["averageQ7"].toDouble(),
+          jsonObjectProfessorRatings["averageQ8"].toDouble(),
+          jsonObjectProfessorRatings["averageQ9"].toDouble(),
+          jsonObjectProfessorRatings["averageQ10"].toDouble(),
+        ];
+      });
       print(numProfessorRatings);
       print(professorRatingsList);
     }
@@ -100,8 +103,6 @@ class _ProfessorRatingsSummaryState extends State<ProfessorRatingsSummary> {
       print(e.toString());
       return;
     }
-
-    setState(() {});
   }
 
   @override
