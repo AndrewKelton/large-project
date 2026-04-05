@@ -62,6 +62,18 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
     print(widget.courseId);
   }
 
+  @override
+  void didUpdateWidget(CourseRatingsSummary oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.courseId != widget.courseId) {
+      setState(() {
+        numCourseRatings = 0;
+        courseRatingsList = [];
+      });
+      loadCourseRatings();
+    }
+  }
+
   void loadCourseRatings() async {
 
     var jsonObjectCourseRatings;
@@ -72,12 +84,16 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
       String ret = await AppDataGet.getJSON(url + widget.courseId.trim());
       jsonObjectCourseRatings = json.decode(ret);
 
-      numCourseRatings = jsonObjectCourseRatings["totalRatings"];
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ1"]);
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ2"]);
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ3"]);
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ4"]);
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ5"]);
+      setState(() {
+        numCourseRatings = jsonObjectCourseRatings["totalRatings"];
+        courseRatingsList = [
+          jsonObjectCourseRatings["averageQ1"].toDouble(),
+          jsonObjectCourseRatings["averageQ2"].toDouble(),
+          jsonObjectCourseRatings["averageQ3"].toDouble(),
+          jsonObjectCourseRatings["averageQ4"].toDouble(),
+          jsonObjectCourseRatings["averageQ5"].toDouble(),
+        ];
+      });
 
       print(numCourseRatings);
       print(courseRatingsList);
