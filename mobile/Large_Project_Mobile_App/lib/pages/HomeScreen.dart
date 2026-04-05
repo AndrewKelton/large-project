@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:group7_mobile_app/main.dart';
 import 'package:group7_mobile_app/pages/HomePageButton.dart';
 import 'package:group7_mobile_app/pages/CourseRatingsSummary.dart';
+import 'package:group7_mobile_app/pages/ProfessorRatingsSummary.dart';
 import 'package:group7_mobile_app/pages/QuestionnaireResults.dart';
 import 'package:group7_mobile_app/utils/getAPI.dart';
 import 'package:group7_mobile_app/utils/GlobalData.dart';
@@ -99,10 +100,11 @@ class _HomePageState extends State<HomePage> with RouteAware {
       List<dynamic> ids = jsonObjectProfessors.map((item) => item["_id"] as String).toList();
       List<dynamic> firstNames = jsonObjectProfessors.map((item) => item["First_Name"] as String).toList();
       List<dynamic> lastNames = jsonObjectProfessors.map((item) => item["Last_Name"] as String).toList();
-      professorList = List.generate(firstNames.length, (i) => "${lastNames[i]} - ${firstNames[i]} ");
+      professorList = List.generate(firstNames.length, (i) => "${lastNames[i]} - ${firstNames[i]}");
       List<String> tempIdsList = List.generate(ids.length, (i) => "${ids[i]}");
       professorIdMap = Map.fromIterables(professorList, tempIdsList);
       print(professorList);
+      print(professorIdMap);
     }
     catch (e) {
       newMessageText = e.toString();
@@ -340,25 +342,25 @@ class _HomePageState extends State<HomePage> with RouteAware {
                   ),
                 ],
               ),
-              // row (conditional) for selected course summary
-              if (selectedCourse != '') ... [
-                // row for course summary label
-                SizedBox(height: 20.0),
-                Row(
-                  children: <Widget> [
-                    Expanded(
-                      child: Text(
-                        "Course Summary",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 35.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
+              // row for course summary label
+              SizedBox(height: 20.0),
+              Row(
+                children: <Widget> [
+                  Expanded(
+                    child: Text(
+                      "Course Summary",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 35.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
+              // row (conditional) for selected course summary
+              if (selectedCourse != '') ... [
                 // row for course code-name title
                 SizedBox(height: 20.0),
                 Column(
@@ -389,15 +391,95 @@ class _HomePageState extends State<HomePage> with RouteAware {
                     ),
                   ],
                 ),
-                // row for course ratings title
-                SizedBox(height: 5.0),
+                SizedBox(height: 20.0),
                 // summary of course ratings
                 CourseRatingsSummary(courseId: courseIdMap[selectedCourse] ?? ''),
+              ] // end of IF statement for selected courses summary
+              else ... [ // enter if no course is selected
+                // row for message to indicate no course selected
+                SizedBox(height: 15.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget> [
+                    Expanded(
+                      child: Text(
+                        'No course selected',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ], // end of ELSE statement for selected course summary
+              // row for professor summary label
+              SizedBox(height: 20.0),
+              Row(
+                children: <Widget> [
+                  Expanded(
+                    child: Text(
+                      "Professor Summary",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 35.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              // row (conditional) for selected professor summary
+              if (selectedCourse != '' && selectedProfessor != '') ... [
+                // row for professor name
+                SizedBox(height: 20.0),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget> [
+                    // Holds professor name title bar
+                    Container(
+                      width: 175,
+                      padding: EdgeInsets.symmetric(vertical: 5.0),
+                      decoration: BoxDecoration(
+                        color: Color(0xFF2575FF),
+                        borderRadius: BorderRadius.circular(7.5),
+                        border: Border.all(color: Color(0xFF2575FF), width: 5),
+                      ),
+                      child: Text("${selectedProfessor}", textAlign: TextAlign.center, style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.white)),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20.0),
+                // summary of professor ratings
+                ProfessorRatingsSummary(courseId: courseIdMap[selectedCourse] ?? '', professorId: professorIdMap[selectedProfessor] ?? ''),
+              ] // end of IF statement for selected courses summary
+              else ... [ // enter if no professor is selected
+                // row for message to indicate no professor selected
+                SizedBox(height: 15.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget> [
+                    Expanded(
+                      child: Text(
+                        'You need to select a course with a professor',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],  // end of ELSE statement for selected professor summary
+              // some space at the bottom of the screen
 
-                // padding before questionnaire results title
-                QuestionnaireResults(courseId: courseIdMap[selectedCourse] ?? ''),
-              ], // end of selected courses conditional subtree
-            ],
+              SizedBox(height: 80.0),
+            ], // end of children array for column
           ),
         ),
       ),

@@ -139,6 +139,9 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                   width: 250,
                   child: TextField(
                     controller: loginController,
+                 /*   onChanged: (text) {
+                      loginName = text;
+                    },*/
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
@@ -157,6 +160,9 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                   child: TextField(
                     controller: passwordController,
                     obscureText: true,
+               /*     onChanged: (text) {
+                      password = text;
+                    },*/
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,

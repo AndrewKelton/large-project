@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:group7_mobile_app/utils/getAPI.dart';
 import 'dart:convert';
+import 'package:group7_mobile_app/pages/QuestionnaireResults.dart';
 
 
 // widget for building the course rating summary section
@@ -48,7 +49,7 @@ Widget _RatingCard(String question, double rating) {
   );
 }
 
-// custom class for the home page button
+// custom class for displaying course ratings summary
 class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
 
   // total number of ratings
@@ -68,11 +69,10 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
   @override
   void didUpdateWidget(CourseRatingsSummary oldWidget) {
     super.didUpdateWidget(oldWidget);
+    // reload only if courseId actually changed
     if (oldWidget.courseId != widget.courseId) {
-      setState(() {
-        numCourseRatings = 0;
-        courseRatingsList = [];
-      });
+      courseRatingsList = [];   // clear old data
+      numCourseRatings = 0;
       loadCourseRatings();
     }
   }
@@ -81,7 +81,7 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
 
     var jsonObjectCourseRatings;
 
-    // get courses table from database
+    // get course ratings from database
     try {
       String url = 'http://leandrovivares.com/api/fetchratings/course/';
       String ret = await AppDataGet.getJSON(url + widget.courseId.trim());
@@ -105,13 +105,11 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
       print(e.toString());
       return;
     }
-
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    // collect ratings for all courses
+    // collect ratings for each question
     double q1Rating = courseRatingsList.isNotEmpty ? courseRatingsList[0] : 0;
     double q2Rating = courseRatingsList.isNotEmpty ? courseRatingsList[1] : 0;
     double q3Rating = courseRatingsList.isNotEmpty ? courseRatingsList[2] : 0;
@@ -136,12 +134,16 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
             ),
           ],
         ),
-        // row for Q1 course ratings
+        // rows for course ratings (questions and answer summary)
         _RatingCard('Overall, how would you rate this course?', q1Rating),
         _RatingCard('How would you rate the course difficulty?', q2Rating),
         _RatingCard('How manageable was the course workload?', q3Rating),
         _RatingCard('How useful were the course materials?', q4Rating),
         _RatingCard('Would you recommend this course to others?', q5Rating),
+
+        SizedBox(height: 5.0),
+
+        QuestionnaireResults(courseId: widget.courseId)
       ],
     );
   }

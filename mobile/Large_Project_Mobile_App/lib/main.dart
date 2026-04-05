@@ -7,7 +7,7 @@ import 'package:group7_mobile_app/pages/Loading.dart';
 
 void main() => runApp(MaterialApp(
   initialRoute: '/home',
-  title: 'COP4431 Group 7 Large Project',
+  title: 'KnightRate',
   routes: {
     '/': (context) => Loading(),
     '/login': (context) => LoginScreen(),
