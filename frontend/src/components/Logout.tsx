@@ -7,6 +7,7 @@ function Logout()
     function doLogout()
     {
         localStorage.removeItem('token');
+        localStorage.removeItem('userId');
         window.location.href = '/';
     }
 
