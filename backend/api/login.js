@@ -10,6 +10,7 @@ const User = require('../models/user.js'); // User model location
 
 // POST - Login
 router.post('/login', async (req, res) => {
+    console.log("LOGIN ROUTE HIT - NEW VERSION");
     const { Username, Password } = req.body;
 
     try {
@@ -35,6 +36,7 @@ router.post('/login', async (req, res) => {
         res.json({
             message: 'Login Successful',
             token,
+            userId: user._id
         });
 
     } catch (err) {

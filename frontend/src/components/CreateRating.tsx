@@ -92,10 +92,12 @@ const CreateRating = ({
       }
     }
 
-    const userId = "69c33e0eb4992405512df29f";
-    //const storedUser = localStorage.getItem("user");
-    //const currentUser = storedUser ? JSON.parse(storedUser) : null;
-    //const userId = currentUser?._id;
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+      setErrorMessage("You must be logged in to submit a rating.");
+      return;
+    }
 
     const payload = {
       User: userId,

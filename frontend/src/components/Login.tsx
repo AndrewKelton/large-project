@@ -25,13 +25,15 @@ function Login({ onSwitchToRegister }: LoginProps)
             });
 
             var res = JSON.parse(await response.text());
+            console.log("Login response:", res);
 
             if (!res.token) {
                 setMessage('User/Password combination incorrect');
             } else {
                 localStorage.setItem('token', res.token);
+                localStorage.setItem('userId', res.userId);
                 setMessage('');
-                window.location.href = '/HomePage'; // doesn't exist yet!
+                //window.location.href = '/HomePage'; // doesn't exist yet!
             }
         } catch(error: any) {
             alert(error.toString());
