@@ -34,7 +34,7 @@ function Login({ onSwitchToRegister }: LoginProps) {
         console.log("Stored userId:", localStorage.getItem("userId"));
         console.log("Login origin:", window.location.origin);
         setMessage("");
-        //window.location.href = '/HomePage'; // doesn't exist yet!
+        window.location.href = '/HomePage'; // doesn't exist yet!
       }
     } catch (error: any) {
       alert(error.toString());
