@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:group7_mobile_app/main.dart';
 import 'package:group7_mobile_app/pages/HomePageButton.dart';
 import 'package:group7_mobile_app/pages/CourseRatingsSummary.dart';
+import 'package:group7_mobile_app/pages/QuestionnaireResults.dart';
 import 'package:group7_mobile_app/utils/getAPI.dart';
 import 'package:group7_mobile_app/utils/GlobalData.dart';
 
@@ -389,9 +390,12 @@ class _HomePageState extends State<HomePage> with RouteAware {
                   ],
                 ),
                 // row for course ratings title
-                SizedBox(height: 20.0),
+                SizedBox(height: 5.0),
                 // summary of course ratings
                 CourseRatingsSummary(courseId: courseIdMap[selectedCourse] ?? ''),
+
+                // padding before questionnaire results title
+                QuestionnaireResults(courseId: courseIdMap[selectedCourse] ?? ''),
               ], // end of selected courses conditional subtree
             ],
           ),

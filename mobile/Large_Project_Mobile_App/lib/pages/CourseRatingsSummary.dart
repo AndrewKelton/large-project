@@ -56,6 +56,9 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
   // course ratings summary data
   late List<double> courseRatingsList = [];
 
+  // stores all questions
+  late List<String> questionList = [];
+
   @override initState() {
     super.initState();
     loadCourseRatings();
