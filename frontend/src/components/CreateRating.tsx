@@ -94,6 +94,10 @@ const CreateRating = ({
 
     const userId = localStorage.getItem("userId");
 
+    console.log("Rating page origin:", window.location.origin);
+    console.log("Rating page userId:", localStorage.getItem("userId"));
+    console.log("Rating page token:", localStorage.getItem("token"));
+
     if (!userId) {
       setErrorMessage("You must be logged in to submit a rating.");
       return;
