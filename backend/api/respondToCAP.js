@@ -48,6 +48,13 @@ router.post('/:questionnaireId/respond', async (req, res) => {
             });
         }
 
+        // Must have rated the course
+        if (!user.Rated_Courses.includes(questionnaire.Course.toString())) {
+            return res.status(403).json({
+                message: "You must rate the course before answering this questionnaire"
+            });
+        }
+
         // Check if the selected option actually exists
         const optionField = `Option_${response}`;
         const countField = `Option_${response}_Count`;
