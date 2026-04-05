@@ -36,7 +36,7 @@ router.post('/login', async (req, res) => {
         res.json({
             message: 'Login Successful',
             token,
-            userId: user._id
+            userId: user._id //Added user ID to be sent when logged in
         });
 
     } catch (err) {

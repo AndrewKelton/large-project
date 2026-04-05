@@ -23,18 +23,14 @@ function Login({ onSwitchToRegister }: LoginProps) {
       });
 
       var res = JSON.parse(await response.text());
-      console.log("Login response:", res);
 
       if (!res.token) {
         setMessage("User/Password combination incorrect");
       } else {
         localStorage.setItem("token", res.token);
-        localStorage.setItem("userId", res.userId);
-        console.log("Stored token:", localStorage.getItem("token"));
-        console.log("Stored userId:", localStorage.getItem("userId"));
-        console.log("Login origin:", window.location.origin);
+        localStorage.setItem("userId", res.userId); //Added storing the user ID for when creating a rating
         setMessage("");
-        window.location.href = '/HomePage'; // doesn't exist yet!
+        window.location.href = '/HomePage';
       }
     } catch (error: any) {
       alert(error.toString());
