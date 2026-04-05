@@ -37,7 +37,7 @@ function QuestionnaireEntryCard({ entry, courseId, professorId, alreadyAnswered 
 
   const [mode, setMode] = useState<'results' | 'answer'>('results');
   const [selected, setSelected] = useState<OptionKey | null>(null);
-  const [submitted, setSubmitted] = useState(false);
+  const [answeredSuccessfully, setAnsweredSuccessfully] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const total = OPTION_LABELS.reduce((sum, key) => {
@@ -47,12 +47,11 @@ function QuestionnaireEntryCard({ entry, courseId, professorId, alreadyAnswered 
 
   const handleSubmit = async () => {
     if (!selected) return;
+    setSubmitError(null);
     try {
       const userId = getUserIdFromToken();
       if (!userId) {
         setSubmitError('Not logged in — please log in and try again.');
-        setSubmitted(true);
-        setMode('results');
         return;
       }
 
@@ -72,13 +71,16 @@ function QuestionnaireEntryCard({ entry, courseId, professorId, alreadyAnswered 
         const msg = data?.message ?? `Server returned ${response.status}`;
         console.warn('Questionnaire respond error:', msg);
         setSubmitError(msg);
+        return;
       }
+
+      // Only mark as answered on a successful response
+      setAnsweredSuccessfully(true);
+      setMode('results');
     } catch (err) {
       console.warn('Questionnaire respond request failed:', err);
       setSubmitError('Network error — please try again.');
     }
-    setSubmitted(true);
-    setMode('results');
   };
 
   // Answer form view
@@ -143,12 +145,18 @@ function QuestionnaireEntryCard({ entry, courseId, professorId, alreadyAnswered 
             View Results
           </button>
         </div>
+
+        {submitError && (
+          <p style={{ color: '#c0392b', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+            ⚠ {submitError}
+          </p>
+        )}
       </div>
     );
   }
 
   // Results view
-  const hasAnswered = alreadyAnswered || submitted;
+  const hasAnswered = alreadyAnswered || answeredSuccessfully;
   return (
     <div style={{ position: 'relative', marginBottom: '1rem', padding: '0.75rem', border: '1px solid #ccc', borderRadius: '6px' }}>
       {/* Status tag */}
@@ -171,10 +179,10 @@ function QuestionnaireEntryCard({ entry, courseId, professorId, alreadyAnswered 
 
       <p style={{ fontWeight: 'bold', marginBottom: '0.5rem', paddingRight: '5.5rem' }}>{entry.Question}</p>
 
-      {submitted && !submitError && (
+      {answeredSuccessfully && !submitError && (
         <p style={{ color: '#2a6db5', fontSize: '0.85rem', marginBottom: '0.4rem' }}>✓ Answer submitted.</p>
       )}
-      {submitted && submitError && (
+      {answeredSuccessfully && submitError && (
         <p style={{ color: '#c0392b', fontSize: '0.85rem', marginBottom: '0.4rem' }}>
           ⚠ {submitError}
         </p>
