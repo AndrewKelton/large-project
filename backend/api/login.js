@@ -10,7 +10,6 @@ const User = require('../models/user.js'); // User model location
 
 // POST - Login
 router.post('/login', async (req, res) => {
-    console.log("LOGIN ROUTE HIT - NEW VERSION");
     const { Username, Password } = req.body;
 
     try {
