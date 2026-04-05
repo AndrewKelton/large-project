@@ -46,7 +46,7 @@ function ProfessorDropdown({ onSelect }: ProfessorDropdownProps) {
         <option value="">Select Professor</option>
         {professorsList.map(course => (
           <option key={course._id} value={course._id}>
-            {course.First_Name} - {course.Last_Name}
+            {course.First_Name} {course.Last_Name}
           </option>
         ))}
       </select>
