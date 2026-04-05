@@ -27,10 +27,13 @@ interface QuestionnaireEntryCardProps {
   // When provided and a token exists, an "Answer" button is shown on this card
   courseId?: string;
   professorId?: string | null;
+  // Whether the logged-in user has already answered this questionnaire
+  alreadyAnswered?: boolean;
 }
 
-function QuestionnaireEntryCard({ entry, courseId, professorId }: QuestionnaireEntryCardProps) {
-  const canAnswer = !!localStorage.getItem('token') && !!courseId;
+function QuestionnaireEntryCard({ entry, courseId, professorId, alreadyAnswered = false }: QuestionnaireEntryCardProps) {
+  const isLoggedIn = !!localStorage.getItem('token');
+  const canAnswer = isLoggedIn && !!courseId;
 
   const [mode, setMode] = useState<'results' | 'answer'>('results');
   const [selected, setSelected] = useState<OptionKey | null>(null);
@@ -81,8 +84,23 @@ function QuestionnaireEntryCard({ entry, courseId, professorId }: QuestionnaireE
   // Answer form view
   if (mode === 'answer') {
     return (
-      <div style={{ marginBottom: '1rem', padding: '0.75rem', border: '1px solid #4a90d9', borderRadius: '6px' }}>
-        <p style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>{entry.Question}</p>
+      <div style={{ position: 'relative', marginBottom: '1rem', padding: '0.75rem', border: '1px solid #4a90d9', borderRadius: '6px' }}>
+        {/* Status tag */}
+        <span style={{
+          position: 'absolute',
+          top: '0.6rem',
+          right: '0.6rem',
+          backgroundColor: '#e74c3c',
+          color: '#fff',
+          fontSize: '0.7rem',
+          fontWeight: 'bold',
+          padding: '0.2rem 0.5rem',
+          borderRadius: '999px',
+          letterSpacing: '0.03em',
+        }}>
+          Unanswered
+        </span>
+        <p style={{ fontWeight: 'bold', marginBottom: '0.5rem', paddingRight: '5.5rem' }}>{entry.Question}</p>
         <p style={{ fontSize: '0.85rem', color: '#555', marginBottom: '0.5rem' }}>
           Select an option. You won't be able to change your answer after submitting.
         </p>
@@ -130,9 +148,28 @@ function QuestionnaireEntryCard({ entry, courseId, professorId }: QuestionnaireE
   }
 
   // Results view
+  const hasAnswered = alreadyAnswered || submitted;
   return (
-    <div style={{ marginBottom: '1rem', padding: '0.75rem', border: '1px solid #ccc', borderRadius: '6px' }}>
-      <p style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>{entry.Question}</p>
+    <div style={{ position: 'relative', marginBottom: '1rem', padding: '0.75rem', border: '1px solid #ccc', borderRadius: '6px' }}>
+      {/* Status tag */}
+      {isLoggedIn && (
+        <span style={{
+          position: 'absolute',
+          top: '0.6rem',
+          right: '0.6rem',
+          backgroundColor: hasAnswered ? '#27ae60' : '#e74c3c',
+          color: '#fff',
+          fontSize: '0.7rem',
+          fontWeight: 'bold',
+          padding: '0.2rem 0.5rem',
+          borderRadius: '999px',
+          letterSpacing: '0.03em',
+        }}>
+          {hasAnswered ? 'Answered' : 'Unanswered'}
+        </span>
+      )}
+
+      <p style={{ fontWeight: 'bold', marginBottom: '0.5rem', paddingRight: '5.5rem' }}>{entry.Question}</p>
 
       {submitted && !submitError && (
         <p style={{ color: '#2a6db5', fontSize: '0.85rem', marginBottom: '0.4rem' }}>✓ Answer submitted.</p>
@@ -157,7 +194,7 @@ function QuestionnaireEntryCard({ entry, courseId, professorId }: QuestionnaireE
         );
       })}
 
-      {canAnswer && !submitted && (
+      {canAnswer && !hasAnswered && (
         <button onClick={() => setMode('answer')} style={{ marginTop: '0.5rem' }}>
           Answer this Question
         </button>
