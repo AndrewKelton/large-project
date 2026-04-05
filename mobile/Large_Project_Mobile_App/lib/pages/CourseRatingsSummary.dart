@@ -48,7 +48,7 @@ Widget _RatingCard(String question, double rating) {
   );
 }
 
-// custom class for the home page button
+// custom class for displaying course ratings summary
 class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
 
   // total number of ratings
@@ -62,22 +62,33 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
     print(widget.courseId);
   }
 
+  @override
+  void didUpdateWidget(CourseRatingsSummary oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // reload only if courseId actually changed
+    if (oldWidget.courseId != widget.courseId) {
+      courseRatingsList = [];   // clear old data
+      numCourseRatings = 0;
+      loadCourseRatings();
+    }
+  }
+
   void loadCourseRatings() async {
 
     var jsonObjectCourseRatings;
 
-    // get courses table from database
+    // get course ratings from database
     try {
       String url = 'http://leandrovivares.com/api/fetchratings/course/';
       String ret = await AppDataGet.getJSON(url + widget.courseId.trim());
       jsonObjectCourseRatings = json.decode(ret);
 
       numCourseRatings = jsonObjectCourseRatings["totalRatings"];
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ1"]);
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ2"]);
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ3"]);
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ4"]);
-      courseRatingsList.add(jsonObjectCourseRatings["averageQ5"]);
+      courseRatingsList.add(jsonObjectCourseRatings["averageQ1"].toDouble());
+      courseRatingsList.add(jsonObjectCourseRatings["averageQ2"].toDouble());
+      courseRatingsList.add(jsonObjectCourseRatings["averageQ3"].toDouble());
+      courseRatingsList.add(jsonObjectCourseRatings["averageQ4"].toDouble());
+      courseRatingsList.add(jsonObjectCourseRatings["averageQ5"].toDouble());
 
       print(numCourseRatings);
       print(courseRatingsList);
@@ -92,7 +103,7 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
 
   @override
   Widget build(BuildContext context) {
-    // collect ratings for all courses
+    // collect ratings for each question
     double q1Rating = courseRatingsList.isNotEmpty ? courseRatingsList[0] : 0;
     double q2Rating = courseRatingsList.isNotEmpty ? courseRatingsList[1] : 0;
     double q3Rating = courseRatingsList.isNotEmpty ? courseRatingsList[2] : 0;
@@ -117,7 +128,7 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
             ),
           ],
         ),
-        // row for Q1 course ratings
+        // rows for course ratings (questions and answer summary)
         _RatingCard('Overall, how would you rate this course?', q1Rating),
         _RatingCard('How would you rate the course difficulty?', q2Rating),
         _RatingCard('How manageable was the course workload?', q3Rating),
