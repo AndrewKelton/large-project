@@ -63,7 +63,7 @@ router.post('/:questionnaireId/respond', async (req, res) => {
 
         if (!hasRatedProfessor) {
             return res.status(403).json({
-                message: "You must rate the professor before answering this questionnaire"
+                message: "You must have rated the professor, specifically for the course selected, before answering this questionnaire"
             });
         }
 
