@@ -55,6 +55,18 @@ router.post('/:questionnaireId/respond', async (req, res) => {
             });
         }
 
+        // Must have rated the professor for this course
+        const hasRatedProfessor = user.Rated_Courses_Professors.some(entry =>
+            entry.Course.toString() === questionnaire.Course.toString() &&
+            entry.Professor.toString() === questionnaire.Professor.toString()
+        );
+
+        if (!hasRatedProfessor) {
+            return res.status(403).json({
+                message: "You must have rated the professor, specifically for the course selected, before answering this questionnaire"
+            });
+        }
+
         // Check if the selected option actually exists
         const optionField = `Option_${response}`;
         const countField = `Option_${response}_Count`;

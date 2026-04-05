@@ -1,7 +1,7 @@
 function PageTitle()
 {
   return (
-    <h1 id="title">COP 4331 Group 7 Large Project</h1>
+    <h1 id="title">KnightRate</h1>
   );
 };
 
