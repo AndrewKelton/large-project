@@ -34,6 +34,7 @@ router.get('/course/:courseId/professor/:professorId', async (req, res) => {
 
         // Format response
         const formatted = questionnaires.map(q => ({
+            _id: q._id,
             Question: q.Question,
             Options: {
                 A: q.Option_A || null,

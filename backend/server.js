@@ -52,6 +52,9 @@ app.use('/api/respondToCAP', respondToCAP);
 const respondToCO = require('./api/respondToCO.js');
 app.use('/api/respondToCO', respondToCO);
 
+const userRouter = require('./api/user.js');
+app.use('/api/user', userRouter);
+
 // connect to database via mongoose
 const url = process.env.MONGO_URI;
 mongoose.connect(url)

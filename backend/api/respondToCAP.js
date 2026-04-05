@@ -49,7 +49,7 @@ router.post('/:questionnaireId/respond', async (req, res) => {
         }
 
         // Must have rated the course
-        if (!user.Rated_Courses.includes(questionnaire.Course.toString())) {
+        if (!user.Rated_Courses.some(id => id.toString() === questionnaire.Course.toString())) {
             return res.status(403).json({
                 message: "You must rate the course before answering this questionnaire"
             });
@@ -79,6 +79,7 @@ router.post('/:questionnaireId/respond', async (req, res) => {
 
         // Increment the appropriate counter
         questionnaire[countField] += 1;
+        questionnaire.markModified(countField);
 
         // Save questionnaire update
         await questionnaire.save();
