@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { Course, Professor, ProfessorQuestionnaireResults } from '../types/index.ts';
 import QuestionnaireEntryCard from './QuestionnaireEntryCard.tsx';
 
@@ -27,31 +27,29 @@ function ProfessorQuestionnaireResultsComponent({ course, professor }: Professor
   const [currentPage, setCurrentPage] = useState(0);
 
   // Fetch the questionnaire results
-  useEffect(() => {
+  const fetchResults = useCallback(async () => {
     if (course === null || professor === null) {
       setResults(null);
       return;
     }
-
-    const fetchResults = async () => {
-      try {
-        const response = await fetch(`/api/fetchCAP/course/${course._id}/professor/${professor._id}`);
-        if (!response.ok) {
-          setResults(null);
-          return;
-        }
-
-        const data: ProfessorQuestionnaireResults = await response.json();
-        setResults(data);
-        setCurrentPage(0);
-      } catch (error: any) {
-        console.error(error);
+    try {
+      const response = await fetch(`/api/fetchCAP/course/${course._id}/professor/${professor._id}`);
+      if (!response.ok) {
         setResults(null);
+        return;
       }
-    };
-
-    fetchResults();
+      const data: ProfessorQuestionnaireResults = await response.json();
+      setResults(data);
+    } catch (error: any) {
+      console.error(error);
+      setResults(null);
+    }
   }, [course, professor]);
+
+  useEffect(() => {
+    setCurrentPage(0);
+    fetchResults();
+  }, [fetchResults]);
 
   // Fetch the logged-in user's answered questionnaire IDs
   useEffect(() => {
@@ -92,6 +90,7 @@ function ProfessorQuestionnaireResultsComponent({ course, professor }: Professor
               courseId={course._id}
               professorId={professor._id}
               alreadyAnswered={answeredIds.has(entry._id)}
+              onAnswered={fetchResults}
             />
           ))}
           {totalPages > 1 && (

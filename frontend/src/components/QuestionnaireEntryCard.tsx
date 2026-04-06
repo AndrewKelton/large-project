@@ -29,9 +29,11 @@ interface QuestionnaireEntryCardProps {
   professorId?: string | null;
   // Whether the logged-in user has already answered this questionnaire
   alreadyAnswered?: boolean;
+  // Called after the user successfully submits an answer so the parent can re-fetch
+  onAnswered?: () => void;
 }
 
-function QuestionnaireEntryCard({ entry, courseId, professorId, alreadyAnswered = false }: QuestionnaireEntryCardProps) {
+function QuestionnaireEntryCard({ entry, courseId, professorId, alreadyAnswered = false, onAnswered }: QuestionnaireEntryCardProps) {
   const isLoggedIn = !!localStorage.getItem('token');
   const canAnswer = isLoggedIn && !!courseId;
 
@@ -77,6 +79,7 @@ function QuestionnaireEntryCard({ entry, courseId, professorId, alreadyAnswered 
       // Only mark as answered on a successful response
       setAnsweredSuccessfully(true);
       setMode('results');
+      onAnswered?.();
     } catch (err) {
       console.warn('Questionnaire respond request failed:', err);
       setSubmitError('Network error — please try again.');
