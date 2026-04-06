@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class AppData {
+class AppDataPost {
 
   // static method to send http request (post method) and return json
   static Future<String> getJSON(String url, String outgoing) async {
@@ -18,6 +18,25 @@ class AppData {
         encoding: Encoding.getByName("utf-8")
       );
 
+      ret = response.body;
+    }
+    catch (e) {
+      print(e.toString());
+    }
+
+    return ret;
+  }
+}
+
+class AppDataGet {
+
+  // static method to send http request (get method) and return json
+  static Future<String> getJSON(String url) async {
+
+    String ret = "";
+
+    try {
+      http.Response response = await http.get(Uri.parse(url));
       ret = response.body;
     }
     catch (e) {

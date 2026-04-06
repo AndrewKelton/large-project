@@ -139,6 +139,9 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                   width: 250,
                   child: TextField(
                     controller: loginController,
+                 /*   onChanged: (text) {
+                      loginName = text;
+                    },*/
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
@@ -157,6 +160,9 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                   child: TextField(
                     controller: passwordController,
                     obscureText: true,
+               /*     onChanged: (text) {
+                      password = text;
+                    },*/
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
@@ -176,35 +182,21 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                     newMessageText = "";
                     changeText();
                     String payload = '{"Username":"${loginController.text.trim()}", "Password":"${passwordController.text.trim()}"}';
-                    var userId = -1;
                     var jsonObject;
 
                     try {
                       String url = 'http://leandrovivares.com/api/login';
-                      String ret = await AppData.getJSON(url, payload);
+                      String ret = await AppDataPost.getJSON(url, payload);
                       jsonObject = json.decode(ret);
                       print(jsonObject);
-                      //userId = jsonObject['id'];
+                      GlobalData.userId = jsonObject['userId'];
                     }
                     catch (e) {
                       newMessageText = e.toString();
                       changeText();
                       return;
                     }
-/*
-                    if (userId <= 0) {
-                      newMessageText = "Incorrect Login/Password";
-                      changeText();
-                    }
-                    else {
-                      GlobalData.userId = userId;
-                      GlobalData.firstName = jsonObject['firstName'];
-                      GlobalData.lastName = jsonObject['lastName'];
-                      GlobalData.loginName = loginName;
-                      GlobalData.password = password;
-                      Navigator.pushNamed(context, '/user_home');
-                    }
-*/
+
                     if (jsonObject.containsKey('message')) {
                       if (jsonObject['message'] == 'Login successful') {
                         // navigate to user home page
