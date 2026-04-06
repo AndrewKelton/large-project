@@ -188,19 +188,25 @@ function QuestionnaireEntryCard({ entry, courseId, professorId, alreadyAnswered 
         </p>
       )}
 
-      {OPTION_LABELS.map((key) => {
-        const option = entry.Options[key];
-        const percent = getPercent(entry.Counts[key], total);
-        if (option === null || percent === null) return null;
-        return (
-          <SingleBar
-            key={key}
-            label={key}
-            percent={percent}
-            displayValue={`${option} (${percent.toFixed(1)}%)`}
-          />
-        );
-      })}
+      {total === 0 ? (
+        <p style={{ fontSize: '0.85rem', color: '#888', fontStyle: 'italic', margin: '0.4rem 0' }}>
+          No answers yet — check back later.
+        </p>
+      ) : (
+        OPTION_LABELS.map((key) => {
+          const option = entry.Options[key];
+          const percent = getPercent(entry.Counts[key], total);
+          if (option === null || percent === null) return null;
+          return (
+            <SingleBar
+              key={key}
+              label={key}
+              percent={percent}
+              displayValue={`${option} (${percent.toFixed(1)}%)`}
+            />
+          );
+        })
+      )}
 
       {canAnswer && !hasAnswered && (
         <button onClick={() => setMode('answer')} style={{ marginTop: '0.5rem' }}>
