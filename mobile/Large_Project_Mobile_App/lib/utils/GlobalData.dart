@@ -1,6 +1,6 @@
 
 class GlobalData {
-  static int userId = -1;
+  static String userId = '69c33e0eb4992405512df29f'; // initialize to -1
   static String firstName = '';
   static String lastName = '';
   static String loginName = '';
