@@ -4,7 +4,7 @@ import 'package:group7_mobile_app/main.dart';
 import 'package:group7_mobile_app/pages/HomePageButton.dart';
 import 'package:group7_mobile_app/pages/CourseRatingsSummary.dart';
 import 'package:group7_mobile_app/pages/ProfessorRatingsSummary.dart';
-import 'package:group7_mobile_app/pages/QuestionnaireResults.dart';
+import 'package:group7_mobile_app/pages/CourseQuestionnaireResults.dart';
 import 'package:group7_mobile_app/utils/getAPI.dart';
 import 'package:group7_mobile_app/utils/GlobalData.dart';
 

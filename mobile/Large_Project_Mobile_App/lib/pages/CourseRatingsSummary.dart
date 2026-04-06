@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:group7_mobile_app/utils/getAPI.dart';
 import 'dart:convert';
-import 'package:group7_mobile_app/pages/QuestionnaireResults.dart';
+import 'package:group7_mobile_app/pages/CourseQuestionnaireResults.dart';
 
 
 // widget for building the course rating summary section
@@ -141,9 +141,9 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
         _RatingCard('How useful were the course materials?', q4Rating),
         _RatingCard('Would you recommend this course to others?', q5Rating),
 
+        // course-specific questionnaire results
         SizedBox(height: 5.0),
-
-        QuestionnaireResults(courseId: widget.courseId)
+        CourseQuestionnaireResults(courseId: widget.courseId),
       ],
     );
   }

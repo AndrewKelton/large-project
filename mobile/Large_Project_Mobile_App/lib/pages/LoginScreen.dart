@@ -182,7 +182,6 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                     newMessageText = "";
                     changeText();
                     String payload = '{"Username":"${loginController.text.trim()}", "Password":"${passwordController.text.trim()}"}';
-                    var userId = -1;
                     var jsonObject;
 
                     try {
@@ -190,27 +189,14 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                       String ret = await AppDataPost.getJSON(url, payload);
                       jsonObject = json.decode(ret);
                       print(jsonObject);
-                      //userId = jsonObject['id'];
+                      GlobalData.userId = jsonObject['userId'];
                     }
                     catch (e) {
                       newMessageText = e.toString();
                       changeText();
                       return;
                     }
-/*
-                    if (userId <= 0) {
-                      newMessageText = "Incorrect Login/Password";
-                      changeText();
-                    }
-                    else {
-                      GlobalData.userId = userId;
-                      GlobalData.firstName = jsonObject['firstName'];
-                      GlobalData.lastName = jsonObject['lastName'];
-                      GlobalData.loginName = loginName;
-                      GlobalData.password = password;
-                      Navigator.pushNamed(context, '/user_home');
-                    }
-*/
+
                     if (jsonObject.containsKey('message')) {
                       if (jsonObject['message'] == 'Login successful') {
                         // navigate to user home page
