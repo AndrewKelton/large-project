@@ -108,6 +108,37 @@ const CreateQuestionaire = ({
           placeholder="What's your question?"
           onChange={(e) => setQuestion(e.target.value)}
         />
+        <br></br>
+        <input
+          type="text"
+          value={optionA}
+          required={true}
+          placeholder="Option A (Required)"
+          onChange={(e) => setOptionA(e.target.value)}
+        />
+        <br></br>
+        <input
+          type="text"
+          value={optionB}
+          required={true}
+          placeholder="Option B (Required)"
+          onChange={(e) => setOptionB(e.target.value)}
+        />
+        <br></br>
+        <input
+          type="text"
+          value={optionC}
+          placeholder="Option C"
+          onChange={(e) => setOptionC(e.target.value)}
+        />
+        <br></br>
+        <input
+          type="text"
+          value={optionD}
+          placeholder="Option D"
+          onChange={(e) => setOptionD(e.target.value)}
+        />
+        <br></br>
       </label>
       {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
