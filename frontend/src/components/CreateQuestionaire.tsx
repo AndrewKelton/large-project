@@ -21,6 +21,11 @@ const CreateQuestionaire = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [question, setQuestion] = useState("");
+  const [optionA, setOptionA] = useState("");
+  const [optionB, setOptionB] = useState("");
+  const [optionC, setOptionC] = useState("");
+  const [optionD, setOptionD] = useState("");
 
   // Function to handle submitting a rating
   const handleSubmit = async () => {
@@ -90,13 +95,14 @@ const CreateQuestionaire = ({
   return (
     <div>
       {/* Main headers */}
-      <h4>Step right up and make a questionaire!</h4>
-
+      <strong>Professor:</strong>{" "}
+      {professor
+            ? `${professor.First_Name} ${professor.Last_Name}`
+            : "Not Selected"}
+      <h4>Step on up and make a questionaire!</h4>
       {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
-
       {/*Display submit button, and then update when clicked */}
-
       <button type="button" onClick={handleSubmit} disabled={isSubmitting}>
         {isSubmitting ? "Submitting..." : "Submit Rating"}
       </button>
