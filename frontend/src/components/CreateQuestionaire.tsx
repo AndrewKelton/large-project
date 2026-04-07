@@ -71,7 +71,7 @@ const CreateQuestionaire = ({
       Option_A: optionA,
       Option_B: optionB,
       Option_C: normalizedOptionC,
-      Option_D: normalizedOptionD
+      Option_D: normalizedOptionD,
     };
 
     // Portion to submit the new rating to the backend
@@ -130,30 +130,36 @@ const CreateQuestionaire = ({
         questionaire
       </h4>
       <label>
+        <p>What's your Question?</p>
         <input
           type="text"
           value={question}
           required={true}
-          placeholder="What's your question?"
+          placeholder="Enter a Question"
           onChange={(e) => setQuestion(e.target.value)}
         />
         <br></br>
+        <p>Enter Your First Answer Choice (Required)</p>
         <input
           type="text"
           value={optionA}
           required={true}
-          placeholder="Option A (Required)"
+          placeholder="Option A"
           onChange={(e) => setOptionA(e.target.value)}
         />
         <br></br>
+        <p>Enter Your Second Answer Choice (Required)</p>
+
         <input
           type="text"
           value={optionB}
           required={true}
-          placeholder="Option B (Required)"
+          placeholder="Option B"
           onChange={(e) => setOptionB(e.target.value)}
         />
         <br></br>
+        <p>Enter Your Third Answer Choice (Optional)</p>
+
         <input
           type="text"
           value={optionC}
@@ -161,6 +167,8 @@ const CreateQuestionaire = ({
           onChange={(e) => setOptionC(e.target.value)}
         />
         <br></br>
+        <p>Enter Your Fourth Answer Choice (Optional)</p>
+
         <input
           type="text"
           value={optionD}
