@@ -38,10 +38,19 @@ const CreateQuestionaire = ({
     // Get the current user ID for the API when submitting a rating. This also ensures a user is logged in, which is required for a rating
     const userId = localStorage.getItem("userId");
 
+    console.log("Questionnaire userId from localStorage:", userId);
+
     if (!userId) {
       setErrorMessage("You must be logged in to submit a rating.");
       return;
     }
+
+    if(question.trim() === "" || optionA.trim() === "" || optionB.trim() === "")
+    {
+      setErrorMessage("You didn't fill in all required components!");
+      return;
+    }
+
 
     // Payload object for each rating
     const payload = {
@@ -106,6 +115,7 @@ const CreateQuestionaire = ({
         ? `${professor.First_Name} ${professor.Last_Name}`
         : "Not Selected"}
       <h4>Step on up and make a questionaire!</h4>
+      <h4>We currently only support one question per questionaire. <br></br>If you want to add more than one question, please make each one in its own questionaire</h4>
       <label>
         <input
           type="text"
@@ -146,6 +156,7 @@ const CreateQuestionaire = ({
         />
         <br></br>
       </label>
+
       {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
       {/*Display submit button, and then update when clicked */}
