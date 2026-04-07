@@ -48,6 +48,12 @@ const CreateQuestionaire = ({
       // Add in the user ID, course ID, and professor information (dependent on a user)
       User: userId,
       Course: course._id,
+      Professor: professor ? professor._id : null,
+      Question: question,
+      Option_A: optionA,
+      Option_B: optionB,
+      Option_C: optionC ? optionC : null,
+      Option_D: optionD ? optionD : null
     };
 
     // Portion to submit the new rating to the backend
@@ -56,7 +62,7 @@ const CreateQuestionaire = ({
       setIsSubmitting(true);
 
       // Try to submit a POST request to the API
-      const response = await fetch("/api/ratings", {
+      const response = await fetch("/api/createQuestionnaire", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -144,7 +150,7 @@ const CreateQuestionaire = ({
       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
       {/*Display submit button, and then update when clicked */}
       <button type="button" onClick={handleSubmit} disabled={isSubmitting}>
-        {isSubmitting ? "Submitting..." : "Submit Rating"}
+        {isSubmitting ? "Submitting..." : "Submit Questionaire"}
       </button>
     </div>
   );
