@@ -97,9 +97,18 @@ const CreateQuestionaire = ({
       {/* Main headers */}
       <strong>Professor:</strong>{" "}
       {professor
-            ? `${professor.First_Name} ${professor.Last_Name}`
-            : "Not Selected"}
+        ? `${professor.First_Name} ${professor.Last_Name}`
+        : "Not Selected"}
       <h4>Step on up and make a questionaire!</h4>
+      <label>
+        <input
+          type="text"
+          value={question}
+          required={true}
+          placeholder="What's your question?"
+          onChange={(e) => setQuestion(e.target.value)}
+        />
+      </label>
       {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
       {/*Display submit button, and then update when clicked */}
