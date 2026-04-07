@@ -4,19 +4,20 @@
 import { useState } from "react";
 import type { Course, Professor } from "../types/index.ts";
 
-// Declare the interface for each rating: A course (required), a professor (not required), and onSuccess, resets it
+// Declare the interface for each Questionaie: A course (required), a professor (not required), and onSuccess, resets it
 interface CreateQuestionaireProps {
   course: Course;
   professor?: Professor | null;
   onSuccess: () => void;
 }
 
-// Main function to create a rating. Takes in a object of the create rating interface
+// Main function to create a Questionaire. Takes in a object of the create rating interface
 const CreateQuestionaire = ({
   course,
   professor = null,
   onSuccess,
 }: CreateQuestionaireProps) => {
+
   // Declare useState variables
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -27,33 +28,27 @@ const CreateQuestionaire = ({
   const [optionC, setOptionC] = useState("");
   const [optionD, setOptionD] = useState("");
 
-  // Function to handle submitting a rating
+  // Function to handle submitting a Questionaire
   const handleSubmit = async () => {
     // Initalize success messages to be empty
     setErrorMessage("");
     setSuccessMessage("");
 
-    // If the user wants to rate a professor, follow similar logic for the courses, but always ensure a specific professor is selected too
-
     // Get the current user ID for the API when submitting a rating. This also ensures a user is logged in, which is required for a rating
     const userId = localStorage.getItem("userId");
-
-    console.log("Questionnaire userId from localStorage:", userId);
 
     if (!userId) {
       setErrorMessage("You must be logged in to submit a rating.");
       return;
     }
 
-    if (
-      question.trim() === "" ||
-      optionA.trim() === "" ||
-      optionB.trim() === ""
-    ) {
+    //E Ensure all required components are entered (using trim for easier checking)
+    if (question.trim() === "" || optionA.trim() === "" || optionB.trim() === "") {
       setErrorMessage("You didn't fill in all required components!");
       return;
     }
 
+    // Check to see if the user entered 3 answer options out of order. If so, order it properly
     const optionalOptions = [optionC.trim(), optionD.trim()].filter(
       (option) => option !== "",
     );
@@ -61,9 +56,9 @@ const CreateQuestionaire = ({
     const normalizedOptionC = optionalOptions[0] || null;
     const normalizedOptionD = optionalOptions[1] || null;
 
-    // Payload object for each rating
+    // Payload object for each questionaire
     const payload = {
-      // Add in the user ID, course ID, and professor information (dependent on a user)
+      // Add in the user ID, course ID, questionaire materials and professor information (dependent on choice)
       User: userId,
       Course: course._id,
       Professor: professor ? professor._id : null,
@@ -74,7 +69,7 @@ const CreateQuestionaire = ({
       Option_D: normalizedOptionD,
     };
 
-    // Portion to submit the new rating to the backend
+    // Portion to submit the new questionaires to the backend
     try {
       // Set flag variable to true
       setIsSubmitting(true);
@@ -127,9 +122,10 @@ const CreateQuestionaire = ({
       <h4>
         We currently only support one question per questionaire. <br></br>If you
         want to add more than one question, please make each one in its own
-        questionaire
+        questionaire.
       </h4>
       <label>
+        {/*Question textbox*/}
         <p>What's your Question?</p>
         <input
           type="text"
@@ -139,6 +135,7 @@ const CreateQuestionaire = ({
           onChange={(e) => setQuestion(e.target.value)}
         />
         <br></br>
+        {/*Option A textbox*/}
         <p>Enter Your First Answer Choice (Required)</p>
         <input
           type="text"
@@ -148,6 +145,7 @@ const CreateQuestionaire = ({
           onChange={(e) => setOptionA(e.target.value)}
         />
         <br></br>
+        {/*Option B textbox*/}
         <p>Enter Your Second Answer Choice (Required)</p>
 
         <input
@@ -160,6 +158,7 @@ const CreateQuestionaire = ({
         <br></br>
         <p>Enter Your Third Answer Choice (Optional)</p>
 
+        {/*Option C textbox*/}
         <input
           type="text"
           value={optionC}
@@ -167,6 +166,8 @@ const CreateQuestionaire = ({
           onChange={(e) => setOptionC(e.target.value)}
         />
         <br></br>
+        {/*Option D textbox*/}
+     
         <p>Enter Your Fourth Answer Choice (Optional)</p>
 
         <input
@@ -177,6 +178,8 @@ const CreateQuestionaire = ({
         />
         <br></br>
       </label>
+      {/*Display approrpiate submit message*/}
+
       {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
       {/*Display submit button, and then update when clicked */}
