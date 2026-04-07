@@ -45,12 +45,21 @@ const CreateQuestionaire = ({
       return;
     }
 
-    if(question.trim() === "" || optionA.trim() === "" || optionB.trim() === "")
-    {
+    if (
+      question.trim() === "" ||
+      optionA.trim() === "" ||
+      optionB.trim() === ""
+    ) {
       setErrorMessage("You didn't fill in all required components!");
       return;
     }
 
+    const optionalOptions = [optionC.trim(), optionD.trim()].filter(
+      (option) => option !== "",
+    );
+
+    const normalizedOptionC = optionalOptions[0] || null;
+    const normalizedOptionD = optionalOptions[1] || null;
 
     // Payload object for each rating
     const payload = {
@@ -61,8 +70,8 @@ const CreateQuestionaire = ({
       Question: question,
       Option_A: optionA,
       Option_B: optionB,
-      Option_C: optionC ? optionC : null,
-      Option_D: optionD ? optionD : null
+      Option_C: normalizedOptionC,
+      Option_D: normalizedOptionD
     };
 
     // Portion to submit the new rating to the backend
@@ -115,7 +124,11 @@ const CreateQuestionaire = ({
         ? `${professor.First_Name} ${professor.Last_Name}`
         : "Not Selected"}
       <h4>Step on up and make a questionaire!</h4>
-      <h4>We currently only support one question per questionaire. <br></br>If you want to add more than one question, please make each one in its own questionaire</h4>
+      <h4>
+        We currently only support one question per questionaire. <br></br>If you
+        want to add more than one question, please make each one in its own
+        questionaire
+      </h4>
       <label>
         <input
           type="text"
@@ -156,7 +169,6 @@ const CreateQuestionaire = ({
         />
         <br></br>
       </label>
-
       {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
       {/*Display submit button, and then update when clicked */}
