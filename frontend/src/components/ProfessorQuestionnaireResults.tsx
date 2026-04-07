@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { Course, Professor, ProfessorQuestionnaireResults } from '../types/index.ts';
 import QuestionnaireEntryCard from './QuestionnaireEntryCard.tsx';
+
+const PAGE_SIZE = 3;
 
 // Decode the userId from the stored JWT without an external library
 function getUserIdFromToken(): string | null {
@@ -22,32 +24,32 @@ interface ProfessorQuestionnaireResultsProps {
 function ProfessorQuestionnaireResultsComponent({ course, professor }: ProfessorQuestionnaireResultsProps) {
   const [results, setResults] = useState<ProfessorQuestionnaireResults | null>(null);
   const [answeredIds, setAnsweredIds] = useState<Set<string>>(new Set());
+  const [currentPage, setCurrentPage] = useState(0);
 
   // Fetch the questionnaire results
-  useEffect(() => {
+  const fetchResults = useCallback(async () => {
     if (course === null || professor === null) {
       setResults(null);
       return;
     }
-
-    const fetchResults = async () => {
-      try {
-        const response = await fetch(`/api/fetchCAP/course/${course._id}/professor/${professor._id}`);
-        if (!response.ok) {
-          setResults(null);
-          return;
-        }
-
-        const data: ProfessorQuestionnaireResults = await response.json();
-        setResults(data);
-      } catch (error: any) {
-        console.error(error);
+    try {
+      const response = await fetch(`/api/fetchCAP/course/${course._id}/professor/${professor._id}`);
+      if (!response.ok) {
         setResults(null);
+        return;
       }
-    };
-
-    fetchResults();
+      const data: ProfessorQuestionnaireResults = await response.json();
+      setResults(data);
+    } catch (error: any) {
+      console.error(error);
+      setResults(null);
+    }
   }, [course, professor]);
+
+  useEffect(() => {
+    setCurrentPage(0);
+    fetchResults();
+  }, [fetchResults]);
 
   // Fetch the logged-in user's answered questionnaire IDs
   useEffect(() => {
@@ -72,19 +74,49 @@ function ProfessorQuestionnaireResultsComponent({ course, professor }: Professor
     return null;
   }
 
+  const questionnaires = results?.Questionnaires ?? [];
+  const totalPages = Math.ceil(questionnaires.length / PAGE_SIZE);
+  const pageSlice = questionnaires.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
+
   return (
     <div>
       <h4>Professor Questionnaire Results</h4>
-      {results && results.Questionnaires.length > 0 ? (
-        results.Questionnaires.map((entry, idx) => (
-          <QuestionnaireEntryCard
-            key={idx}
-            entry={entry}
-            courseId={course._id}
-            professorId={professor._id}
-            alreadyAnswered={answeredIds.has(entry._id)}
-          />
-        ))
+      {questionnaires.length > 0 ? (
+        <>
+          {pageSlice.map((entry, idx) => (
+            <QuestionnaireEntryCard
+              key={idx}
+              entry={entry}
+              courseId={course._id}
+              professorId={professor._id}
+              alreadyAnswered={answeredIds.has(entry._id)}
+              onAnswered={fetchResults}
+            />
+          ))}
+          {totalPages > 1 && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginTop: '0.75rem' }}>
+              <button
+                onClick={() => setCurrentPage(p => p - 1)}
+                disabled={currentPage === 0}
+                aria-label="Previous page"
+                style={{ fontSize: '1.2rem', padding: '0.25rem 0.75rem', cursor: currentPage === 0 ? 'not-allowed' : 'pointer' }}
+              >
+                &#8592;
+              </button>
+              <span style={{ fontSize: '0.9rem' }}>
+                {currentPage + 1} / {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage(p => p + 1)}
+                disabled={currentPage === totalPages - 1}
+                aria-label="Next page"
+                style={{ fontSize: '1.2rem', padding: '0.25rem 0.75rem', cursor: currentPage === totalPages - 1 ? 'not-allowed' : 'pointer' }}
+              >
+                &#8594;
+              </button>
+            </div>
+          )}
+        </>
       ) : (
         <p>No questionnaire results yet</p>
       )}
