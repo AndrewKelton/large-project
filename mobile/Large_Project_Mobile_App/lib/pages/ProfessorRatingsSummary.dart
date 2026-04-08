@@ -151,8 +151,8 @@ class _ProfessorRatingsSummaryState extends State<ProfessorRatingsSummary> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16.0,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[700],
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ),
