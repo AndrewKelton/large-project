@@ -151,6 +151,24 @@ class _ProfessorRatingsSummaryState extends State<ProfessorRatingsSummary> {
               ),
             ],
           ),
+
+          // Container for tags
+          Container(
+            width: double.infinity,
+            margin: EdgeInsets.symmetric(vertical: 6.0),
+            padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(7.5),
+              border: Border.all(color: Colors.grey.shade300, width: 1.5),
+            ),
+            child: Column(
+              children: [
+                Text("Tags", textAlign: TextAlign.center, style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
+
           // rows for professor ratings (questions and answer summary)
           _RatingCard('Overall, how would you rate this professor?', q1Rating),
           _RatingCard('How clearly did the professor explain the material?', q2Rating),

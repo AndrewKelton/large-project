@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 void main() => runApp(ChangeNotifierProvider(
   create: (context) => GlobalData(),
   child: MaterialApp(
-    initialRoute: '/create_rating',
+    initialRoute: '/home',
     title: 'KnightRate',
     routes: {
       '/': (context) => Loading(),
@@ -26,4 +26,3 @@ void main() => runApp(ChangeNotifierProvider(
 ));
 
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
-
