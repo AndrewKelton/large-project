@@ -18,6 +18,31 @@ class ProfessorRatingsSummary extends StatefulWidget {
   State<ProfessorRatingsSummary> createState() => _ProfessorRatingsSummaryState();
 }
 
+Widget _buildRatingTile(double ratingNum, String badTag, String goodTag) {
+  if (2 < ratingNum && ratingNum < 4) return SizedBox.shrink();
+
+  final bool isBad = ratingNum <= 2;
+
+  return Container(
+    padding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 14.0),
+    decoration: BoxDecoration(
+      color: isBad ? Colors.red.shade50 : Colors.green.shade50,
+      borderRadius: BorderRadius.circular(50.0),
+      border: Border.all(
+        color: isBad ? Colors.red.shade300 : Colors.green.shade300,
+        width: 1.5,
+      ),
+    ),
+    child: Text(
+      isBad ? badTag : goodTag,
+      style: TextStyle(
+        color: isBad ? Colors.red.shade700 : Colors.green.shade700,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+  );
+}
+
 // this widget holds the question, numeric rating value, and shaded stars for q1->q5
 Widget _RatingCard(String question, double rating) {
   double ParsedRating = rating ?? 0;
@@ -165,6 +190,11 @@ class _ProfessorRatingsSummaryState extends State<ProfessorRatingsSummary> {
             child: Column(
               children: [
                 Text("Tags", textAlign: TextAlign.center, style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),
+                _buildRatingTile(q1Rating, "Poorly Rated", "Highly Rated"),
+                _buildRatingTile(q2Rating, "Unclear Explanations", "Good Explainer"),
+                _buildRatingTile(q3Rating, "Hard to Reach", "Very Accessible"),
+                _buildRatingTile(q4Rating, "Unfair Grader", "Fair Grader"),
+                _buildRatingTile(q5Rating, "Not Recommended", "Recommended"),
               ],
             ),
           ),
