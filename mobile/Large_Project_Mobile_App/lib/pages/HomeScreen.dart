@@ -4,9 +4,9 @@ import 'package:group7_mobile_app/main.dart';
 import 'package:group7_mobile_app/pages/HomePageButton.dart';
 import 'package:group7_mobile_app/pages/CourseRatingsSummary.dart';
 import 'package:group7_mobile_app/pages/ProfessorRatingsSummary.dart';
-import 'package:group7_mobile_app/pages/CourseQuestionnaireResults.dart';
 import 'package:group7_mobile_app/utils/getAPI.dart';
 import 'package:group7_mobile_app/utils/GlobalData.dart';
+import 'package:provider/provider.dart';
 
 
 // widget for the home screen
@@ -24,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final data = context.watch<GlobalData>(); // rebuild widget if global data changes
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -118,7 +119,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
   @override
   void initState() {
     super.initState();
-    print('testing home screen');
+    print('opened home screen');
     loadDropdownLists();
   }
 
@@ -203,6 +204,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
                     width: 250,
                     child: DropdownMenu(
                       width: double.infinity,
+                      initialSelection: "",
                       inputDecorationTheme: InputDecorationTheme(
                         filled: true,
                         fillColor: Colors.white,
@@ -254,6 +256,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
                     width: 250,
                     child: DropdownMenu(
                       width: double.infinity,
+                      initialSelection: "",
                       inputDecorationTheme: InputDecorationTheme(
                         filled: true,
                         fillColor: Colors.white,
@@ -289,7 +292,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
                     SizedBox(
                       width: 300,
                       child: CreateRatingButton(
-                        onPressed: () async {
+                        onPressed: () {
                           newMessageText = "";
                           changeText();
                           print('Create Rating Button:');
