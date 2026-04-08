@@ -65,7 +65,25 @@ function CourseQuestionnaireResultsComponent({ course }: CourseQuestionnaireResu
         return;
       }
       const data = await response.json();
-      setSearchResults(data.results ?? []);
+      // search api returns raw mongoose docs, need to normalize
+      // { Options: {A,B,C,D}, Counts: {A,B,C,D} }
+      const normalized = (data.results ?? []).map((q: any) => ({
+        _id: q._id,
+        Question: q.Question,
+        Options: {
+          A: q.Option_A ?? null,
+          B: q.Option_B ?? null,
+          C: q.Option_C ?? null,
+          D: q.Option_D ?? null,
+        },
+        Counts: {
+          A: q.Option_A_Count ?? null,
+          B: q.Option_B_Count ?? null,
+          C: q.Option_C_Count ?? null,
+          D: q.Option_D_Count ?? null,
+        },
+      }));
+      setSearchResults(normalized);
     } catch (error: any) {
       console.error(error);
       setSearchResults([]);
