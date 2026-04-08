@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:group7_mobile_app/utils/getAPI.dart';
 import 'package:group7_mobile_app/utils/GlobalData.dart';
 import 'dart:convert';
+import 'package:provider/provider.dart';
 
 class CourseQuestionnaireResults extends StatefulWidget {
   final String courseId;
@@ -67,7 +68,7 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
 
   // function to get course-specific questionnaires and results from questionnaire
   void getAnsweredCourseQuestionnaires() async {
-    String userId = GlobalData.userId;
+    String userId = context.watch<GlobalData>().userId;
     String url = "http://leandrovivares.com/api/user/${userId}/answered-questionnaires";
 
     try {
@@ -405,7 +406,7 @@ class _AnswerCourseQuestionnaireState extends State<AnswerCourseQuestionnaire> {
   void submitAnswerCourseQuestionnaire(String? option) async {
 
     String url = "http://leandrovivares.com/api/respondToCO/${widget.questionnaireId}/respond";
-    String payload = '{"userId":"${GlobalData.userId}", "response":"${_selectedValue}"}';
+    String payload = '{"userId":"${context.read<GlobalData>().userId}", "response":"${_selectedValue}"}';
 
     print(url);
 

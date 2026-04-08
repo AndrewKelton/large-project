@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:group7_mobile_app/main.dart';
 import 'package:group7_mobile_app/utils/getAPI.dart';
 import 'package:group7_mobile_app/utils/GlobalData.dart';
+import 'package:provider/provider.dart';
 
 
 // widget for the registration screen
@@ -21,6 +22,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final data = context.watch<GlobalData>(); // rebuild widget if global data changes
     return Scaffold(
       appBar: AppBar(
         title: Text(
