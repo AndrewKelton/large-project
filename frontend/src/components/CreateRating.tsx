@@ -192,8 +192,7 @@ const CreateRating = ({course, professor = null, onSuccess,}: CreateRatingProps)
       <div>
               {/* Main headers */}
          <h3>
-          Please answer your responses on a scale of 1-5, with 1 being the
-          lowest rating, and 5 being the highest rating
+          Please answer the following questions from the dropdown menu, with 1 being the lowest rating, and 5 being the highest rating
         </h3>
         <h4>Course Rating Questions</h4>
 
