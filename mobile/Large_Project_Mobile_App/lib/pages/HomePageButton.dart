@@ -49,8 +49,7 @@ class CreateRatingButton extends HomePageButton {
     String label = 'Rate ' + course;
 
     if (professor != '') {
-      List<String> parts = professor.split("-");
-      label += ' with ' + parts[1].trim() + ' ' + parts[0].trim();
+      label += ' with ' + professor.trim();
     }
     return label;
   }
@@ -72,8 +71,7 @@ class CreateQuestionnaireButton extends HomePageButton {
     String label = 'Create Questionnaire for ' + course;
 
     if (professor != '') {
-      List<String> parts = professor.split("-");
-      label += ' with ' + parts[1].trim() + ' ' + parts[0].trim();
+      label += ' with ' + professor.trim();
     }
     return label;
   }

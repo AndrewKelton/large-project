@@ -198,7 +198,6 @@ class _CreateRatingPageState extends State<CreateRatingPage> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    final data = context.watch<GlobalData>(); // widget rebuilds if changes are made to global data
     return Align(
       alignment: Alignment.topCenter,
       child: Container(
