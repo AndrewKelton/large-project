@@ -182,7 +182,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
                   ),
                 ],
               ),
-              // row for coursedropdown menu
+              // row for course dropdown menu
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget> [
