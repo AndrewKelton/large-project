@@ -55,6 +55,12 @@ app.use('/api/respondToCO', respondToCO);
 const userRouter = require('./api/user.js');
 app.use('/api/user', userRouter);
 
+const searchCO = require('./api/searchCO.js');
+app.use('/api/searchCO', searchCO);
+
+const searchCAP = require('./api/searchCAP.js');
+app.use('/api/searchCAP', searchCAP);
+
 // connect to database via mongoose
 const url = process.env.MONGO_URI;
 mongoose.connect(url)
