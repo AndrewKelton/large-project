@@ -68,7 +68,7 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
 
   // function to get course-specific questionnaires and results from questionnaire
   void getAnsweredCourseQuestionnaires() async {
-    String userId = context.watch<GlobalData>().userId;
+    String userId = context.read<GlobalData>().userId;
     String url = "http://leandrovivares.com/api/user/${userId}/answered-questionnaires";
 
     try {
