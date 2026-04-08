@@ -455,7 +455,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
                         borderRadius: BorderRadius.circular(7.5),
                         border: Border.all(color: Color(0xFF2575FF), width: 5),
                       ),
-                      child: Text("${selectedProfessorName}", textAlign: TextAlign.center, style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.white)),
+                      child: Text("${selectedProfessorName}", textAlign: TextAlign.center, style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis),
                     ),
                   ],
                 ),
