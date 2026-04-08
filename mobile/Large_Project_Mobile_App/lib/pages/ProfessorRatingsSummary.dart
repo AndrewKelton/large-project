@@ -24,20 +24,20 @@ Widget _buildRatingTile(double ratingNum, String badTag, String goodTag) {
   final bool isBad = ratingNum <= 2;
 
   return Container(
-    padding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 14.0),
+    padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
     decoration: BoxDecoration(
-      color: isBad ? Colors.red.shade50 : Colors.green.shade50,
-      borderRadius: BorderRadius.circular(50.0),
+      color: isBad ? Colors.red.shade300 : Colors.green.shade300,
+      borderRadius: BorderRadius.circular(25.0),
       border: Border.all(
-        color: isBad ? Colors.red.shade300 : Colors.green.shade300,
-        width: 1.5,
+        color: isBad ? Colors.red.shade200 : Colors.green.shade200,
+        width: 5.0,
       ),
     ),
     child: Text(
       isBad ? badTag : goodTag,
       style: TextStyle(
-        color: isBad ? Colors.red.shade700 : Colors.green.shade700,
-        fontWeight: FontWeight.w600,
+        color: Colors.black,
+        fontWeight: FontWeight.bold,
       ),
     ),
   );
@@ -177,19 +177,21 @@ class _ProfessorRatingsSummaryState extends State<ProfessorRatingsSummary> {
             ],
           ),
 
-          // Container for tags
+          // Container for professor tags
           Container(
             width: double.infinity,
-            margin: EdgeInsets.symmetric(vertical: 6.0),
-            padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
+            margin: EdgeInsets.symmetric(vertical: 5.0),
+            padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(7.5),
-              border: Border.all(color: Colors.grey.shade300, width: 1.5),
             ),
-            child: Column(
+            child: Wrap(
+              spacing: 5.0, // horizontal gap
+              runSpacing: 5.0, // vertical gap
+              alignment: WrapAlignment.center,
               children: [
-                Text("Tags", textAlign: TextAlign.center, style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),
+                // rating pills for q[1-5]Ratings
                 _buildRatingTile(q1Rating, "Poorly Rated", "Highly Rated"),
                 _buildRatingTile(q2Rating, "Unclear Explanations", "Good Explainer"),
                 _buildRatingTile(q3Rating, "Hard to Reach", "Very Accessible"),
