@@ -61,6 +61,9 @@ app.use('/api/searchCO', searchCO);
 const searchCAP = require('./api/searchCAP.js');
 app.use('/api/searchCAP', searchCAP);
 
+const auth2faResetRouter = require('./api/twoFactorAuth.js');
+app.use('/api/auth', auth2faResetRouter);
+
 // connect to database via mongoose
 const url = process.env.MONGO_URI;
 mongoose.connect(url)
