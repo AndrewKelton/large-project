@@ -37,6 +37,14 @@ const UserSchema = new Schema({
         Professor: { type: mongoose.Schema.Types.ObjectId, ref: 'Professor' }
     }],
 
+    // 2-Factor Authentication Data
+    TwoFA_Code: { type: String },
+    TwoFA_Expires: { type: Date },
+
+    // Password Reset Token Data
+    Reset_Token: { type: String },
+    Reset_Expires: { type: Date },
+
     // User metadata
     Date_Created: {
         type: Date,
