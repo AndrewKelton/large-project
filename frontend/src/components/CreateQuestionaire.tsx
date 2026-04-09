@@ -17,7 +17,6 @@ const CreateQuestionaire = ({
   professor = null,
   onSuccess,
 }: CreateQuestionaireProps) => {
-
   // Declare useState variables
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -42,7 +41,7 @@ const CreateQuestionaire = ({
       return;
     }
 
-    //E Ensure all required components are entered (using trim for easier checking)
+    //Ensure all required components are entered (using trim for easier checking)
     if (question.trim() === "" || optionA.trim() === "" || optionB.trim() === "") {
       setErrorMessage("You didn't fill in all required components!");
       return;
@@ -135,6 +134,8 @@ const CreateQuestionaire = ({
           onChange={(e) => setQuestion(e.target.value)}
         />
         <br></br>
+      </label>
+      <label>
         {/*Option A textbox*/}
         <p>Enter Your First Answer Choice (Required)</p>
         <input
@@ -145,6 +146,8 @@ const CreateQuestionaire = ({
           onChange={(e) => setOptionA(e.target.value)}
         />
         <br></br>
+      </label>
+      <label>
         {/*Option B textbox*/}
         <p>Enter Your Second Answer Choice (Required)</p>
 
@@ -156,6 +159,8 @@ const CreateQuestionaire = ({
           onChange={(e) => setOptionB(e.target.value)}
         />
         <br></br>
+      </label>
+      <label>
         <p>Enter Your Third Answer Choice (Optional)</p>
 
         {/*Option C textbox*/}
@@ -166,8 +171,10 @@ const CreateQuestionaire = ({
           onChange={(e) => setOptionC(e.target.value)}
         />
         <br></br>
+      </label>
+      <label>
         {/*Option D textbox*/}
-     
+
         <p>Enter Your Fourth Answer Choice (Optional)</p>
 
         <input
@@ -179,7 +186,6 @@ const CreateQuestionaire = ({
         <br></br>
       </label>
       {/*Display approrpiate submit message*/}
-
       {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
       {/*Display submit button, and then update when clicked */}
