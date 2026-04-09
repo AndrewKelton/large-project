@@ -3,6 +3,7 @@ import 'package:group7_mobile_app/utils/getAPI.dart';
 import 'package:group7_mobile_app/utils/GlobalData.dart';
 import 'dart:convert';
 import 'package:provider/provider.dart';
+import 'dart:math';
 
 class CourseQuestionnaireResults extends StatefulWidget {
   final String courseId;
@@ -17,6 +18,9 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
 
   List<Map<String, dynamic>> courseQuestionnaireObjects = [];
   List<String> answeredCourseQuestionnairesList = [];
+  // used for pagination
+  static const int pageSize = 3;
+  int currentPage = 0;
 
   @override
   void initState() {
@@ -30,6 +34,7 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
     super.didUpdateWidget(oldWidget);
     if (oldWidget.courseId != widget.courseId) {
       setState(() {
+        currentPage = 0;
         courseQuestionnaireObjects = [];
         answeredCourseQuestionnairesList = [];
       });
@@ -39,7 +44,7 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
   }
 
   // function to get the course ratings from database
-  void loadCourseQuestionnaires() async {
+  void loadCourseQuestionnaires({int? restorePage}) async {
     String courseId = widget.courseId.trim();
     String url = "http://leandrovivares.com/api/fetchCO/course/${courseId}";
 
@@ -49,6 +54,8 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
       List<dynamic> questionnaires = decoded["Questionnaires"];
 
       setState(() {
+        // only reset to 0 if no restore page is passed as an argument
+        currentPage = restorePage ?? 0;
         courseQuestionnaireObjects = questionnaires.map((q) {
           return {
             "questionnaire_id": q["_id"],
@@ -87,6 +94,11 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
 
   @override
   Widget build(BuildContext context) {
+    final totalPages = (courseQuestionnaireObjects.length / pageSize).ceil();
+    final pageSlice = courseQuestionnaireObjects.sublist(
+      currentPage * pageSize,
+      min((currentPage + 1) * pageSize, courseQuestionnaireObjects.length),
+    );
     return Column(
       children: [
         // title bar
@@ -108,9 +120,12 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
           ),
           SizedBox(height: 5.0),
         ],
+
         // questionnaire cards
-        ...courseQuestionnaireObjects.asMap().entries.map((entry) {
-          int index = entry.key;
+        ...pageSlice.asMap().entries.map((entry) {
+          // localIndex refers to pageSlice, globalIndex refers to courseQuestionnaireObjects
+          int localIndex = entry.key;
+          int globalIndex = currentPage * pageSize + localIndex;
 
           // information for current questionnaire
           Map<String, dynamic> q = entry.value;
@@ -158,25 +173,26 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
                 ),
                 SizedBox(height: 8.0),
                 // ternary operator - if true, then display form to allow user to answer course-specific questionnaire; otherwise just show the course-specific questionnaire results summary
-                courseQuestionnaireObjects[index]["_showQuestions"] as bool
+                courseQuestionnaireObjects[globalIndex]["_showQuestions"] as bool
                   ? AnswerCourseQuestionnaire(
                       questionnaireId: questionnaireId,
                       options: options,
                       onViewResults: () {
-                        final int curIndex = index;
+                        final int curIndex = globalIndex;
                         setState(() {
                           courseQuestionnaireObjects[curIndex]["_showQuestions"] = !courseQuestionnaireObjects[curIndex]["_showQuestions"];
                           courseQuestionnaireObjects[curIndex]["answerMessage"] = '';
                         });
                       },
                       onSubmitAnswer: (String? message) {
-                        final int curIndex = index;
+                        final int curIndex = globalIndex;
+                        final int pageToRestore = currentPage;
                         setState(() {
                           print(message);
                           courseQuestionnaireObjects[curIndex]["_showQuestions"] = !courseQuestionnaireObjects[curIndex]["_showQuestions"];
                           if (message == 'Response recorded successfully') {
                             courseQuestionnaireObjects[curIndex]["answerMessage"] = '';
-                            loadCourseQuestionnaires();
+                            loadCourseQuestionnaires(restorePage: pageToRestore);
                             getAnsweredCourseQuestionnaires();
                           }
                           else {
@@ -188,7 +204,7 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
                   : QuestionnaireResults(options: options, counts: counts, totalVotes: totalVotes, answerMessage: answerMessage),
                 // button for answer questions (only displayed when a question is marked 'unanswered')
                 if (!(answeredCourseQuestionnairesList.any((item) => item == q['questionnaire_id']))) ... [ // enter if user can answer this question
-                  if (!(courseQuestionnaireObjects[index]["_showQuestions"] as bool)) ... [ // enter if the user clicked button to answer questionnaire
+                  if (!(courseQuestionnaireObjects[globalIndex]["_showQuestions"] as bool)) ... [ // enter if the user clicked button to answer questionnaire
                     Center(
                       child: SizedBox(
                         width: 200.0,
@@ -196,7 +212,7 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
                           onPressed: () {
                             setState(() {
                               print('Clicked \'Answer this Question\' Button');
-                              courseQuestionnaireObjects[index]["_showQuestions"] = !courseQuestionnaireObjects[index]["_showQuestions"];
+                              courseQuestionnaireObjects[globalIndex]["_showQuestions"] = !courseQuestionnaireObjects[globalIndex]["_showQuestions"];
                             });
                           },
                           style: ElevatedButton.styleFrom(
@@ -221,6 +237,31 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
             ),
           );
         }).toList(),
+        // arrow buttons for pagination
+        if (totalPages > 1) ...[
+          SizedBox(height: 8.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: currentPage > 0
+                    ? () => setState(() => currentPage--)
+                    : null,
+              ),
+              Text(
+                '${currentPage + 1} / $totalPages',
+                style: TextStyle(fontSize: 14.0),
+              ),
+              IconButton(
+                icon: Icon(Icons.arrow_forward),
+                onPressed: currentPage < totalPages - 1
+                    ? () => setState(() => currentPage++)
+                    : null,
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }

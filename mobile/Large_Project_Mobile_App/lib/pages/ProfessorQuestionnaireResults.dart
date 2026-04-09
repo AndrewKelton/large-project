@@ -3,6 +3,7 @@ import 'package:group7_mobile_app/utils/getAPI.dart';
 import 'package:group7_mobile_app/utils/GlobalData.dart';
 import 'dart:convert';
 import 'package:provider/provider.dart';
+import 'dart:math';
 
 class ProfessorQuestionnaireResults extends StatefulWidget {
   final String courseId;
@@ -20,6 +21,9 @@ class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireRe
   List<Map<String, dynamic>> professorQuestionnaireObjects = [];
   // list of questionnaires answer by user
   List<String> answeredProfessorQuestionnairesList = [];
+  // used for pagination
+  static const int pageSize = 3;
+  int currentPage = 0;
 
   @override
   void initState() {
@@ -42,7 +46,7 @@ class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireRe
   }
 
   // function to get the professor ratings from database
-  void loadProfessorQuestionnaires() async {
+  void loadProfessorQuestionnaires({int? restorePage}) async {
     String courseId = widget.courseId.trim();
     String professorId = widget.professorId.trim();
     String url = "http://leandrovivares.com/api/fetchCAP/course/${courseId}/professor/${professorId}";
@@ -53,6 +57,8 @@ class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireRe
       List<dynamic> questionnaires = decoded["Questionnaires"];
 
       setState(() {
+        // only reset to 0 if no restore page is passed as an argument
+        currentPage = restorePage ?? 0;
         professorQuestionnaireObjects = questionnaires.map((q) {
           return {
             "questionnaire_id": q["_id"],
@@ -81,6 +87,7 @@ class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireRe
       List<dynamic> answered = decoded["answeredQuestionnaires"];
 
       setState(() {
+        currentPage = 0;
         answeredProfessorQuestionnairesList = List<String>.from(answered.map((item) => item.toString()));;
       });
 
@@ -91,6 +98,11 @@ class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireRe
 
   @override
   Widget build(BuildContext context) {
+    final totalPages = (professorQuestionnaireObjects.length / pageSize).ceil();
+    final pageSlice = professorQuestionnaireObjects.sublist(
+      currentPage * pageSize,
+      min((currentPage + 1) * pageSize, professorQuestionnaireObjects.length),
+    );
     return Column(
       children: [
         // title bar
@@ -113,8 +125,10 @@ class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireRe
           SizedBox(height: 5.0),
         ],
         // questionnaire cards
-        ...professorQuestionnaireObjects.asMap().entries.map((entry) {
-          int index = entry.key;
+        ...pageSlice.asMap().entries.map((entry) {
+          // localIndex refers to pageSlice, globalIndex refers to professorQuestionnaireObjects
+          int localIndex = entry.key;
+          int globalIndex = currentPage * pageSize + localIndex;
 
           // information for current questionnaire
           Map<String, dynamic> q = entry.value;
@@ -162,25 +176,26 @@ class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireRe
                 ),
                 SizedBox(height: 8.0),
                 // ternary operator - if true, then display form to allow user to answer course+professor questionnaire; otherwise just show the course+professor questionnaire results summary
-                professorQuestionnaireObjects[index]["_showQuestions"] as bool
+                professorQuestionnaireObjects[globalIndex]["_showQuestions"] as bool
                     ? AnswerProfessorQuestionnaire(
                   questionnaireId: questionnaireId,
                   options: options,
                   onViewResults: () {
-                    final int curIndex = index;
+                    final int curIndex = globalIndex;
                     setState(() {
                       professorQuestionnaireObjects[curIndex]["_showQuestions"] = !professorQuestionnaireObjects[curIndex]["_showQuestions"];
                       professorQuestionnaireObjects[curIndex]["answerMessage"] = '';
                     });
                   },
                   onSubmitAnswer: (String? message) {
-                    final int curIndex = index;
+                    final int curIndex = globalIndex;
+                    final int pageToRestore = currentPage;
                     setState(() {
                       print(message);
                       professorQuestionnaireObjects[curIndex]["_showQuestions"] = !professorQuestionnaireObjects[curIndex]["_showQuestions"];
                       if (message == 'Response recorded successfully') {
                         professorQuestionnaireObjects[curIndex]["answerMessage"] = '';
-                        loadProfessorQuestionnaires();
+                        loadProfessorQuestionnaires(restorePage: pageToRestore);
                         getAnsweredProfessorQuestionnaires();
                       }
                       else {
@@ -192,7 +207,7 @@ class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireRe
                     : QuestionnaireResults(options: options, counts: counts, totalVotes: totalVotes, answerMessage: answerMessage),
                 // button for answer questions (only displayed when a question is marked 'unanswered')
                 if (!(answeredProfessorQuestionnairesList.any((item) => item == q['questionnaire_id']))) ... [ // enter if user can answer this question
-                  if (!(professorQuestionnaireObjects[index]["_showQuestions"] as bool)) ... [ // enter if the user clicked button to answer questionnaire
+                  if (!(professorQuestionnaireObjects[globalIndex]["_showQuestions"] as bool)) ... [ // enter if the user clicked button to answer questionnaire
                     Center(
                       child: SizedBox(
                         width: 200.0,
@@ -200,7 +215,7 @@ class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireRe
                           onPressed: () {
                             setState(() {
                               print('Clicked \'Answer this Question\' Button');
-                              professorQuestionnaireObjects[index]["_showQuestions"] = !professorQuestionnaireObjects[index]["_showQuestions"];
+                              professorQuestionnaireObjects[globalIndex]["_showQuestions"] = !professorQuestionnaireObjects[globalIndex]["_showQuestions"];
                             });
                           },
                           style: ElevatedButton.styleFrom(
@@ -225,6 +240,31 @@ class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireRe
             ),
           );
         }).toList(),
+        // arrow buttons for pagination
+        if (totalPages > 1) ...[
+          SizedBox(height: 8.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: currentPage > 0
+                    ? () => setState(() => currentPage--)
+                    : null,
+              ),
+              Text(
+                '${currentPage + 1} / $totalPages',
+                style: TextStyle(fontSize: 14.0),
+              ),
+              IconButton(
+                icon: Icon(Icons.arrow_forward),
+                onPressed: currentPage < totalPages - 1
+                    ? () => setState(() => currentPage++)
+                    : null,
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }
