@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:group7_mobile_app/utils/getAPI.dart';
 import 'dart:convert';
+import 'package:group7_mobile_app/pages/ProfessorQuestionnaireResults.dart';
 
 
 // widget for building the professor rating summary section
@@ -207,8 +208,44 @@ class _ProfessorRatingsSummaryState extends State<ProfessorRatingsSummary> {
           _RatingCard('How available was the professor outside of class?', q3Rating),
           _RatingCard('How fairly did the professor grade assignments?', q4Rating),
           _RatingCard('Would you recommend this professor to others?', q5Rating),
-      ], // end of ELSE statement for selected course summary
+
+          SizedBox(height: 5.0),
+        ], // end of ELSE statement for selected course summary
+        // course+professor questionnaire results
+        ProfessorQuestionnaireResults(courseId: widget.courseId, professorId: widget.professorId),
       ], // end of list of children for column
     );
   }
+}
+
+// this widget holds the question, numeric rating value, and shaded stars for q1->q5
+Widget _RatingCard(String question, double rating) {
+  double ParsedRating = rating ?? 0;
+
+  return Container(
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(vertical: 6.0),
+      padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(7.5),
+        border: Border.all(color: Colors.grey.shade300, width: 1.5),
+      ),
+      child: Column(
+          children: [
+            Text(question, textAlign: TextAlign.center, style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),
+            SizedBox(height: 4.0),
+            Text('$rating / 5', textAlign: TextAlign.center, style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold, )),
+            SizedBox(height: 4.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(5, (index) {
+                if (index < ParsedRating.floor()) return Icon(Icons.star, color: Colors.black);
+                if (index < ParsedRating) return Icon(Icons.star_half, color: Colors.black);
+                return Icon(Icons.star_border, color: Colors.black);
+              }),
+            )
+          ]
+      )
+  );
 }
