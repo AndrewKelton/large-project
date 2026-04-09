@@ -449,14 +449,13 @@ class _HomePageState extends State<HomePage> with RouteAware {
                   children: <Widget> [
                     // Holds professor name title bar
                     Container(
-                      width: 175,
-                      padding: EdgeInsets.symmetric(vertical: 5.0),
+                      padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                       decoration: BoxDecoration(
                         color: Color(0xFF2575FF),
                         borderRadius: BorderRadius.circular(7.5),
                         border: Border.all(color: Color(0xFF2575FF), width: 5),
                       ),
-                      child: Text("${selectedProfessorName}", textAlign: TextAlign.center, style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.white)),
+                      child: Text("${selectedProfessorName}", textAlign: TextAlign.center, style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis),
                     ),
                   ],
                 ),

@@ -26,4 +26,3 @@ void main() => runApp(ChangeNotifierProvider(
 ));
 
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
-

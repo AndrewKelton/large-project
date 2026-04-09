@@ -19,6 +19,63 @@ class ProfessorRatingsSummary extends StatefulWidget {
   State<ProfessorRatingsSummary> createState() => _ProfessorRatingsSummaryState();
 }
 
+Widget _buildRatingTile(double ratingNum, String badTag, String goodTag) {
+  if (2 < ratingNum && ratingNum < 4) return SizedBox.shrink();
+
+  final bool isBad = ratingNum <= 2;
+
+  return Container(
+    padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+    decoration: BoxDecoration(
+      color: isBad ? Colors.red.shade300 : Colors.green.shade300,
+      borderRadius: BorderRadius.circular(25.0),
+      border: Border.all(
+        color: isBad ? Colors.red.shade200 : Colors.green.shade200,
+        width: 5.0,
+      ),
+    ),
+    child: Text(
+      isBad ? badTag : goodTag,
+      style: TextStyle(
+        color: Colors.black,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
+}
+
+// this widget holds the question, numeric rating value, and shaded stars for q1->q5
+Widget _RatingCard(String question, double rating) {
+  double ParsedRating = rating ?? 0;
+
+  return Container(
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(vertical: 6.0),
+      padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(7.5),
+        border: Border.all(color: Colors.grey.shade300, width: 1.5),
+      ),
+      child: Column(
+          children: [
+            Text(question, textAlign: TextAlign.center, style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),
+            SizedBox(height: 4.0),
+            Text('$rating / 5', textAlign: TextAlign.center, style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold, )),
+            SizedBox(height: 4.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(5, (index) {
+                if (index < ParsedRating.floor()) return Icon(Icons.star, color: Colors.black);
+                if (index < ParsedRating) return Icon(Icons.star_half, color: Colors.black);
+                return Icon(Icons.star_border, color: Colors.black);
+              }),
+            )
+          ]
+      )
+  );
+}
+
 // custom class for displaying professor ratings summary
 class _ProfessorRatingsSummaryState extends State<ProfessorRatingsSummary> {
 
@@ -95,8 +152,8 @@ class _ProfessorRatingsSummaryState extends State<ProfessorRatingsSummary> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16.0,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[700],
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -120,6 +177,31 @@ class _ProfessorRatingsSummaryState extends State<ProfessorRatingsSummary> {
               ),
             ],
           ),
+
+          // Container for professor tags
+          Container(
+            width: double.infinity,
+            margin: EdgeInsets.symmetric(vertical: 5.0),
+            padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(7.5),
+            ),
+            child: Wrap(
+              spacing: 5.0, // horizontal gap
+              runSpacing: 5.0, // vertical gap
+              alignment: WrapAlignment.center,
+              children: [
+                // rating pills for q[1-5]Ratings
+                _buildRatingTile(q1Rating, "Poorly Rated", "Highly Rated"),
+                _buildRatingTile(q2Rating, "Unclear Explanations", "Good Explainer"),
+                _buildRatingTile(q3Rating, "Hard to Reach", "Very Accessible"),
+                _buildRatingTile(q4Rating, "Unfair Grader", "Fair Grader"),
+                _buildRatingTile(q5Rating, "Not Recommended", "Recommended"),
+              ],
+            ),
+          ),
+
           // rows for professor ratings (questions and answer summary)
           _RatingCard('Overall, how would you rate this professor?', q1Rating),
           _RatingCard('How clearly did the professor explain the material?', q2Rating),
