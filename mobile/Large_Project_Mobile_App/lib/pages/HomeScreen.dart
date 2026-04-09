@@ -485,7 +485,6 @@ class _HomePageState extends State<HomePage> with RouteAware {
                 ),
               ],  // end of ELSE statement for selected professor summary
               // some space at the bottom of the screen
-
               SizedBox(height: 80.0),
             ], // end of children array for column
           ),
