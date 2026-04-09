@@ -58,7 +58,7 @@ const CreateRating = ({course, professor = null, onSuccess,}: CreateRatingProps)
   // Function to get all of the professors in the database, only runs if the user has the professor option selected
   useEffect(() => {
     const fetchProfessors = async () => {
-      
+
       // Try getting the professors, and if so, set the returned profesors appropriately. If not, error out
       try {
         const response = await fetch(`/api/professors`);
@@ -157,7 +157,7 @@ const CreateRating = ({course, professor = null, onSuccess,}: CreateRatingProps)
         return;
       }
 
-      // If the POST succeded, notify the user 
+      // If the POST succeded, notify the user
       setSuccessMessage(
         "Rating submitted successfully! Redirecting to home page...",
       );
@@ -176,7 +176,7 @@ const CreateRating = ({course, professor = null, onSuccess,}: CreateRatingProps)
     }
   };
 
-  
+
   return (
     <div>
       {/* Display the professor information - Selected or not selected*/}
@@ -192,8 +192,7 @@ const CreateRating = ({course, professor = null, onSuccess,}: CreateRatingProps)
       <div>
               {/* Main headers */}
          <h3>
-          Please answer your responses on a scale of 1-5, with 1 being the
-          lowest rating, and 5 being the highest rating
+          Please answer the following questions from the dropdown menu, with 1 being the lowest rating, and 5 being the highest rating
         </h3>
         <h4>Course Rating Questions</h4>
 
@@ -315,7 +314,7 @@ const CreateRating = ({course, professor = null, onSuccess,}: CreateRatingProps)
 
       {/* Display error or success message*/}
 
-      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+      {errorMessage && <p style={{ color: '#c0392b', fontSize: '0.85rem', marginTop: '0.5rem' }}>⚠ {errorMessage}</p>}
       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
 
       {/*Display submit button, and then update when clicked */}

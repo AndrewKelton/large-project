@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:group7_mobile_app/main.dart';
 import 'package:group7_mobile_app/utils/getAPI.dart';
 import 'package:group7_mobile_app/utils/GlobalData.dart';
+import 'package:provider/provider.dart';
 
 
 // widget for the registration screen
@@ -21,6 +22,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final data = context.watch<GlobalData>(); // rebuild widget if global data changes
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -245,6 +247,15 @@ class _RegistrationPageState extends State<RegistrationPage> with RouteAware {
                   onPressed: () async {
                     newMessageText = "";
                     changeText();
+
+                    // checkout that the two password textfields match
+                    if (passwordController.text.trim() != confirmPasswordController.text.trim()) {
+
+                      newMessageText = "Password entries must match!";
+                      changeText();
+                      return;
+                    }
+
                     String payload = '{"FirstName":"${firstNameController.text.trim()}", '
                         '              "LastName":"${lastNameController.text.trim()}", '
                         '              "Email":"${emailAddressController.text.trim()}", '
@@ -256,7 +267,7 @@ class _RegistrationPageState extends State<RegistrationPage> with RouteAware {
 
                     try {
                       String url = 'http://leandrovivares.com/api/register';
-                      String ret = await AppData.getJSON(url, payload);
+                      String ret = await AppDataPost.getJSON(url, payload);
                       jsonObject = json.decode(ret);
                       print(jsonObject);
                       //userId = jsonObject['id'];

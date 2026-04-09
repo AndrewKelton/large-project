@@ -1,0 +1,681 @@
+openapi: 3.0.0
+info:
+  title: Large Project API
+  version: 1.0.0
+  description: API documentation for Group 7's Large Project
+
+servers:
+  - url: http://leandrovivares.com
+    description: Production server
+  - url: http://localhost:3000
+    description: Local development
+
+paths:
+
+  # ── Authentication ──────────────────────────────────────────────────────────
+
+  /api/register:
+    post:
+      summary: Register a new user
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [First_Name, Last_Name, Username, Password, Email]
+              properties:
+                First_Name:
+                  type: string
+                Last_Name:
+                  type: string
+                Username:
+                  type: string
+                Password:
+                  type: string
+                  minLength: 5
+                Email:
+                  type: string
+                  format: email
+      responses:
+        '201':
+          description: Account created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Validation error or duplicate username/email
+        '500':
+          description: Server error
+
+  /api/login:
+    post:
+      summary: Login
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [Username, Password]
+              properties:
+                Username:
+                  type: string
+                Password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  token:
+                    type: string
+                  userId:
+                    type: string
+        '400':
+          description: Invalid username or password
+        '500':
+          description: Server error
+
+  # ── Courses ──────────────────────────────────────────────────────────────────
+
+  /api/courses:
+    get:
+      summary: Get all courses
+      tags: [Courses]
+      responses:
+        '200':
+          description: List of courses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+    post:
+      summary: Add a course
+      tags: [Courses]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [Name, Code]
+              properties:
+                Name:
+                  type: string
+                Code:
+                  type: string
+      responses:
+        '201':
+          description: Course created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        '400':
+          description: Name and Code are required
+        '500':
+          description: Server error
+
+  # ── Professors ───────────────────────────────────────────────────────────────
+
+  /api/professors:
+    get:
+      summary: Get all professors
+      tags: [Professors]
+      responses:
+        '200':
+          description: List of professors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Professor'
+    post:
+      summary: Add a professor
+      tags: [Professors]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [First_Name, Last_Name]
+              properties:
+                First_Name:
+                  type: string
+                Last_Name:
+                  type: string
+      responses:
+        '201':
+          description: Professor created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Professor'
+        '400':
+          description: First name and last name are required
+        '500':
+          description: Server error
+
+  /api/professors/course/{courseId}:
+    get:
+      summary: Get professors by course
+      tags: [Professors]
+      parameters:
+        - in: path
+          name: courseId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of professors for the course
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Professor'
+        '500':
+          description: Server error
+
+  # ── Ratings ───────────────────────────────────────────────────────────────────
+
+  /api/ratings:
+    post:
+      summary: Submit a rating
+      tags: [Ratings]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [User, Course, Option_A_Count, Option_B_Count, Option_C_Count, Option_D_Count, Option_E_Count]
+              properties:
+                User:
+                  type: string
+                Course:
+                  type: string
+                Professor:
+                  type: string
+                Option_A_Count:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                Option_B_Count:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                Option_C_Count:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                Option_D_Count:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                Option_E_Count:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                Professor_Rated:
+                  type: boolean
+                  default: false
+                Option_F_Count:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                Option_G_Count:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                Option_H_Count:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                Option_I_Count:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                Option_J_Count:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+      responses:
+        '201':
+          description: Rating created
+        '400':
+          description: Validation error or already rated
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+
+  /api/ratings/course/{courseId}:
+    get:
+      summary: Get raw ratings for a course
+      tags: [Ratings]
+      parameters:
+        - in: path
+          name: courseId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Array of rating objects
+        '500':
+          description: Server error
+
+  /api/ratings/course/{courseId}/professor/{professorId}:
+    get:
+      summary: Get raw ratings for a course+professor pair
+      tags: [Ratings]
+      parameters:
+        - in: path
+          name: courseId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: professorId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Array of rating objects
+        '500':
+          description: Server error
+
+  /api/fetchRatings/course/{courseId}:
+    get:
+      summary: Get course rating averages
+      tags: [Ratings]
+      parameters:
+        - in: path
+          name: courseId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Averaged course ratings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalRatings:
+                    type: integer
+                  averageQ1:
+                    type: number
+                  averageQ2:
+                    type: number
+                  averageQ3:
+                    type: number
+                  averageQ4:
+                    type: number
+                  averageQ5:
+                    type: number
+        '404':
+          description: No ratings found
+        '500':
+          description: Server error
+
+  /api/fetchRatings/course/{courseId}/professor/{professorId}:
+    get:
+      summary: Get course+professor rating averages
+      tags: [Ratings]
+      parameters:
+        - in: path
+          name: courseId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: professorId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Averaged professor ratings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalProfessorRatings:
+                    type: integer
+                  averageQ6:
+                    type: number
+                  averageQ7:
+                    type: number
+                  averageQ8:
+                    type: number
+                  averageQ9:
+                    type: number
+                  averageQ10:
+                    type: number
+        '404':
+          description: No professor ratings found
+        '500':
+          description: Server error
+
+  # ── Questionnaires ────────────────────────────────────────────────────────────
+
+  /api/createQuestionnaire:
+    post:
+      summary: Create a questionnaire
+      tags: [Questionnaires]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [User, Course, Question, Option_A, Option_B]
+              properties:
+                User:
+                  type: string
+                Course:
+                  type: string
+                Professor:
+                  type: string
+                Question:
+                  type: string
+                Option_A:
+                  type: string
+                Option_B:
+                  type: string
+                Option_C:
+                  type: string
+                Option_D:
+                  type: string
+      responses:
+        '201':
+          description: Questionnaire created
+        '400':
+          description: "write a question / add a MC option / User and Course are required"
+        '500':
+          description: Server error
+
+  /api/fetchCO/course/{courseId}:
+    get:
+      summary: Get course-only questionnaires
+      tags: [Questionnaires]
+      parameters:
+        - in: path
+          name: courseId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Course and its questionnaires (no professor)
+        '404':
+          description: Course not found
+        '500':
+          description: Server error
+
+  /api/fetchCAP/course/{courseId}/professor/{professorId}:
+    get:
+      summary: Get course+professor questionnaires
+      tags: [Questionnaires]
+      parameters:
+        - in: path
+          name: courseId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: professorId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Course, professor, and their questionnaires
+        '404':
+          description: Course or professor not found
+        '500':
+          description: Server error
+
+  /api/respondToCO/{questionnaireId}/respond:
+    post:
+      summary: Respond to a course-only questionnaire
+      tags: [Questionnaires]
+      parameters:
+        - in: path
+          name: questionnaireId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId, response]
+              properties:
+                userId:
+                  type: string
+                response:
+                  type: string
+                  enum: [A, B, C, D]
+      responses:
+        '200':
+          description: Response recorded successfully
+        '400':
+          description: Invalid response or questionnaire type mismatch
+        '403':
+          description: Permission denied
+        '404':
+          description: Questionnaire or user not found
+        '500':
+          description: Server error
+
+  /api/respondToCAP/{questionnaireId}/respond:
+    post:
+      summary: Respond to a course+professor questionnaire
+      tags: [Questionnaires]
+      parameters:
+        - in: path
+          name: questionnaireId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId, response]
+              properties:
+                userId:
+                  type: string
+                response:
+                  type: string
+                  enum: [A, B, C, D]
+      responses:
+        '200':
+          description: Response recorded successfully
+        '400':
+          description: Invalid response or questionnaire type mismatch
+        '403':
+          description: Permission denied
+        '404':
+          description: Questionnaire or user not found
+        '500':
+          description: Server error
+
+  # ── User ──────────────────────────────────────────────────────────────────────
+
+  /api/userSettings/{userId}:
+    get:
+      summary: Get user settings
+      tags: [User]
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User object (excluding password)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+
+  /api/updateUser/{userId}:
+    put:
+      summary: Update user settings
+      tags: [User]
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                First_Name:
+                  type: string
+                Last_Name:
+                  type: string
+                Username:
+                  type: string
+                Email:
+                  type: string
+      responses:
+        '200':
+          description: Updated user object (excluding password)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Username or email already taken
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+
+  /api/user/{userId}/answered-questionnaires:
+    get:
+      summary: Get answered questionnaires for a user
+      tags: [User]
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of answered questionnaire IDs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answeredQuestionnaires:
+                    type: array
+                    items:
+                      type: string
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+
+# ── Schemas ───────────────────────────────────────────────────────────────────
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+        First_Name:
+          type: string
+        Last_Name:
+          type: string
+        Username:
+          type: string
+        Email:
+          type: string
+        Date_Created:
+          type: string
+          format: date-time
+        Answered_Questionnaires:
+          type: array
+          items:
+            type: string
+        Rated_Courses:
+          type: array
+          items:
+            type: string
+        Rated_Courses_Professors:
+          type: array
+          items:
+            type: object
+            properties:
+              Course:
+                type: string
+              Professor:
+                type: string
+
+    Course:
+      type: object
+      properties:
+        _id:
+          type: string
+        Name:
+          type: string
+        Code:
+          type: string
+
+    Professor:
+      type: object
+      properties:
+        _id:
+          type: string
+        First_Name:
+          type: string
+        Last_Name:
+          type: string

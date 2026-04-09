@@ -16,6 +16,7 @@ function Register({ onSwitchToLogin }: RegisterProps) {
   const [Username, setUsername] = useState("");
   const [Password, setPassword] = useState("");
   const [Message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
   const [ConfirmPassword, setConfirmPassword] = useState("");
   const [Email, setEmail] = useState("");
 
@@ -48,11 +49,13 @@ function Register({ onSwitchToLogin }: RegisterProps) {
     event.preventDefault();
 
     if (FirstName === "" || LastName === "" || Username === "" || Password === "" || ConfirmPassword === "" ||Email === "") {
+      setIsError(true);
       setMessage("Please fill out all fields.");
       return;
     }
 
     if (Password !== ConfirmPassword) {
+      setIsError(true);
       setMessage("Passwords do not match.");
       return;
     }
@@ -81,6 +84,7 @@ function Register({ onSwitchToLogin }: RegisterProps) {
 
       // If the API gives an error, display the message properly
       if (!response.ok) {
+        setIsError(true);
         if (res.errors && res.errors.length > 0) {
           setMessage(res.errors[0].msg);
         } else if (res.message) {
@@ -88,11 +92,12 @@ function Register({ onSwitchToLogin }: RegisterProps) {
         } else {
           setMessage("ERROR! Registration failed for unknown reason.");
         }
-        
-      // If here, the API was successful  
+
+      // If here, the API was successful
       } else {
 
         // Print the success message
+        setIsError(false);
         setMessage(res.message);
 
         // Wait two seconds and clear the text boxes. Show user going to Login screen
@@ -106,16 +111,17 @@ function Register({ onSwitchToLogin }: RegisterProps) {
           setMessage("Redirecting to Login Screen...");
         }, 2000);
 
-        
+
         // After another 1.5 seconds, switch to login tab
         setTimeout(() => {
           onSwitchToLogin?.();
         }, 3500);
       }
 
-    // Catch any errors and display  
+    // Catch any errors and display
     } catch (error: any) {
-      alert(error.toString());
+      setIsError(true);
+      setMessage("Network error — please try again.");
       return;
     }
   }
@@ -180,7 +186,11 @@ function Register({ onSwitchToLogin }: RegisterProps) {
         onClick={doRegistration}
       />
       <br></br>
-      <span id="registerResult">{Message}</span>
+      {Message && (
+        isError
+          ? <p style={{ color: '#c0392b', fontSize: '0.85rem', marginTop: '0.5rem' }}>⚠ {Message}</p>
+          : <p style={{ color: '#27ae60', fontSize: '0.85rem', marginTop: '0.5rem' }}>{Message}</p>
+      )}
       <br />
       <p style = {{display: 'inline'}}>Already have an account? Click </p>
       <button className="link-button" onClick={onSwitchToLogin}>here</button>

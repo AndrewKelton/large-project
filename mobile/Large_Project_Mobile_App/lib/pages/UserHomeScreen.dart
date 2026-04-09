@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:group7_mobile_app/utils/GlobalData.dart';
+import 'package:provider/provider.dart';
+
 
 
 class UserHomeScreen extends StatefulWidget {
@@ -15,6 +18,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final data = context.watch<GlobalData>(); // rebuild widget if global data changes
     return Scaffold(
       backgroundColor: Colors.yellow,
       appBar: AppBar(

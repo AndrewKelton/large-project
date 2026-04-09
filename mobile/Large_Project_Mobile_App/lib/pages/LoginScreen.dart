@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:group7_mobile_app/main.dart';
 import 'package:group7_mobile_app/utils/getAPI.dart';
 import 'package:group7_mobile_app/utils/GlobalData.dart';
+import 'package:provider/provider.dart';
 
 
 // widget for the login screen
@@ -21,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final data = context.watch<GlobalData>(); // rebuild widget if global data changes
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -125,7 +127,6 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                     '$message',
                     style: TextStyle(
                       fontSize: 14.0,
-                      color: Colors.black,
                       color: Colors.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -183,35 +184,21 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                     newMessageText = "";
                     changeText();
                     String payload = '{"Username":"${loginController.text.trim()}", "Password":"${passwordController.text.trim()}"}';
-                    var userId = -1;
                     var jsonObject;
 
                     try {
                       String url = 'http://leandrovivares.com/api/login';
-                      String ret = await AppData.getJSON(url, payload);
+                      String ret = await AppDataPost.getJSON(url, payload);
                       jsonObject = json.decode(ret);
                       print(jsonObject);
-                      //userId = jsonObject['id'];
+                      context.read<GlobalData>().setUserId(jsonObject['userId']);
                     }
                     catch (e) {
                       newMessageText = e.toString();
                       changeText();
                       return;
                     }
-/*
-                    if (userId <= 0) {
-                      newMessageText = "Incorrect Login/Password";
-                      changeText();
-                    }
-                    else {
-                      GlobalData.userId = userId;
-                      GlobalData.firstName = jsonObject['firstName'];
-                      GlobalData.lastName = jsonObject['lastName'];
-                      GlobalData.loginName = loginName;
-                      GlobalData.password = password;
-                      Navigator.pushNamed(context, '/user_home');
-                    }
-*/
+
                     if (jsonObject.containsKey('message')) {
                       if (jsonObject['message'] == 'Login successful') {
                         // navigate to user home page

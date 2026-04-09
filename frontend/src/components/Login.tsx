@@ -33,7 +33,7 @@ function Login({ onSwitchToRegister }: LoginProps) {
         window.location.href = '/HomePage';
       }
     } catch (error: any) {
-      alert(error.toString());
+      setMessage("Network error — please try again.");
       return;
     }
   }
@@ -74,7 +74,9 @@ function Login({ onSwitchToRegister }: LoginProps) {
         value="Login"
         onClick={doLogin}
       />
-      <span id="loginResult">{message}</span>
+      {message && (
+        <p style={{ color: '#c0392b', fontSize: '0.85rem', marginTop: '0.5rem' }}>⚠ {message}</p>
+      )}
       <br />
       <p style={{ display: "inline" }}>Don't have an account? Click </p>
       <button className="link-button" onClick={onSwitchToRegister}>

@@ -29,9 +29,11 @@ interface QuestionnaireEntryCardProps {
   professorId?: string | null;
   // Whether the logged-in user has already answered this questionnaire
   alreadyAnswered?: boolean;
+  // Called after the user successfully submits an answer so the parent can re-fetch
+  onAnswered?: () => void;
 }
 
-function QuestionnaireEntryCard({ entry, courseId, professorId, alreadyAnswered = false }: QuestionnaireEntryCardProps) {
+function QuestionnaireEntryCard({ entry, courseId, professorId, alreadyAnswered = false, onAnswered }: QuestionnaireEntryCardProps) {
   const isLoggedIn = !!localStorage.getItem('token');
   const canAnswer = isLoggedIn && !!courseId;
 
@@ -77,6 +79,7 @@ function QuestionnaireEntryCard({ entry, courseId, professorId, alreadyAnswered 
       // Only mark as answered on a successful response
       setAnsweredSuccessfully(true);
       setMode('results');
+      onAnswered?.();
     } catch (err) {
       console.warn('Questionnaire respond request failed:', err);
       setSubmitError('Network error — please try again.');
@@ -188,19 +191,25 @@ function QuestionnaireEntryCard({ entry, courseId, professorId, alreadyAnswered 
         </p>
       )}
 
-      {OPTION_LABELS.map((key) => {
-        const option = entry.Options[key];
-        const percent = getPercent(entry.Counts[key], total);
-        if (option === null || percent === null) return null;
-        return (
-          <SingleBar
-            key={key}
-            label={key}
-            percent={percent}
-            displayValue={`${option} (${percent.toFixed(1)}%)`}
-          />
-        );
-      })}
+      {total === 0 ? (
+        <p style={{ fontSize: '0.85rem', color: '#888', fontStyle: 'italic', margin: '0.4rem 0' }}>
+          No answers yet — check back later.
+        </p>
+      ) : (
+        OPTION_LABELS.map((key) => {
+          const option = entry.Options[key];
+          const percent = getPercent(entry.Counts[key], total);
+          if (option === null || percent === null) return null;
+          return (
+            <SingleBar
+              key={key}
+              label={key}
+              percent={percent}
+              displayValue={`${option} (${percent.toFixed(1)}%)`}
+            />
+          );
+        })
+      )}
 
       {canAnswer && !hasAnswered && (
         <button onClick={() => setMode('answer')} style={{ marginTop: '0.5rem' }}>
