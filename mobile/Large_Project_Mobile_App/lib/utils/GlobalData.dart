@@ -2,11 +2,11 @@
 import 'package:flutter/cupertino.dart';
 
 class GlobalData extends ChangeNotifier {
-  String _userId = '69d6b3c5cdb6529abc79f64c'; // initialize to -1
-  String _selectedCourseId = '69cfe4a15d3fb0a1a7d346e9';//'69cfe4e05d3fb0a1a7d346ef';
-  String _selectedCourse = 'PLACEHOLDER COURSE';
-  String _selectedProfessorId = '69c746a172bc22bb12d805e3';
-  String _selectedProfessor = 'Tanvir Ahmed';
+  String _userId = '-1'; // initialize to -1 (test id 69d6b3c5cdb6529abc79f64c)
+  String _selectedCourseId = '';// (test id 69cfe4e05d3fb0a1a7d346ef);
+  String _selectedCourse = '';
+  String _selectedProfessorId = ''; // (test id 69c746a172bc22bb12d805e3)
+  String _selectedProfessor = ''; // (test name Tanvir Ahmed)
 
   // get methods
   String get userId => _userId;
