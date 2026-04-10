@@ -77,7 +77,7 @@ function SingleAnswerCard({ entry, questionIdx, professorId }: SingleAnswerCardP
       <div>
         {!submitError
           ? <p style={{ color: '#2a6db5', fontWeight: 'bold', marginBottom: '0.25rem' }}>✓ Answer submitted.</p>
-          : <p style={{ color: '#c0392b', fontSize: '0.85rem', marginBottom: '0.25rem' }}>⚠ {submitError}</p>
+          : <p style={{ color: '#c0392b', fontSize: '0.85rem', marginTop: '0.5rem' }}>⚠ {submitError}</p>
         }
         <QuestionnaireEntryCard entry={entry} />
       </div>
