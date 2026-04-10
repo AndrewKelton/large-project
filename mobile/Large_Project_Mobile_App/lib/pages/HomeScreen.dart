@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:flutter/gestures.dart';
 import 'package:group7_mobile_app/main.dart';
 import 'package:group7_mobile_app/pages/HomePageButton.dart';
 import 'package:group7_mobile_app/pages/CourseRatingsSummary.dart';
@@ -116,6 +117,42 @@ class _HomePageState extends State<HomePage> with RouteAware {
     setState(() {});
   }
 
+  Future<int> checkIfUserAlreadyRatedCourse() async {
+    var jsonObjectCourseRatings;
+
+    try {
+      String userIdToCheck = context.read<GlobalData>().userId;
+      String url = 'http://leandrovivares.com/api/ratings/course/${context.read<GlobalData>().selectedCourseId}';
+      String ret = await AppDataGet.getJSON(url);
+      jsonObjectCourseRatings = json.decode(ret);
+
+      // check if the userId is in the jsonObjectCourseRatings (indicates that the user already rated the course)
+      bool userAlreadyRated = jsonObjectCourseRatings.any((item) => item['User'] == userIdToCheck);
+
+      if (userAlreadyRated) { // enter if user already rated the course
+        print('User already rated this course.');
+        return 0;
+      } else { // enter if the user hasn't rated the course
+        print('User has not rated this course');
+        return 1;
+      }
+    }
+    catch (e) {
+      newMessageText = e.toString();
+      changeText();
+      return -1;
+    }
+  }
+
+  // used to reset global data to default values for logout
+  void clearGlobalData() {
+    context.read<GlobalData>().setUserId('-1');
+    context.read<GlobalData>().setSelectedCourseId('');
+    context.read<GlobalData>().setSelectedCourse('');
+    context.read<GlobalData>().setSelectedProfessorId('');
+    context.read<GlobalData>().setSelectedProfessor('');
+  }
+
   @override
   void initState() {
     super.initState();
@@ -155,6 +192,8 @@ class _HomePageState extends State<HomePage> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
+    print('HomeScreen userId: ${context.read<GlobalData>().userId}');
+    final data = context.watch<GlobalData>(); // rebuild widget if global data changes
     return Align(
       alignment: Alignment.topCenter,
       child: Container(
@@ -164,7 +203,68 @@ class _HomePageState extends State<HomePage> with RouteAware {
             mainAxisAlignment: MainAxisAlignment.start, // center column contents vertically
             crossAxisAlignment: CrossAxisAlignment.center, // center column contents horizontally
             children: <Widget> [
-              SizedBox(height: 100.0),
+              SizedBox(height: 20.0),
+              if (context.read<GlobalData>().userId == '-1') ... [ // enter if user isn't signed in
+                // row for login page link
+                SizedBox(
+                  height: 50.0,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 25.0),
+                          child: RichText(
+                            textAlign: TextAlign.right,
+                            text: TextSpan(
+                              style: TextStyle(color: Colors.black),
+                              children: [
+                                TextSpan(
+                                  text: "Login / Sign Up",
+                                  style: TextStyle(
+                                    color: Colors.indigo[900],
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      Navigator.pushNamed(context, '/login');
+                                    },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ]
+              else ... [ // enter if user is signed in
+                // row for logout button
+                SizedBox(
+                  height: 50.0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.only(right: 25.0),
+                        child: CreateLogoutButton(
+                          onPressed: () {
+                            newMessageText = "";
+                            changeText();
+                            print('Logout Button');
+                            // clear global data to reset userId to logged out state
+                            clearGlobalData();
+                            print('userId = ${context.read<GlobalData>().userId}');
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ], // end of else for login link and logout button
+              SizedBox(height: 50.0),
               // row for course dropdown label
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -199,6 +299,8 @@ class _HomePageState extends State<HomePage> with RouteAware {
                       enableFilter: true,
                       requestFocusOnTap: true,
                       onSelected: (text) {
+                        newMessageText = "";
+                        changeText();
                         print('text-course = ${text}');
                         selectedCourseCode = text ?? '';
                         String? courseId = courseIdMap[text] ?? '';
@@ -262,6 +364,8 @@ class _HomePageState extends State<HomePage> with RouteAware {
                       enableFilter: true,
                       requestFocusOnTap: true,
                       onSelected: (text) {
+                        newMessageText = "";
+                        changeText();
                         print('text-professor = ${text}');
                         selectedProfessorName = text ?? '';
                         String? professorId = professorIdMap[text] ?? '';
@@ -297,12 +401,36 @@ class _HomePageState extends State<HomePage> with RouteAware {
                     SizedBox(
                       width: 300,
                       child: CreateRatingButton(
-                        onPressed: () {
+                        onPressed: () async {
                           newMessageText = "";
                           changeText();
                           print('Create Rating Button:');
                           print('Selected Course: ${selectedCourseCode}');
                           print('Selected Professor: ${selectedProfessorName}');
+
+                          // navigate to create rating page if user is logged in and hasn't already rated the course
+                          if (context.read<GlobalData>().userId != '-1') { // enter if user is logged in
+
+                            // check if the user has already rated the course (0='user already rated course'; 1='user didn't already rate'; -1='error with api')
+                            int didUserAlreadyRateCourse = await checkIfUserAlreadyRatedCourse();
+                            // check if the user has already rated the course
+                            if (didUserAlreadyRateCourse == 0) { // enter if user has already rated the course
+                              newMessageText = "You have already rated this course.";
+                              changeText();
+                            }
+                            else if (didUserAlreadyRateCourse == 1) { // enter if user didn't rate course
+                              // navigate to create rating page
+                              Navigator.pushNamed(context, '/create_rating');
+                            }
+                            else { // enter if api error (value of didUserAlreadyRateCourse should be -1)
+                              // do nothing, message will be displayed on the screen
+                              print('Error in method checkIfUserAlreadyRatedCourse - Code: ${didUserAlreadyRateCourse}');
+                            }
+                          }
+                          else { // enter if user isn't logged in
+                            newMessageText = "Please log in to create a rating.";
+                            changeText();
+                          }
                         },
                         course: selectedCourseCode,
                         professor: selectedProfessorName,
@@ -326,6 +454,15 @@ class _HomePageState extends State<HomePage> with RouteAware {
                           print('Create Questionnaire Button:');
                           print('Selected Course: ${selectedCourseCode}');
                           print('Selected Professor: ${selectedProfessorName}');
+
+                          // navigate to create questionnaire page if user is logged in
+                          if (context.read<GlobalData>().userId != '-1') { // enter if user is logged in
+                      //      Navigator.pushNamed(context, '/create_questionnaire');
+                          }
+                          else { // enter if user isn't logged in
+                            newMessageText = "Please log in to create a questionnaire.";
+                            changeText();
+                          }
                         },
                         course: selectedCourseCode,
                         professor: selectedProfessorName,
@@ -342,7 +479,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
                       '$message',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 14.0,
+                        fontSize: 16.0,
                         color: Colors.red,
                         fontWeight: FontWeight.bold,
                       ),

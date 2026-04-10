@@ -162,12 +162,15 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
                         child: Text(q["question"], style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),
                       ),
                       SizedBox(width: 5.0),
-                      if (answeredCourseQuestionnairesList.any((item) => item == q['questionnaire_id'])) ... [
-                        AnsweredTag(),
-                      ] // end of if statement for 'Answered/Unanswered'
-                      else ... [ // enter if the question was unanswered by the user
-                        UnansweredTag(),
-                      ], // end of else statement for 'Answered/Unanswered'
+                      // check if user is logged (if so, then indicate whether question is answered or unanswered)
+                      if (context.read<GlobalData>().userId != '-1') ... [ // enter if user is signed in
+                        if (answeredCourseQuestionnairesList.any((item) => item == q['questionnaire_id'])) ... [
+                          AnsweredTag(),
+                        ] // end of if statement for 'Answered/Unanswered'
+                        else ... [ // enter if the question was unanswered by the user
+                          UnansweredTag(),
+                        ], // end of else statement for 'Answered/Unanswered'
+                      ],
                     ],
                   ),
                 ),
@@ -202,37 +205,40 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
                       },
                     )
                   : QuestionnaireResults(options: options, counts: counts, totalVotes: totalVotes, answerMessage: answerMessage),
+                // check if the user is signed in
+                if (context.read<GlobalData>().userId != '-1') ... [ // enter if user has signed in
                 // button for answer questions (only displayed when a question is marked 'unanswered')
-                if (!(answeredCourseQuestionnairesList.any((item) => item == q['questionnaire_id']))) ... [ // enter if user can answer this question
-                  if (!(courseQuestionnaireObjects[globalIndex]["_showQuestions"] as bool)) ... [ // enter if the user clicked button to answer questionnaire
-                    Center(
-                      child: SizedBox(
-                        width: 200.0,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              print('Clicked \'Answer this Question\' Button');
-                              courseQuestionnaireObjects[globalIndex]["_showQuestions"] = !courseQuestionnaireObjects[globalIndex]["_showQuestions"];
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                  if (!(answeredCourseQuestionnairesList.any((item) => item == q['questionnaire_id']))) ... [ // enter if user can answer this question
+                    if (!(courseQuestionnaireObjects[globalIndex]["_showQuestions"] as bool)) ... [ // enter if the user clicked button to answer questionnaire
+                      Center(
+                        child: SizedBox(
+                          width: 200.0,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                print('Clicked \'Answer this Question\' Button');
+                                courseQuestionnaireObjects[globalIndex]["_showQuestions"] = !courseQuestionnaireObjects[globalIndex]["_showQuestions"];
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              backgroundColor: Colors.brown[50],
+                              foregroundColor: Colors.black,
+                              padding: EdgeInsets.all(8.0),
                             ),
-                            backgroundColor: Colors.brown[50],
-                            foregroundColor: Colors.black,
-                            padding: EdgeInsets.all(8.0),
-                          ),
-                          child: Text(
-                            'Answer this Question',
-                            style: TextStyle(fontSize: 15.0),
-                            textAlign: TextAlign.center,
+                            child: Text(
+                              'Answer this Question',
+                              style: TextStyle(fontSize: 15.0),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   ],
-                ],
+                ], // end if statement that checks if the user is signed in
               ],
             ),
           );

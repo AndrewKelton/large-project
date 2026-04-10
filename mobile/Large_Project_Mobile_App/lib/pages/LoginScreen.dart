@@ -25,11 +25,19 @@ class _LoginScreenState extends State<LoginScreen> {
     final data = context.watch<GlobalData>(); // rebuild widget if global data changes
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'COP 4331 Group 7 Large Project',
-          textAlign: TextAlign.center,
+        title: Column(
+          children: [
+            Text(
+              'COP 4331 Group 7 Large Project',
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              'Welcome to KnightRate',
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
       ),
       backgroundColor: Colors.blue,
       body: LoginPage(),
@@ -111,7 +119,7 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                     'PLEASE LOG IN',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 16.0,
+                      fontSize: 18.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
@@ -126,7 +134,7 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                   child: Text(
                     '$message',
                     style: TextStyle(
-                      fontSize: 14.0,
+                      fontSize: 16.0,
                       color: Colors.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -141,9 +149,6 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                   width: 250,
                   child: TextField(
                     controller: loginController,
-                 /*   onChanged: (text) {
-                      loginName = text;
-                    },*/
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
@@ -162,9 +167,6 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                   child: TextField(
                     controller: passwordController,
                     obscureText: true,
-               /*     onChanged: (text) {
-                      password = text;
-                    },*/
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
@@ -175,55 +177,63 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                 ),
               ],
             ),
+            SizedBox(height: 10.0),
             // row for login button
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget> [
-                LoginButton(
-                  onPressed: () async {
-                    newMessageText = "";
-                    changeText();
-                    String username = loginController.text.trim();
-                    String password = passwordController.text.trim();
-                    String payload = '{"Username":"${loginController.text.trim()}", "Password":"${passwordController.text.trim()}"}';
-
-                    print('password = ${password}');
-                    print('payload = ${payload}');
-
-                    var jsonObject;
-
-                    try {
-                      String url = 'http://leandrovivares.com/api/login';
-                      String ret = await AppDataPost.getJSON(url, payload);
-                      jsonObject = json.decode(ret);
-                      print('jsonObject = ${jsonObject}');
-                      context.read<GlobalData>().setUserId(jsonObject['userId']);
-                      print('jsonObject = $jsonObject');
-                    }
-                    catch (e) {
-                      newMessageText = e.toString();
+                SizedBox(
+                  width: 100.0,
+                  child: LoginButton(
+                    onPressed: () async {
+                      newMessageText = "";
                       changeText();
-                      return;
-                    }
+                      String username = loginController.text.trim();
+                      String password = passwordController.text.trim();
+                      String payload = '{"Username":"${loginController.text.trim()}", "Password":"${passwordController.text.trim()}"}';
 
-                    if (jsonObject.containsKey('message')) {
-                      if (jsonObject['message'] == 'Login Successful') {
-                        // navigate to user home page
-                        Navigator.pushNamed(context, '/user_home');
+                      print('password = ${username}');
+                      print('password = ${password}');
+                      print('payload = ${payload}');
+
+                      var jsonObject;
+
+                      try {
+                        String url = 'http://leandrovivares.com/api/login';
+                        String ret = await AppDataPost.getJSON(url, payload);
+                        jsonObject = json.decode(ret);
+                        print('jsonObject = ${jsonObject}');
+                      }
+                      catch (e) {
+                        newMessageText = e.toString();
+                        changeText();
+                        return;
+                      }
+
+                      // check response object to verify successful login
+                      if (jsonObject.containsKey('message')) {
+                        if (jsonObject['message'] == 'Login Successful') {
+                          // set global variable for userId upon successful login
+                          context.read<GlobalData>().setUserId(jsonObject['userId']);
+                          // navigate to home page while removing everything from the stack before pushing the new route
+                          Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+                          print('userId global: ${context.read<GlobalData>().userId}');
+                        }
+                        else {
+                          newMessageText = jsonObject['message'];
+                          changeText();
+                        }
                       }
                       else {
-                        newMessageText = jsonObject['message'];
+                        newMessageText = 'Unknown Error!';
                         changeText();
                       }
-                    }
-                    else {
-                      newMessageText = 'Unknown Error!';
-                      changeText();
-                    }
-                  },
+                    },
+                  ),
                 ),
               ],
             ),
+            SizedBox(height: 20.0),
             // row for registration page link
             Row(
               children: [
@@ -231,9 +241,12 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                   child: RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18.0,
+                        height: 1.2,),
                       children: [
-                        TextSpan(text: "Don't have an account? Click "),
+                        TextSpan(text: "Don't have an account?\nClick "),
                         TextSpan(
                           text: "here",
                           style: TextStyle(
@@ -281,9 +294,11 @@ class LoginButton extends StatelessWidget {
       ),
       child: Text(
         'Login',
-        style: TextStyle(fontSize: 14.0),
+        style: TextStyle(fontSize: 16.0),
       ),
     );
   }
 }
+
+
 
