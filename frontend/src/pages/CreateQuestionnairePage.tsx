@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { Course, Professor } from '../types/index.ts';
+import CreateQuestionaire from '../components/CreateQuestionaire.tsx';
 
 interface CreateQuestionnaireState {
   course: Course;
@@ -27,10 +28,7 @@ const CreateQuestionnairePage = () => {
     <div>
       <h2>Create Questionnaire</h2>
       <p><strong>Course:</strong> {course.Code} – {course.Name}</p>
-      {professor && (
-        <p><strong>Professor:</strong> {professor.First_Name} {professor.Last_Name}</p>
-      )}
-      {/* Questionnaire form will go here */}
+      <CreateQuestionaire course={course} professor={professor} onSuccess={() => navigate("/")} />
       <button onClick={() => navigate('/')}>Back</button>
     </div>
   );

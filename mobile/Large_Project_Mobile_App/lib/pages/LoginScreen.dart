@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:group7_mobile_app/main.dart';
 import 'package:group7_mobile_app/utils/getAPI.dart';
 import 'package:group7_mobile_app/utils/GlobalData.dart';
+import 'package:provider/provider.dart';
 
 
 // widget for the login screen
@@ -21,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final data = context.watch<GlobalData>(); // rebuild widget if global data changes
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -181,15 +183,22 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                   onPressed: () async {
                     newMessageText = "";
                     changeText();
+                    String username = loginController.text.trim();
+                    String password = passwordController.text.trim();
                     String payload = '{"Username":"${loginController.text.trim()}", "Password":"${passwordController.text.trim()}"}';
+
+                    print('password = ${password}');
+                    print('payload = ${payload}');
+
                     var jsonObject;
 
                     try {
                       String url = 'http://leandrovivares.com/api/login';
                       String ret = await AppDataPost.getJSON(url, payload);
                       jsonObject = json.decode(ret);
-                      print(jsonObject);
-                      GlobalData.userId = jsonObject['userId'];
+                      print('jsonObject = ${jsonObject}');
+                      context.read<GlobalData>().setUserId(jsonObject['userId']);
+                      print('jsonObject = $jsonObject');
                     }
                     catch (e) {
                       newMessageText = e.toString();
@@ -198,7 +207,7 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                     }
 
                     if (jsonObject.containsKey('message')) {
-                      if (jsonObject['message'] == 'Login successful') {
+                      if (jsonObject['message'] == 'Login Successful') {
                         // navigate to user home page
                         Navigator.pushNamed(context, '/user_home');
                       }

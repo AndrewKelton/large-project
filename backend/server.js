@@ -12,7 +12,7 @@ app.use(express.json());
 
 // allow requests from the front-end origin
 const corsOptions = {
-        origin: ['http://leandrovivares.com', 'http://localhost', 'http://localhost:5173'],
+        origin: ['http://leandrovivares.com', 'https://leandrovivares.com', 'http://localhost', 'http://localhost:5173'],
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization'],
         credentials: true
@@ -54,6 +54,12 @@ app.use('/api/respondToCO', respondToCO);
 
 const userRouter = require('./api/user.js');
 app.use('/api/user', userRouter);
+
+const searchCO = require('./api/searchCO.js');
+app.use('/api/searchCO', searchCO);
+
+const searchCAP = require('./api/searchCAP.js');
+app.use('/api/searchCAP', searchCAP);
 
 // connect to database via mongoose
 const url = process.env.MONGO_URI;

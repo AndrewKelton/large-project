@@ -5,19 +5,22 @@ import 'dart:convert';
 import 'package:provider/provider.dart';
 import 'dart:math';
 
-class CourseQuestionnaireResults extends StatefulWidget {
+class ProfessorQuestionnaireResults extends StatefulWidget {
   final String courseId;
+  final String professorId;
 
-  const CourseQuestionnaireResults({super.key, required this.courseId});
+  const ProfessorQuestionnaireResults({super.key, required this.courseId, required this.professorId});
 
   @override
-  State<CourseQuestionnaireResults> createState() => _CourseQuestionnaireResultsState();
+  State<ProfessorQuestionnaireResults> createState() => _ProfessorQuestionnaireResultsState();
 }
 
-class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults> {
+class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireResults> {
 
-  List<Map<String, dynamic>> courseQuestionnaireObjects = [];
-  List<String> answeredCourseQuestionnairesList = [];
+  // list of course+professor questionnaire results
+  List<Map<String, dynamic>> professorQuestionnaireObjects = [];
+  // list of questionnaires answer by user
+  List<String> answeredProfessorQuestionnairesList = [];
   // used for pagination
   static const int pageSize = 3;
   int currentPage = 0;
@@ -25,28 +28,28 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
   @override
   void initState() {
     super.initState();
-    loadCourseQuestionnaires();
-    getAnsweredCourseQuestionnaires();
+    loadProfessorQuestionnaires();
+    getAnsweredProfessorQuestionnaires();
   }
 
   @override
-  void didUpdateWidget(CourseQuestionnaireResults oldWidget) {
+  void didUpdateWidget(ProfessorQuestionnaireResults oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.courseId != widget.courseId) {
+    if (oldWidget.courseId != widget.courseId || oldWidget.professorId != widget.professorId) {
       setState(() {
-        currentPage = 0;
-        courseQuestionnaireObjects = [];
-        answeredCourseQuestionnairesList = [];
+        professorQuestionnaireObjects = [];
+        answeredProfessorQuestionnairesList = [];
       });
-      loadCourseQuestionnaires();
-      getAnsweredCourseQuestionnaires();
+      loadProfessorQuestionnaires();
+      getAnsweredProfessorQuestionnaires();
     }
   }
 
-  // function to get the course ratings from database
-  void loadCourseQuestionnaires({int? restorePage}) async {
+  // function to get the professor ratings from database
+  void loadProfessorQuestionnaires({int? restorePage}) async {
     String courseId = widget.courseId.trim();
-    String url = "http://leandrovivares.com/api/fetchCO/course/${courseId}";
+    String professorId = widget.professorId.trim();
+    String url = "http://leandrovivares.com/api/fetchCAP/course/${courseId}/professor/${professorId}";
 
     try {
       String ret = await AppDataGet.getJSON(url);
@@ -56,7 +59,7 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
       setState(() {
         // only reset to 0 if no restore page is passed as an argument
         currentPage = restorePage ?? 0;
-        courseQuestionnaireObjects = questionnaires.map((q) {
+        professorQuestionnaireObjects = questionnaires.map((q) {
           return {
             "questionnaire_id": q["_id"],
             "question": q["Question"],
@@ -69,12 +72,12 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
       });
 
     } catch (e) {
-      print('Course questionnaire results error: ${e.toString()}');
+      print('Professor questionnaire results error: ${e.toString()}');
     }
   }
 
-  // function to get course-specific questionnaires and results from questionnaire
-  void getAnsweredCourseQuestionnaires() async {
+  // function to get course+professor questionnaires and results from questionnaire
+  void getAnsweredProfessorQuestionnaires() async {
     String userId = context.read<GlobalData>().userId;
     String url = "http://leandrovivares.com/api/user/${userId}/answered-questionnaires";
 
@@ -84,30 +87,31 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
       List<dynamic> answered = decoded["answeredQuestionnaires"];
 
       setState(() {
-        answeredCourseQuestionnairesList = List<String>.from(answered.map((item) => item.toString()));;
+        currentPage = 0;
+        answeredProfessorQuestionnairesList = List<String>.from(answered.map((item) => item.toString()));;
       });
 
     } catch (e) {
-      print('Answered course questionnaire list error: ${e.toString()}');
+      print('Answered course+professor questionnaire list error: ${e.toString()}');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final totalPages = (courseQuestionnaireObjects.length / pageSize).ceil();
-    final pageSlice = courseQuestionnaireObjects.sublist(
+    final totalPages = (professorQuestionnaireObjects.length / pageSize).ceil();
+    final pageSlice = professorQuestionnaireObjects.sublist(
       currentPage * pageSize,
-      min((currentPage + 1) * pageSize, courseQuestionnaireObjects.length),
+      min((currentPage + 1) * pageSize, professorQuestionnaireObjects.length),
     );
     return Column(
       children: [
         // title bar
-        if (courseQuestionnaireObjects.isNotEmpty) ...[
+        if (professorQuestionnaireObjects.isNotEmpty) ...[
           Row(
             children: [
               Expanded(
                 child: Text(
-                  'Course Questionnaire Results',
+                  'Professor Questionnaire Results',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 25.0,
@@ -120,10 +124,9 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
           ),
           SizedBox(height: 5.0),
         ],
-
         // questionnaire cards
         ...pageSlice.asMap().entries.map((entry) {
-          // localIndex refers to pageSlice, globalIndex refers to courseQuestionnaireObjects
+          // localIndex refers to pageSlice, globalIndex refers to professorQuestionnaireObjects
           int localIndex = entry.key;
           int globalIndex = currentPage * pageSize + localIndex;
 
@@ -162,7 +165,7 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
                         child: Text(q["question"], style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),
                       ),
                       SizedBox(width: 5.0),
-                      if (answeredCourseQuestionnairesList.any((item) => item == q['questionnaire_id'])) ... [
+                      if (answeredProfessorQuestionnairesList.any((item) => item == q['questionnaire_id'])) ... [
                         AnsweredTag(),
                       ] // end of if statement for 'Answered/Unanswered'
                       else ... [ // enter if the question was unanswered by the user
@@ -172,39 +175,39 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
                   ),
                 ),
                 SizedBox(height: 8.0),
-                // ternary operator - if true, then display form to allow user to answer course-specific questionnaire; otherwise just show the course-specific questionnaire results summary
-                courseQuestionnaireObjects[globalIndex]["_showQuestions"] as bool
-                  ? AnswerCourseQuestionnaire(
-                      questionnaireId: questionnaireId,
-                      options: options,
-                      onViewResults: () {
-                        final int curIndex = globalIndex;
-                        setState(() {
-                          courseQuestionnaireObjects[curIndex]["_showQuestions"] = !courseQuestionnaireObjects[curIndex]["_showQuestions"];
-                          courseQuestionnaireObjects[curIndex]["answerMessage"] = '';
-                        });
-                      },
-                      onSubmitAnswer: (String? message) {
-                        final int curIndex = globalIndex;
-                        final int pageToRestore = currentPage;
-                        setState(() {
-                          print(message);
-                          courseQuestionnaireObjects[curIndex]["_showQuestions"] = !courseQuestionnaireObjects[curIndex]["_showQuestions"];
-                          if (message == 'Response recorded successfully') {
-                            courseQuestionnaireObjects[curIndex]["answerMessage"] = '';
-                            loadCourseQuestionnaires(restorePage: pageToRestore);
-                            getAnsweredCourseQuestionnaires();
-                          }
-                          else {
-                            courseQuestionnaireObjects[curIndex]["answerMessage"] = message ?? '';
-                          }
-                        });
-                      },
-                    )
-                  : QuestionnaireResults(options: options, counts: counts, totalVotes: totalVotes, answerMessage: answerMessage),
+                // ternary operator - if true, then display form to allow user to answer course+professor questionnaire; otherwise just show the course+professor questionnaire results summary
+                professorQuestionnaireObjects[globalIndex]["_showQuestions"] as bool
+                    ? AnswerProfessorQuestionnaire(
+                  questionnaireId: questionnaireId,
+                  options: options,
+                  onViewResults: () {
+                    final int curIndex = globalIndex;
+                    setState(() {
+                      professorQuestionnaireObjects[curIndex]["_showQuestions"] = !professorQuestionnaireObjects[curIndex]["_showQuestions"];
+                      professorQuestionnaireObjects[curIndex]["answerMessage"] = '';
+                    });
+                  },
+                  onSubmitAnswer: (String? message) {
+                    final int curIndex = globalIndex;
+                    final int pageToRestore = currentPage;
+                    setState(() {
+                      print(message);
+                      professorQuestionnaireObjects[curIndex]["_showQuestions"] = !professorQuestionnaireObjects[curIndex]["_showQuestions"];
+                      if (message == 'Response recorded successfully') {
+                        professorQuestionnaireObjects[curIndex]["answerMessage"] = '';
+                        loadProfessorQuestionnaires(restorePage: pageToRestore);
+                        getAnsweredProfessorQuestionnaires();
+                      }
+                      else {
+                        professorQuestionnaireObjects[curIndex]["answerMessage"] = message ?? '';
+                      }
+                    });
+                  },
+                )
+                    : QuestionnaireResults(options: options, counts: counts, totalVotes: totalVotes, answerMessage: answerMessage),
                 // button for answer questions (only displayed when a question is marked 'unanswered')
-                if (!(answeredCourseQuestionnairesList.any((item) => item == q['questionnaire_id']))) ... [ // enter if user can answer this question
-                  if (!(courseQuestionnaireObjects[globalIndex]["_showQuestions"] as bool)) ... [ // enter if the user clicked button to answer questionnaire
+                if (!(answeredProfessorQuestionnairesList.any((item) => item == q['questionnaire_id']))) ... [ // enter if user can answer this question
+                  if (!(professorQuestionnaireObjects[globalIndex]["_showQuestions"] as bool)) ... [ // enter if the user clicked button to answer questionnaire
                     Center(
                       child: SizedBox(
                         width: 200.0,
@@ -212,7 +215,7 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
                           onPressed: () {
                             setState(() {
                               print('Clicked \'Answer this Question\' Button');
-                              courseQuestionnaireObjects[globalIndex]["_showQuestions"] = !courseQuestionnaireObjects[globalIndex]["_showQuestions"];
+                              professorQuestionnaireObjects[globalIndex]["_showQuestions"] = !professorQuestionnaireObjects[globalIndex]["_showQuestions"];
                             });
                           },
                           style: ElevatedButton.styleFrom(
@@ -323,11 +326,11 @@ class _QuestionnaireResultsState extends State<QuestionnaireResults> {
         }).toList(),
         if (widget.answerMessage != '') ... [
           Text(
-            widget.answerMessage,
-            style: TextStyle(
-              color: Colors.red,
-              fontSize: 14.0,
-            )
+              widget.answerMessage,
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 14.0,
+              )
           ),
         ],
       ],
@@ -416,10 +419,10 @@ class _AnsweredTagState extends State<AnsweredTag> {
 }
 
 
-// class used to answer course-specific questionnaires
-class AnswerCourseQuestionnaire extends StatefulWidget {
+// class used to answer course+professor questionnaires
+class AnswerProfessorQuestionnaire extends StatefulWidget {
 
-  // course questionnaire id
+  // course+professor questionnaire id
   final String questionnaireId;
   // the multiple-choice answer options for this questionnaire
   final dynamic options;
@@ -428,13 +431,13 @@ class AnswerCourseQuestionnaire extends StatefulWidget {
   // function from parent to send message back to parent and go back to results summary view
   final ValueChanged<String?> onSubmitAnswer;
 
-  const AnswerCourseQuestionnaire({super.key, required this.questionnaireId, required this.options, required this.onViewResults, required this.onSubmitAnswer});
+  const AnswerProfessorQuestionnaire({super.key, required this.questionnaireId, required this.options, required this.onViewResults, required this.onSubmitAnswer});
 
   @override
-  State<AnswerCourseQuestionnaire> createState() => _AnswerCourseQuestionnaireState();
+  State<AnswerProfessorQuestionnaire> createState() => _AnswerProfessorQuestionnaireState();
 }
 
-class _AnswerCourseQuestionnaireState extends State<AnswerCourseQuestionnaire> {
+class _AnswerProfessorQuestionnaireState extends State<AnswerProfessorQuestionnaire> {
 
   // used to hold the selected answer
   String? _selectedValue;
@@ -444,9 +447,9 @@ class _AnswerCourseQuestionnaireState extends State<AnswerCourseQuestionnaire> {
     super.initState();
   }
 
-  void submitAnswerCourseQuestionnaire(String? option) async {
+  void submitAnswerProfessorQuestionnaire(String? option) async {
 
-    String url = "http://leandrovivares.com/api/respondToCO/${widget.questionnaireId}/respond";
+    String url = "http://leandrovivares.com/api/respondToCAP/${widget.questionnaireId}/respond";
     String payload = '{"userId":"${context.read<GlobalData>().userId}", "response":"${_selectedValue}"}';
 
     print(url);
@@ -457,7 +460,7 @@ class _AnswerCourseQuestionnaireState extends State<AnswerCourseQuestionnaire> {
       print(decoded);
       widget.onSubmitAnswer(decoded['message']);
     } catch (e) {
-      print('Course questionnaire submit answer error: ${e.toString()}');
+      print('Professor questionnaire submit answer error: ${e.toString()}');
     }
   }
 
@@ -471,24 +474,24 @@ class _AnswerCourseQuestionnaireState extends State<AnswerCourseQuestionnaire> {
       child: Column(
         children: [
           ...(widget.options).entries.map((entry) {
-          String? option = entry.value;
+            String? option = entry.value;
 
-          if (option == null) return SizedBox.shrink();
+            if (option == null) return SizedBox.shrink();
 
-          return Padding(
-            padding: EdgeInsets.symmetric(vertical: 1.0),
-            child: RadioListTile<String>(
-              title: Text(
-                option,
-                style: TextStyle(
-                  fontSize: 14.0,
-                  color: Colors.black,
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: 1.0),
+              child: RadioListTile<String>(
+                title: Text(
+                  option,
+                  style: TextStyle(
+                    fontSize: 14.0,
+                    color: Colors.black,
+                  ),
                 ),
+                value: entry.key,
+                dense: true,
               ),
-              value: entry.key,
-              dense: true,
-            ),
-          );
+            );
           }).toList(),
           Row(
             children: [
@@ -500,7 +503,7 @@ class _AnswerCourseQuestionnaireState extends State<AnswerCourseQuestionnaire> {
                     if (_selectedValue != null) {
                       print('Selected: $_selectedValue');
                       // send answer to database
-                      submitAnswerCourseQuestionnaire(_selectedValue);
+                      submitAnswerProfessorQuestionnaire(_selectedValue);
                     }
                   },
                   style: ElevatedButton.styleFrom(

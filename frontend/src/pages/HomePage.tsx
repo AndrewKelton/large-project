@@ -129,7 +129,7 @@ const HomePage = () => {
         </p>
       )}
 
-      {rateError && <p style={{ color: "red" }}>{rateError}</p>}
+      {rateError && <p style={{ color: '#c0392b', fontSize: '0.85rem', marginTop: '0.5rem' }}>⚠ {rateError}</p>}
 
       <CourseSummary course={selectedCourse} />
       <CourseQuestionnaireResults course={selectedCourse} />
