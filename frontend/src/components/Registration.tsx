@@ -62,8 +62,8 @@ function Register({ onSwitchToLogin }: RegisterProps) {
 
     // Make object variable and stringify for the API
     var obj = {
-      FirstName: FirstName,
-      LastName: LastName,
+      First_Name: FirstName,
+      Last_Name: LastName,
       Email: Email,
       Username: Username,
       Password: Password,
@@ -133,7 +133,7 @@ function Register({ onSwitchToLogin }: RegisterProps) {
       <br></br>
       <input
         type="text"
-        id="FirstName"
+        id="First_Name"
         placeholder="First Name"
         value = {FirstName}
         onChange={handleSetFirstName}
@@ -141,7 +141,7 @@ function Register({ onSwitchToLogin }: RegisterProps) {
       <br></br>
       <input
         type="text"
-        id="LastName"
+        id="Last_Name"
         placeholder="Last Name"
         value = {LastName}
         onChange={handleSetLastName}
