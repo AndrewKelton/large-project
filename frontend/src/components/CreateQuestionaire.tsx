@@ -111,86 +111,72 @@ const CreateQuestionaire = ({
   };
 
   return (
-    <div>
-      {/* Main headers */}
-      <strong>Professor:</strong>{" "}
-      {professor
-        ? `${professor.First_Name} ${professor.Last_Name}`
-        : "Not Selected"}
-      <h4>Step on up and make a questionaire!</h4>
-      <h4>
-        We currently only support one question per questionaire. <br></br>If you
-        want to add more than one question, please make each one in its own
-        questionaire.
-      </h4>
-      <label>
-        {/*Question textbox*/}
-        <p>What's your Question?</p>
-        <input
-          type="text"
-          value={question}
-          required={true}
-          placeholder="Enter a Question"
-          onChange={(e) => setQuestion(e.target.value)}
-        />
-        <br></br>
-      </label>
-      <label>
-        {/*Option A textbox*/}
-        <p>Enter Your First Answer Choice (Required)</p>
-        <input
-          type="text"
-          value={optionA}
-          required={true}
-          placeholder="Option A"
-          onChange={(e) => setOptionA(e.target.value)}
-        />
-        <br></br>
-      </label>
-      <label>
-        {/*Option B textbox*/}
-        <p>Enter Your Second Answer Choice (Required)</p>
+    <div style={{ maxWidth: '640px', margin: '0 auto' }}>
 
-        <input
-          type="text"
-          value={optionB}
-          required={true}
-          placeholder="Option B"
-          onChange={(e) => setOptionB(e.target.value)}
-        />
-        <br></br>
-      </label>
-      <label>
-        <p>Enter Your Third Answer Choice (Optional)</p>
+      {/* ── Question & Answers Section ───────────────────────────────── */}
+      <div className="section-card">
+        <div className="section-card__header">
+          ❓ Question
+        </div>
+        <div style={{ marginBottom: '1.1rem' }}>
+          <label htmlFor="q-text" style={{ fontWeight: 500, display: 'block', marginBottom: '0.4rem' }}>
+            What's your question? <span style={{ color: 'var(--error)' }}>*</span>
+          </label>
+          <input
+            id="q-text"
+            type="text"
+            value={question}
+            required
+            placeholder="Enter your question here…"
+            onChange={(e) => setQuestion(e.target.value)}
+            style={{ width: '100%' }}
+          />
+        </div>
 
-        {/*Option C textbox*/}
-        <input
-          type="text"
-          value={optionC}
-          placeholder="Option C"
-          onChange={(e) => setOptionC(e.target.value)}
-        />
-        <br></br>
-      </label>
-      <label>
-        {/*Option D textbox*/}
+        <div className="section-card__header" style={{ margin: '0 -1.5rem 1rem', borderRadius: 0 }}>
+          🔤 Answer Choices
+        </div>
 
-        <p>Enter Your Fourth Answer Choice (Optional)</p>
+        <div className="section-card__body">
+          {[
+            { id: 'opt-a', label: 'Option A', value: optionA, setter: setOptionA, required: true },
+            { id: 'opt-b', label: 'Option B', value: optionB, setter: setOptionB, required: true },
+            { id: 'opt-c', label: 'Option C', value: optionC, setter: setOptionC, required: false },
+            { id: 'opt-d', label: 'Option D', value: optionD, setter: setOptionD, required: false },
+          ].map(({ id, label, value, setter, required }) => (
+            <div key={id} className="section-card__row" style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+              <label htmlFor={id} style={{ fontWeight: 500, fontSize: '0.95rem' }}>
+                {label}{required && <span style={{ color: 'var(--error)' }}> *</span>}
+                {!required && <span style={{ fontWeight: 400, color: '#666', fontSize: '0.85rem' }}> (optional)</span>}
+              </label>
+              <input
+                id={id}
+                type="text"
+                value={value}
+                required={required}
+                placeholder={`Enter ${label}…`}
+                onChange={(e) => setter(e.target.value)}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
 
-        <input
-          type="text"
-          value={optionD}
-          placeholder="Option D"
-          onChange={(e) => setOptionD(e.target.value)}
-        />
-        <br></br>
-      </label>
-      {/*Display approrpiate submit message*/}
-      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
-      {/*Display submit button, and then update when clicked */}
-      <button type="button" onClick={handleSubmit} disabled={isSubmitting}>
-        {isSubmitting ? "Submitting..." : "Submit Questionaire"}
+      {/* ── Feedback & submit ─────────────────────────────────────────── */}
+      {errorMessage && (
+        <p style={{ color: 'var(--error)', fontSize: '0.9rem', marginTop: '0.75rem' }}>⚠ {errorMessage}</p>
+      )}
+      {successMessage && (
+        <p style={{ color: '#2e7d32', fontSize: '0.9rem', marginTop: '0.75rem' }}>✔ {successMessage}</p>
+      )}
+
+      <button
+        type="button"
+        onClick={handleSubmit}
+        disabled={isSubmitting}
+        style={{ marginTop: '1rem' }}
+      >
+        {isSubmitting ? "Submitting…" : "Submit Questionnaire"}
       </button>
     </div>
   );
