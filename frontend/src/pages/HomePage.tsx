@@ -89,10 +89,38 @@ const HomePage = () => {
 
   return (
     <div>
-      <div style={{ position: "absolute", top: "1rem", right: "1rem" }}>
-        {!token && <Link to="/auth">Login / Sign Up</Link>}
-        {token && <Logout />}
-      </div>
+      <nav
+        aria-label="User account navigation"
+        style={{
+          position: "absolute",
+          top: "1rem",
+          right: "1rem",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem",
+        }}
+      >
+        {!token && (
+          <Link
+            to="/auth"
+            className="nav-pill-link nav-pill-link--primary"
+          >
+            Login / Sign Up
+          </Link>
+        )}
+        {token && (
+          <>
+            <Link
+              to="/settings"
+              aria-label="Go to account settings"
+              className="nav-pill-link"
+            >
+              ⚙ Settings
+            </Link>
+            <Logout />
+          </>
+        )}
+      </nav>
 
       <PageTitle />
       <WelcomeMessage />
