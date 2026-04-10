@@ -52,11 +52,20 @@ const UserSettingsPage = () => {
     fetchUserInfo();
   }, [userId, token, navigate]);
 
+  const isValidEmail = (value: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSaving(true);
     setSuccessMessage("");
     setErrorMessage("");
+
+    if (!isValidEmail(email)) {
+      setErrorMessage("Please enter a valid email address.");
+      return;
+    }
+
+    setSaving(true);
 
     try {
       const response = await fetch(`/api/updateUser/${userId}`, {
