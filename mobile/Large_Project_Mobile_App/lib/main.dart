@@ -4,6 +4,7 @@ import 'package:group7_mobile_app/pages/RegistrationScreen.dart';
 import 'package:group7_mobile_app/pages/UserHomeScreen.dart';
 import 'package:group7_mobile_app/pages/HomeScreen.dart';
 import 'package:group7_mobile_app/pages/CreateRatingScreen.dart';
+import 'package:group7_mobile_app/pages/CreateQuestionnaireScreen.dart';
 import 'package:group7_mobile_app/pages/Loading.dart';
 import 'package:group7_mobile_app/utils/GlobalData.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +12,7 @@ import 'package:provider/provider.dart';
 void main() => runApp(ChangeNotifierProvider(
   create: (context) => GlobalData(),
   child: MaterialApp(
-    initialRoute: '/home',
+    initialRoute: '/create_questionnaire',
     title: 'KnightRate',
     debugShowCheckedModeBanner: true,
     routes: {
@@ -21,6 +22,7 @@ void main() => runApp(ChangeNotifierProvider(
       '/user_home': (context) => UserHomeScreen(),
       '/home': (context) => HomeScreen(),
       '/create_rating': (context) => CreateRatingScreen(),
+      '/create_questionnaire': (context) => CreateQuestionnaireScreen(),
     },
     navigatorObservers: [routeObserver],
   ),
