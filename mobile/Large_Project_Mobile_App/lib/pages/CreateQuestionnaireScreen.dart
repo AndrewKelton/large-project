@@ -74,6 +74,7 @@ class _CreateQuestionnairePageState extends State<CreateQuestionnairePage> with 
   void initState() {
     super.initState();
     option2Controller.addListener(() {
+      if (!mounted) return;
       setState(() {
         option3Enabled = option2Controller.text.isNotEmpty;
         if (!option3Enabled) {
@@ -84,6 +85,7 @@ class _CreateQuestionnairePageState extends State<CreateQuestionnairePage> with 
       });
     });
     option3Controller.addListener(() {
+      if (!mounted) return;
       setState(() {
         option4Enabled = option3Controller.text.isNotEmpty;
         if (!option4Enabled) {
@@ -128,6 +130,7 @@ class _CreateQuestionnairePageState extends State<CreateQuestionnairePage> with 
   String message = '';
 
   void updateErrorMessage(String msg) {
+    if (!mounted) return;
     setState(() {
       message = msg;
     });
@@ -259,7 +262,7 @@ class _CreateQuestionnairePageState extends State<CreateQuestionnairePage> with 
                   postQuestionnaire(question, option1, option2, option3, option4);
 
                   print('redirect to home page');
-                  if (Navigator.canPop(context)) {
+                  if (mounted && Navigator.canPop(context)) {
                     Navigator.pop(context);
                   }
 
