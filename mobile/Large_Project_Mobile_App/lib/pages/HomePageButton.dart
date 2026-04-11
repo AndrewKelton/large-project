@@ -33,6 +33,20 @@ abstract class HomePageButton extends StatelessWidget {
   }
 }
 
+// custom class for the logout button
+class CreateLogoutButton extends HomePageButton {
+
+  // constructor
+  const CreateLogoutButton({required VoidCallback onPressed}) : super(onPressed: onPressed);
+
+  // creates label for the button
+  @override
+  String getLabel() {
+
+    return 'Log Out';
+  }
+}
+
 // custom class for the create rating button
 class CreateRatingButton extends HomePageButton {
   // course selected

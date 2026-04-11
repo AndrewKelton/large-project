@@ -91,7 +91,21 @@ const HomePage = () => {
     <div>
       <div style={{ position: "absolute", top: "1rem", right: "1rem" }}>
         {!token && <Link to="/auth">Login / Sign Up</Link>}
-        {token && <Logout />}
+        {token && (
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <Link
+              to="/settings"
+              style={{
+                fontSize: "0.9rem",
+                color: "var(--accent)",
+                textDecoration: "none",
+              }}
+            >
+              ⚙ Account Settings
+            </Link>
+            <Logout />
+          </div>
+        )}
       </div>
 
       <PageTitle />
