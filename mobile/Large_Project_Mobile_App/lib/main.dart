@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 void main() => runApp(ChangeNotifierProvider(
   create: (context) => GlobalData(),
   child: MaterialApp(
-    initialRoute: '/create_questionnaire',
+    initialRoute: '/home',
     title: 'KnightRate',
     debugShowCheckedModeBanner: true,
     routes: {

@@ -457,7 +457,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
 
                           // navigate to create questionnaire page if user is logged in
                           if (context.read<GlobalData>().userId != '-1') { // enter if user is logged in
-                      //      Navigator.pushNamed(context, '/create_questionnaire');
+                            Navigator.pushNamed(context, '/create_questionnaire');
                           }
                           else { // enter if user isn't logged in
                             newMessageText = "Please log in to create a questionnaire.";
