@@ -133,6 +133,36 @@ class _CreateQuestionnairePageState extends State<CreateQuestionnairePage> with 
     });
   }
 
+  // post questionnaire api call
+  void postQuestionnaire(String question, String A, String B, String C, String D) async {
+
+    final userId = context.read<GlobalData>().userId;
+
+    String payload = jsonEncode({
+      "User": userId,
+      "Course": selectedCourseId,
+      "Professor": selectedProfessorId.isEmpty ? null : selectedProfessorId,
+      "Question": question,
+      "Option_A": A,
+      "Option_B": B,
+      if (C.isNotEmpty) "Option_C": C,
+      if (D.isNotEmpty) "Option_D": D,
+    });
+
+    try {
+      String url = 'http://leandrovivares.com/api/professors';
+      String ret = await AppDataPost.getJSON('http://leandrovivares.com/api/createQuestionnaire', payload);
+
+      Map<String, dynamic> decoded = jsonDecode(ret);
+      print(decoded);
+    } catch (e) {
+      updateErrorMessage('Network error — please try again.');
+      print(e.toString());
+    }
+
+    updateErrorMessage('Questionnaire submitted!');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -222,10 +252,16 @@ class _CreateQuestionnairePageState extends State<CreateQuestionnairePage> with 
                     return;
                   }
 
-                  // clear error field
+                  // all passing; clear error field
                   updateErrorMessage('');
 
-                  // api call here
+                  // API call to add questionnaire
+                  postQuestionnaire(question, option1, option2, option3, option4);
+
+                  print('redirect to home page');
+                  if (Navigator.canPop(context)) {
+                    Navigator.pop(context);
+                  }
 
                 },
                 style: ElevatedButton.styleFrom(
