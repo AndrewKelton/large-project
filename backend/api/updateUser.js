@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
 // PUT update user settings
 router.put('/:userId', async (req, res) => {
     try {
-        const { Username, Email, First_Name, Last_Name } = req.body;
+        const { Username, Email, First_Name, Last_Name, Password } = req.body;
 
         // Check if username already taken by another user
         if (Username) {
@@ -19,9 +20,12 @@ router.put('/:userId', async (req, res) => {
             if (existingEmail) return res.status(400).json({ message: 'Email already registered!' });
         }
 
+        const updateFields = { Username, Email, First_Name, Last_Name };
+        if (Password) updateFields.Password = await bcrypt.hash(Password, 10);
+
         const updated = await User.findByIdAndUpdate(
             req.params.userId,
-            { Username, Email, First_Name, Last_Name },
+            updateFields,
             { new: true, runValidators: true }
         ).select('-Password');
 
