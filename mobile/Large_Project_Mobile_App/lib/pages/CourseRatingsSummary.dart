@@ -11,7 +11,7 @@ class CourseRatingsSummary extends StatefulWidget {
   final String courseId;
 
   // constructor
-  const CourseRatingsSummary({required this.courseId});
+  const CourseRatingsSummary({super.key, required this.courseId});
 
   @override
   State<CourseRatingsSummary> createState() => _CourseRatingsSummaryState();

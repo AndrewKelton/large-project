@@ -68,6 +68,9 @@ class _HomePageState extends State<HomePage> with RouteAware {
   late String selectedCourseCode = ''; // course selected from dropdown
   late String selectedProfessorName = ''; // professor selected from dropdown
 
+  // triggers rebuild
+  int _refreshKey = 0;
+
   void loadDropdownLists() async {
 
     var jsonObjectCourses;
@@ -180,7 +183,9 @@ class _HomePageState extends State<HomePage> with RouteAware {
     setState(() {
       message = "";
       newMessageText = "";
+      _refreshKey++;
     });
+    loadDropdownLists();
   }
 
   // method to change the state of select widget attributes when called
@@ -538,7 +543,10 @@ class _HomePageState extends State<HomePage> with RouteAware {
                 ),
                 SizedBox(height: 20.0),
                 // summary of course ratings
-                CourseRatingsSummary(courseId: courseIdMap[selectedCourseCode] ?? ''),
+                CourseRatingsSummary(
+                    key: ValueKey('course_ratings_$_refreshKey'),
+                    courseId: courseIdMap[selectedCourseCode] ?? ''
+                ),
               ] // end of IF statement for selected courses summary
               else ... [ // enter if no course is selected
                 // row for message to indicate no course selected
@@ -598,7 +606,10 @@ class _HomePageState extends State<HomePage> with RouteAware {
                 ),
                 SizedBox(height: 20.0),
                 // summary of professor ratings
-                ProfessorRatingsSummary(courseId: courseIdMap[selectedCourseCode] ?? '', professorId: professorIdMap[selectedProfessorName] ?? ''),
+                ProfessorRatingsSummary(
+                    key: ValueKey('professor_ratings_$_refreshKey'),
+                    courseId: courseIdMap[selectedCourseCode] ?? '',
+                    professorId: professorIdMap[selectedProfessorName] ?? ''),
               ] // end of IF statement for selected courses summary
               else ... [ // enter if no professor is selected
                 // row for message to indicate no professor selected
