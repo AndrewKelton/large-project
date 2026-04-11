@@ -202,7 +202,30 @@ class _CreateQuestionnairePageState extends State<CreateQuestionnairePage> with 
               ElevatedButton(
                 onPressed: () {
 
-                  updateErrorMessage('Hello');
+                  // question and option field inputs
+                  final question = questionController.text.trim();
+                  final option1 = option1Controller.text.trim();
+                  final option2 = option2Controller.text.trim();
+                  final option3 = option3Controller.text.trim();
+                  final option4 = option4Controller.text.trim();
+
+                  if (question.isEmpty) {
+                    updateErrorMessage('Please enter a question.');
+                    return;
+                  }
+                  if (option1.isEmpty) {
+                    updateErrorMessage('Please enter at least 2 options.');
+                    return;
+                  }
+                  if (option2.isEmpty) {
+                    updateErrorMessage('Please enter at least 2 options.');
+                    return;
+                  }
+
+                  // clear error field
+                  updateErrorMessage('');
+
+                  // api call here
 
                 },
                 style: ElevatedButton.styleFrom(
