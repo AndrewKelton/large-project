@@ -4,6 +4,12 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
     
     // User information
+    First_Name: {
+        type: String
+    },
+    Last_Name: {
+        type: String
+    },
     Username: {
         type: String,
         required: true
@@ -15,12 +21,6 @@ const UserSchema = new Schema({
     Email: {
         type: String,
         required: true
-    },
-    First_Name: {
-        type: String
-    },
-    Last_Name: {
-        type: String
     },
 
     // Reference Entries
