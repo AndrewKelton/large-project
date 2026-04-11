@@ -20,12 +20,16 @@ router.put('/:userId', async (req, res) => {
             if (existingEmail) return res.status(400).json({ message: 'Email already registered!' });
         }
 
-        const updateFields = { Username, Email, First_Name, Last_Name };
+        const updateFields = {};
+        if (Username !== undefined) updateFields.Username = Username;
+        if (Email !== undefined) updateFields.Email = Email;
+        if (First_Name !== undefined) updateFields.First_Name = First_Name;
+        if (Last_Name !== undefined) updateFields.Last_Name = Last_Name;
         if (Password) updateFields.Password = await bcrypt.hash(Password, 10);
 
         const updated = await User.findByIdAndUpdate(
             req.params.userId,
-            updateFields,
+            { $set: updateFields },
             { new: true, runValidators: true }
         ).select('-Password');
 
