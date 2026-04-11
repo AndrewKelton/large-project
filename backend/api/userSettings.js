@@ -5,7 +5,7 @@ const User = require('../models/user');
 // GET user settings by user ID
 router.get('/:userId', async (req, res) => {
     try {
-        const user = await User.findById(req.params.userId).select('-Password');
+        const user = await User.findById(req.params.userId);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
         res.json(user);
