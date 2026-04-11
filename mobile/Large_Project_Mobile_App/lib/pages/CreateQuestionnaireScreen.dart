@@ -108,8 +108,8 @@ class _CreateQuestionnairePageState extends State<CreateQuestionnairePage> with 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontWeight: FontWeight.bold, color: enabled ? Colors.black : Colors.grey)),
-        SizedBox(height: 4),
+        Text(label, style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: enabled ? Colors.black : Colors.grey)),
+        SizedBox(height: 5),
         TextField(
           controller: controller,
           enabled: enabled,
@@ -119,9 +119,18 @@ class _CreateQuestionnairePageState extends State<CreateQuestionnairePage> with 
             border: OutlineInputBorder(),
           ),
         ),
-        SizedBox(height: 16),
+        SizedBox(height: 10),
       ],
     );
+  }
+
+  // error message updater
+  String message = '';
+
+  void updateErrorMessage(String msg) {
+    setState(() {
+      message = msg;
+    });
   }
 
   @override
@@ -146,7 +155,7 @@ class _CreateQuestionnairePageState extends State<CreateQuestionnairePage> with 
               Text(
                 'Course: ${selectedCourseName}',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500, color: Colors.white),
+                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.white),
               ),
               SizedBox(height: 8.0),
 
@@ -154,7 +163,7 @@ class _CreateQuestionnairePageState extends State<CreateQuestionnairePage> with 
               Text(
                 'Professor: ${context.read<GlobalData>().selectedProfessor}',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500, color: Colors.white),
+                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.white),
               ),
 
               Divider(
@@ -162,7 +171,7 @@ class _CreateQuestionnairePageState extends State<CreateQuestionnairePage> with 
                 color: Colors.black,
                 indent: 20,
                 endIndent: 20,
-                height: 30,
+                height: 15,
               ),
 
               Text(
@@ -180,15 +189,50 @@ class _CreateQuestionnairePageState extends State<CreateQuestionnairePage> with 
                 color: Colors.black,
                 indent: 20,
                 endIndent: 20,
-                height: 30,
+                height: 5,
               ),
 
-              SizedBox(height: 24.0),
+              SizedBox(height: 15.0),
               labeledTextField('Question', questionController, true),
               labeledTextField('Option 1', option1Controller, true),
               labeledTextField('Option 2', option2Controller, true),
               labeledTextField('Option 3', option3Controller, option3Enabled),
               labeledTextField('Option 4', option4Controller, option4Enabled),
+
+              ElevatedButton(
+                onPressed: () {
+
+                  updateErrorMessage('Hello');
+
+                },
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  backgroundColor: Colors.brown[50],
+                  foregroundColor: Colors.black,
+                  padding: EdgeInsets.all(8.0),
+                ),
+                child: Text(
+                  'Submit Questionnaire',
+                  style: TextStyle(fontSize: 15.0),
+                  textAlign: TextAlign.center,
+                )
+              ),
+
+              if (message != '') ...[
+                SizedBox(height: 10.0),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+              SizedBox(height: 100.0),
             ]
           )
         )
