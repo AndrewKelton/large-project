@@ -29,7 +29,9 @@ class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireRe
   void initState() {
     super.initState();
     loadProfessorQuestionnaires();
-    getAnsweredProfessorQuestionnaires();
+    if (context.read<GlobalData>().userId != '-1') {
+      getAnsweredProfessorQuestionnaires();
+    }
   }
 
   @override
@@ -41,7 +43,9 @@ class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireRe
         answeredProfessorQuestionnairesList = [];
       });
       loadProfessorQuestionnaires();
-      getAnsweredProfessorQuestionnaires();
+      if (context.read<GlobalData>().userId != '-1') {
+        getAnsweredProfessorQuestionnaires();
+      }
     }
   }
 
