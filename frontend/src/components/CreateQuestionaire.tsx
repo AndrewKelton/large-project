@@ -120,7 +120,7 @@ const CreateQuestionaire = ({
         </div>
         <div style={{ marginBottom: '1.1rem' }}>
           <label htmlFor="q-text" style={{ fontWeight: 500, display: 'block', marginBottom: '0.4rem' }}>
-            What's your question? <span style={{ color: 'var(--error)' }}>*</span>
+            What's your question?
           </label>
           <input
             id="q-text"
@@ -146,7 +146,7 @@ const CreateQuestionaire = ({
           ].map(({ id, label, value, setter, required }) => (
             <div key={id} className="section-card__row" style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
               <label htmlFor={id} style={{ fontWeight: 500, fontSize: '0.95rem' }}>
-                {label}{required && <span style={{ color: 'var(--error)' }}> *</span>}
+                {label}
                 {!required && <span style={{ fontWeight: 400, color: '#666', fontSize: '0.85rem' }}> (optional)</span>}
               </label>
               <input

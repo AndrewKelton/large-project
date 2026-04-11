@@ -157,6 +157,24 @@ input[type="password"]:focus {
   outline-offset: 1px;
 }
 
+/* --- Per-field validation --- */
+input.input-error {
+  border-color: var(--error) !important;
+  outline: 2px solid var(--error) !important;
+  outline-offset: 1px;
+  background: #fff5f5;
+}
+
+.field-error-msg {
+  color: var(--error);
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+  margin-bottom: 0.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
 /* --- Links --- */
 a {
   color: var(--accent);
