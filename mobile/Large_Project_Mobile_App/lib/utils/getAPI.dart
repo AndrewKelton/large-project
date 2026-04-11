@@ -4,7 +4,7 @@ import 'dart:convert';
 class AppDataPost {
 
   // static method to send http request (post method) and return json
-  static Future<String> getJSON(String url, String outgoing) async {
+  static Future<String> getJSON(String url, String outgoing, {String? token}) async {
 
     String ret = "";
 
@@ -14,6 +14,7 @@ class AppDataPost {
         headers: {
           "Accept": "application/json",
           "Content-Type": "application/json",
+          if (token != null) "Authorization": "$token",
         },
         encoding: Encoding.getByName("utf-8")
       );
@@ -29,17 +30,18 @@ class AppDataPost {
 }
 
 class AppDataGet {
-
   // static method to send http request (get method) and return json
-  static Future<String> getJSON(String url) async {
-
+  static Future<String> getJSON(String url, {String? token}) async {
     String ret = "";
 
     try {
-      http.Response response = await http.get(Uri.parse(url));
+      http.Response response = await http.get(Uri.parse(url),
+          headers: {
+            if (token != null) "Authorization": "$token",
+          }
+      );
       ret = response.body;
-    }
-    catch (e) {
+    } catch (e) {
       print(e.toString());
     }
 
