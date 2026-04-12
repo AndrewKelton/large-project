@@ -139,7 +139,7 @@ class _UserSettingsPageState extends State<UserSettingsPage> with RouteAware {
       Map<String, dynamic> decoded = jsonDecode(ret);
       print(decoded);
       firstName = decoded['First_Name'];
-      //lastName = decoded['Last_Name'];
+      lastName = decoded['Last_Name'];
       username = decoded['Username'];
       email = decoded['Email'];
       setState(() {
@@ -311,7 +311,7 @@ class _UserSettingsPageState extends State<UserSettingsPage> with RouteAware {
                   successMessage,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Colors.amber,
+                    color: Colors.amber[500],
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
                   ),
