@@ -54,8 +54,10 @@ class LoginPage extends StatefulWidget {
 
 // widget for building the login page
 class _LoginPageState extends State<LoginPage> with RouteAware {
-  String message = "";
+  String message1 = ""; // message to describe errors
+  String message2 = ""; // message to notify that temporary password was sent
   String newMessageText = "";
+  String tempPasswordMessage = "";
   // controllers for textfields (objects contain the text inputs)
   late TextEditingController loginController;
   late TextEditingController passwordController;
@@ -87,8 +89,9 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
   void didPopNext() {
     // called when coming back from another page
     setState(() {
-      message = "";
+      message1 = "";
       newMessageText = "";
+      tempPasswordMessage = "";
       loginController.clear();
       passwordController.clear();
     });
@@ -97,7 +100,16 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
   // method to change the state of select widget attributes when called
   void changeText() {
     setState(() {
-      message = newMessageText;
+      message1 = newMessageText;
+      message2 = "";
+    });
+  }
+
+  // method to change the state of select widget attributes when called
+  void changeTempPasswordMessage() {
+    setState(() {
+      message1 = "";
+      message2 = tempPasswordMessage;
     });
   }
 
@@ -128,11 +140,11 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
               ],
             ),
             // row (conditional) for potential error message
-            if (message != '') Row(
+            if (message1 != '') Row(
               children: <Widget> [
                 Expanded(
                   child: Text(
-                    '$message',
+                    '$message1',
                     style: TextStyle(
                       fontSize: 16.0,
                       color: Colors.red,
@@ -243,7 +255,7 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                 ),
               ],
             ),
-            SizedBox(height: 20.0),
+            SizedBox(height: 25.0),
             // row for registration page link
             Row(
               children: [
@@ -276,6 +288,61 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                 ),
               ],
             ),
+            SizedBox(height: 40.0),
+            // row for forgot password page link
+            Row(
+              children: [
+                Expanded(
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18.0,
+                        height: 1.2,),
+                      children: [
+                        TextSpan(text: "Forgot password?\nEnter \'Username\' above then\nclick "),
+                        TextSpan(
+                          text: "here",
+                          style: TextStyle(
+                            color: Colors.indigo[900],
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              // call api that requests temporary password be sent via NodeMailer
+                              // .......
+                              tempPasswordMessage = 'A temporary password has been sent to your email.';
+                              changeTempPasswordMessage();
+                            },
+                        ),
+                        TextSpan(text: " to request a temporary password."),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            // row (conditional) for message notifying that temporary password was sent to email
+            if (message2 != '') ... [
+              SizedBox(height: 25.0),
+              Row(
+                children: <Widget> [
+                  Expanded(
+                    child: Text(
+                      '$message2',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        color: Colors.amber[500],
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ], // end IF statement for temporary password notify
           ],
         ),
       ),
