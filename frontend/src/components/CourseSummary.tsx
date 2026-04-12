@@ -50,37 +50,18 @@ function CourseSummary({ course }: CourseSummaryProps) {
   }
 
   return (
-    <div>
-      <h3>Course Summary</h3>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
-        padding: '0.75rem 1rem',
-        marginBottom: '0.75rem',
-        backgroundColor: '#eef4fc',
-        border: '1px solid #4a90d9',
-        borderRadius: '8px',
-      }}>
-        <span style={{
-          backgroundColor: '#4a90d9',
-          color: '#fff',
-          fontWeight: 'bold',
-          fontSize: '1rem',
-          padding: '0.3rem 0.65rem',
-          borderRadius: '6px',
-          letterSpacing: '0.03em',
-          whiteSpace: 'nowrap',
-        }}>
-          {course.Code}
-        </span>
+    <div className="section-card">
+      <div className="section-card__header">Course Summary</div>
+
+      <div className="selection-chip-row">
+        <span className="selection-chip">{course.Code}</span>
         <span style={{ fontWeight: '600', fontSize: '1.05rem', color: '#1a1a1a' }}>
           {course.Name}
         </span>
         <span style={{
           marginLeft: 'auto',
           fontSize: '0.75rem',
-          color: '#4a90d9',
+          color: 'var(--appbar)',
           fontWeight: '600',
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
@@ -90,10 +71,10 @@ function CourseSummary({ course }: CourseSummaryProps) {
       </div>
 
       {courseRatings !== null ? (
-        <div style={{ border: '1px solid #ccc', borderRadius: '6px', padding: '0.75rem' }}>
+        <div className="section-card__body">
           <h4 style={{ marginTop: 0 }}>Course Ratings ({courseRatings.totalRatings} total)</h4>
-          {(Object.keys(COURSE_QUESTIONS) as Array<keyof typeof COURSE_QUESTIONS>).map((key, idx, arr) => (
-            <div key={key} style={{ paddingBottom: '0.6rem', marginBottom: '0.6rem', borderBottom: idx < arr.length - 1 ? '1px solid #eee' : 'none' }}>
+          {(Object.keys(COURSE_QUESTIONS) as Array<keyof typeof COURSE_QUESTIONS>).map((key) => (
+            <div key={key} className="section-card__row">
               <p style={{ fontWeight: 'bold', marginBottom: '0.4rem' }}>{COURSE_QUESTIONS[key]}</p>
               <StarRating value={courseRatings[key]} />
             </div>

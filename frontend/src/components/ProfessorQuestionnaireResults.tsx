@@ -148,8 +148,8 @@ function ProfessorQuestionnaireResultsComponent({ course, professor }: Professor
   const pageSlice = questionnaires.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
 
   return (
-    <div>
-      <h4>Professor Questionnaire Results</h4>
+    <div className="section-card">
+      <div className="section-card__header">Professor Questionnaire Results</div>
 
       <div style={{ marginBottom: '0.75rem' }}>
         <input
@@ -157,14 +157,6 @@ function ProfessorQuestionnaireResultsComponent({ course, professor }: Professor
           placeholder="Search professor questions…"
           value={searchQuery}
           onChange={handleSearchChange}
-          style={{
-            width: '100%',
-            padding: '0.4rem 0.6rem',
-            fontSize: '0.9rem',
-            borderRadius: '4px',
-            border: '1px solid #ccc',
-            boxSizing: 'border-box',
-          }}
         />
       </div>
 

@@ -26,6 +26,7 @@ const UserSettingsPage = () => {
   const [saving, setSaving] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<{ username?: string; email?: string }>({});
 
   useEffect(() => {
     if (!token || !userId) {
@@ -66,10 +67,16 @@ const UserSettingsPage = () => {
     setSuccessMessage("");
     setErrorMessage("");
 
-    if (!isValidEmail(email)) {
-      setErrorMessage("Please enter a valid email address.");
+    // Per-field validation
+    const errors: { username?: string; email?: string } = {};
+    if (!username.trim()) errors.username = "Username is required.";
+    if (!email.trim())    errors.email    = "Email is required.";
+    else if (!isValidEmail(email)) errors.email = "Please enter a valid email address.";
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
+    setFieldErrors({});
 
     if (password && password !== confirmPassword) {
       setErrorMessage("Passwords do not match.");
@@ -187,7 +194,7 @@ const UserSettingsPage = () => {
               <div style={{ flex: 1, textAlign: "left" }}>
                 <label
                   htmlFor="settings-firstname"
-                  style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem" }}
+                  style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
                 >
                   First Name
                 </label>
@@ -203,7 +210,7 @@ const UserSettingsPage = () => {
               <div style={{ flex: 1, textAlign: "left" }}>
                 <label
                   htmlFor="settings-lastname"
-                  style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem" }}
+                  style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
                 >
                   Last Name
                 </label>
@@ -221,7 +228,7 @@ const UserSettingsPage = () => {
             <div style={{ marginBottom: "1rem", textAlign: "left" }}>
               <label
                 htmlFor="settings-username"
-                style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem" }}
+                style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
               >
                 New Username
               </label>
@@ -229,17 +236,23 @@ const UserSettingsPage = () => {
                 id="settings-username"
                 type="text"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                className={fieldErrors.username ? "input-error" : ""}
+                onChange={(e) => { setUsername(e.target.value); setFieldErrors((f) => ({ ...f, username: undefined })); }}
                 placeholder="Username"
-                required
+                aria-describedby={fieldErrors.username ? "settings-username-err" : undefined}
+                aria-invalid={!!fieldErrors.username}
+                autoComplete="username"
                 style={{ width: "100%", boxSizing: "border-box" }}
               />
+              {fieldErrors.username && (
+                <p id="settings-username-err" className="field-error-msg">⚠ {fieldErrors.username}</p>
+              )}
             </div>
 
             <div style={{ marginBottom: "1.5rem", textAlign: "left" }}>
               <label
                 htmlFor="settings-email"
-                style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem" }}
+                style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
               >
                 New Email
               </label>
@@ -247,11 +260,17 @@ const UserSettingsPage = () => {
                 id="settings-email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                className={fieldErrors.email ? "input-error" : ""}
+                onChange={(e) => { setEmail(e.target.value); setFieldErrors((f) => ({ ...f, email: undefined })); }}
                 placeholder="Email"
-                required
+                aria-describedby={fieldErrors.email ? "settings-email-err" : undefined}
+                aria-invalid={!!fieldErrors.email}
+                autoComplete="email"
                 style={{ width: "100%", boxSizing: "border-box" }}
               />
+              {fieldErrors.email && (
+                <p id="settings-email-err" className="field-error-msg">⚠ {fieldErrors.email}</p>
+              )}
             </div>
 
             <h3 style={{ marginBottom: "0.5rem", fontWeight: 500 }}>
@@ -264,7 +283,7 @@ const UserSettingsPage = () => {
             <div style={{ marginBottom: "1rem", textAlign: "left" }}>
               <label
                 htmlFor="settings-password"
-                style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem" }}
+                style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
               >
                 New Password
               </label>
@@ -282,7 +301,7 @@ const UserSettingsPage = () => {
             <div style={{ marginBottom: "1.5rem", textAlign: "left" }}>
               <label
                 htmlFor="settings-confirm-password"
-                style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem" }}
+                style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
               >
                 Confirm New Password
               </label>
