@@ -47,6 +47,20 @@ class CreateLogoutButton extends HomePageButton {
   }
 }
 
+// custom class for the user account settings button
+class CreateSettingsButton extends HomePageButton {
+
+  // constructor
+  const CreateSettingsButton({required VoidCallback onPressed}) : super(onPressed: onPressed);
+
+  // creates label for the button
+  @override
+  String getLabel() {
+
+    return 'Settings';
+  }
+}
+
 // custom class for the create rating button
 class CreateRatingButton extends HomePageButton {
   // course selected
