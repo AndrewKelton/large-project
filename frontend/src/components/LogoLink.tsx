@@ -10,8 +10,10 @@ function LogoLink() {
             id="logo-link"
             onClick={() => navigate('/')}
             aria-label="Go to homepage"
+            title="Go to homepage"
         >
             <img src={logo} alt="KnightRate logo" id="logo-img" />
+            <span id="logo-home-label">Home</span>
         </button>
     );
 }

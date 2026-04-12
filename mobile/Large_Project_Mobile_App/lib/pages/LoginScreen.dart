@@ -213,8 +213,18 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                       // check response object to verify successful login
                       if (jsonObject.containsKey('message')) {
                         if (jsonObject['message'] == 'Login Successful') {
+                          // set token after successful login
+                          context.read<GlobalData>().setToken(jsonObject['token']);
+
+                          // decode userId from JWT token
+                          final parts = context.read<GlobalData>().token.split('.');
+                          final payload = parts[1];
+                          final decoded = utf8.decode(base64Url.decode(base64Url.normalize(payload)));
+                          final map = jsonDecode(decoded);
+
                           // set global variable for userId upon successful login
-                          context.read<GlobalData>().setUserId(jsonObject['userId']);
+                          context.read<GlobalData>().setUserId(map['userId']);
+
                           // navigate to home page while removing everything from the stack before pushing the new route
                           Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
                           print('userId global: ${context.read<GlobalData>().userId}');

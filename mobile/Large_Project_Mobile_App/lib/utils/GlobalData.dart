@@ -7,6 +7,7 @@ class GlobalData extends ChangeNotifier {
   String _selectedCourse = '';
   String _selectedProfessorId = ''; // (test id 69c746a172bc22bb12d805e3)
   String _selectedProfessor = ''; // (test name Tanvir Ahmed)
+  String _token = '';
 
   // get methods
   String get userId => _userId;
@@ -14,6 +15,7 @@ class GlobalData extends ChangeNotifier {
   String get selectedCourse => _selectedCourse;
   String get selectedProfessorId => _selectedProfessorId;
   String get selectedProfessor => _selectedProfessor;
+  String get token => _token;
 
   // set methods
   void setUserId(String userId) {
@@ -39,5 +41,10 @@ class GlobalData extends ChangeNotifier {
   void setSelectedProfessor(String selectedProfessor) {
     _selectedProfessor = selectedProfessor;
     notifyListeners();  // rebuilds widgets listening to GlobalData
+  }
+
+  void setToken(String token) {
+    _token = token;
+    notifyListeners();
   }
 }
