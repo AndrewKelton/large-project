@@ -147,8 +147,8 @@ function CourseQuestionnaireResultsComponent({ course }: CourseQuestionnaireResu
   const pageSlice = questionnaires.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
 
   return (
-    <div>
-      <h4>Course Questionnaire Results</h4>
+    <div className="section-card">
+      <div className="section-card__header">Course Questionnaire Results</div>
 
       <div style={{ marginBottom: '0.75rem' }}>
         <input
@@ -156,14 +156,6 @@ function CourseQuestionnaireResultsComponent({ course }: CourseQuestionnaireResu
           placeholder="Search course questions…"
           value={searchQuery}
           onChange={handleSearchChange}
-          style={{
-            width: '100%',
-            padding: '0.4rem 0.6rem',
-            fontSize: '0.9rem',
-            borderRadius: '4px',
-            border: '1px solid #ccc',
-            boxSizing: 'border-box',
-          }}
         />
       </div>
 

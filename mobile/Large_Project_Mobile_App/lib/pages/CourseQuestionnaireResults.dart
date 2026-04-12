@@ -4,6 +4,7 @@ import 'package:group7_mobile_app/utils/GlobalData.dart';
 import 'dart:convert';
 import 'package:provider/provider.dart';
 import 'dart:math';
+import 'dart:async';
 
 class CourseQuestionnaireResults extends StatefulWidget {
   final String courseId;
@@ -21,12 +22,21 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
   // used for pagination
   static const int pageSize = 3;
   int currentPage = 0;
+  // controllers for textfields (objects contain the text inputs)
+  late TextEditingController searchController;
+  // message related to questionnaire
+  String questionnaireMessage = '';
+  // timer to make sure that some amount of time has passed before using onChange property of textfield
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
+    searchController = TextEditingController();
     loadCourseQuestionnaires();
-    getAnsweredCourseQuestionnaires();
+    if (context.read<GlobalData>().userId != '-1') {
+      getAnsweredCourseQuestionnaires();
+    }
   }
 
   @override
@@ -38,12 +48,23 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
         courseQuestionnaireObjects = [];
         answeredCourseQuestionnairesList = [];
       });
+      questionnaireMessage = '';
+      searchController.clear();
       loadCourseQuestionnaires();
-      getAnsweredCourseQuestionnaires();
+      if (context.read<GlobalData>().userId != '-1') {
+        getAnsweredCourseQuestionnaires();
+      }
     }
   }
 
-  // function to get the course ratings from database
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    searchController.dispose();
+    super.dispose();
+  }
+
+  // function to get the course questionnaires from database
   void loadCourseQuestionnaires({int? restorePage}) async {
     String courseId = widget.courseId.trim();
     String url = "http://leandrovivares.com/api/fetchCO/course/${courseId}";
@@ -56,6 +77,10 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
       setState(() {
         // only reset to 0 if no restore page is passed as an argument
         currentPage = restorePage ?? 0;
+        int numQuestionnaires = questionnaires.length;
+        if (numQuestionnaires == 0) {
+          questionnaireMessage = 'No Questionnaire Yet - Check back later!';
+        }
         courseQuestionnaireObjects = questionnaires.map((q) {
           return {
             "questionnaire_id": q["_id"],
@@ -67,7 +92,39 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
           };
         }).toList().cast<Map<String, dynamic>>();
       });
+    } catch (e) {
+      print('Course questionnaire results error: ${e.toString()}');
+    }
+  }
 
+  // function to get the SEARCHED course ratings from database
+  void loadSearchCourseQuestionnaires({int? restorePage}) async {
+    String courseId = widget.courseId.trim();
+    String url = "http://leandrovivares.com/api/searchCO/search?query=${searchController.text}&courseId=${courseId}";
+
+    try {
+      String ret = await AppDataGet.getJSON(url);
+      Map<String, dynamic> decoded = json.decode(ret);
+      List<dynamic> questionnaires = decoded["results"];
+
+      setState(() {
+        // only reset to 0 if no restore page is passed as an argument
+        currentPage = restorePage ?? 0;
+        int numQuestionnaires = questionnaires.length;
+        if (numQuestionnaires == 0) {
+          questionnaireMessage = 'No questions match \"${searchController.text}\"';
+        }
+        courseQuestionnaireObjects = questionnaires.map((q) {
+          return {
+            "questionnaire_id": q["_id"],
+            "question": q["Question"],
+            "options": {"A": q["Option_A"], "B": q["Option_B"], "C": q["Option_C"], "D": q["Option_D"]},
+            "counts": {"A": q["Option_A_Count"], "B": q["Option_B_Count"], "C": q["Option_C_Count"], "D": q["Option_D_Count"]},
+            "_showQuestions": false,
+            "answerMessage": '',
+          };
+        }).toList().cast<Map<String, dynamic>>();
+      });
     } catch (e) {
       print('Course questionnaire results error: ${e.toString()}');
     }
@@ -102,24 +159,73 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
     return Column(
       children: [
         // title bar
-        if (courseQuestionnaireObjects.isNotEmpty) ...[
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Course Questionnaire Results',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 25.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Course Questionnaire Results',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
-            ],
+            ),
+          ],
+        ),
+        SizedBox(height: 5.0),
+        // row for search textfield
+        Row (
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget> [
+            SizedBox(
+              width: 300,
+              child: TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(),
+                  hintText: 'Search course questions...',
+                ),
+                onChanged: (value) {
+                  if (_debounce?.isActive ?? false) {
+                    _debounce!.cancel();
+                  }
+                  _debounce = Timer(const Duration(milliseconds: 500), () {
+                    print('Search text changed: $value');
+                    if (searchController.text != '') {
+                      questionnaireMessage = '';
+                      // load only the questionnaires matching the search textfield if not blank
+                      loadSearchCourseQuestionnaires();
+                    }
+                    else {
+                      setState(() {
+                        questionnaireMessage = '';
+                        // load complete list of questionnaires if the search textfield is blank
+                        loadCourseQuestionnaires();
+                      });
+                    }
+                  });
+                }
+              ),
+            )
+          ],
+        ),
+        // row for potential error message after clicking search questionnaires
+        if (questionnaireMessage != '') ... [
+          SizedBox(height: 20.0),
+          Text(
+              questionnaireMessage,
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+              )
           ),
-          SizedBox(height: 5.0),
         ],
+        SizedBox(height: 5.0),
 
         // questionnaire cards
         ...pageSlice.asMap().entries.map((entry) {
@@ -162,12 +268,15 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
                         child: Text(q["question"], style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),
                       ),
                       SizedBox(width: 5.0),
-                      if (answeredCourseQuestionnairesList.any((item) => item == q['questionnaire_id'])) ... [
-                        AnsweredTag(),
-                      ] // end of if statement for 'Answered/Unanswered'
-                      else ... [ // enter if the question was unanswered by the user
-                        UnansweredTag(),
-                      ], // end of else statement for 'Answered/Unanswered'
+                      // check if user is logged (if so, then indicate whether question is answered or unanswered)
+                      if (context.read<GlobalData>().userId != '-1') ... [ // enter if user is signed in
+                        if (answeredCourseQuestionnairesList.any((item) => item == q['questionnaire_id'])) ... [
+                          AnsweredTag(),
+                        ] // end of if statement for 'Answered/Unanswered'
+                        else ... [ // enter if the question was unanswered by the user
+                          UnansweredTag(),
+                        ], // end of else statement for 'Answered/Unanswered'
+                      ],
                     ],
                   ),
                 ),
@@ -192,8 +301,13 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
                           courseQuestionnaireObjects[curIndex]["_showQuestions"] = !courseQuestionnaireObjects[curIndex]["_showQuestions"];
                           if (message == 'Response recorded successfully') {
                             courseQuestionnaireObjects[curIndex]["answerMessage"] = '';
-                            loadCourseQuestionnaires(restorePage: pageToRestore);
-                            getAnsweredCourseQuestionnaires();
+                            if (searchController.text == '') { // enter when there isn't search text
+                              loadCourseQuestionnaires(restorePage: pageToRestore);
+                            }
+                            else { // enter when there is search text
+                              loadSearchCourseQuestionnaires(restorePage: pageToRestore);
+                            }
+                           getAnsweredCourseQuestionnaires();
                           }
                           else {
                             courseQuestionnaireObjects[curIndex]["answerMessage"] = message ?? '';
@@ -202,37 +316,40 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
                       },
                     )
                   : QuestionnaireResults(options: options, counts: counts, totalVotes: totalVotes, answerMessage: answerMessage),
+                // check if the user is signed in
+                if (context.read<GlobalData>().userId != '-1') ... [ // enter if user has signed in
                 // button for answer questions (only displayed when a question is marked 'unanswered')
-                if (!(answeredCourseQuestionnairesList.any((item) => item == q['questionnaire_id']))) ... [ // enter if user can answer this question
-                  if (!(courseQuestionnaireObjects[globalIndex]["_showQuestions"] as bool)) ... [ // enter if the user clicked button to answer questionnaire
-                    Center(
-                      child: SizedBox(
-                        width: 200.0,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              print('Clicked \'Answer this Question\' Button');
-                              courseQuestionnaireObjects[globalIndex]["_showQuestions"] = !courseQuestionnaireObjects[globalIndex]["_showQuestions"];
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                  if (!(answeredCourseQuestionnairesList.any((item) => item == q['questionnaire_id']))) ... [ // enter if user can answer this question
+                    if (!(courseQuestionnaireObjects[globalIndex]["_showQuestions"] as bool)) ... [ // enter if the user clicked button to answer questionnaire
+                      Center(
+                        child: SizedBox(
+                          width: 200.0,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                print('Clicked \'Answer this Question\' Button');
+                                courseQuestionnaireObjects[globalIndex]["_showQuestions"] = !courseQuestionnaireObjects[globalIndex]["_showQuestions"];
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              backgroundColor: Colors.brown[50],
+                              foregroundColor: Colors.black,
+                              padding: EdgeInsets.all(8.0),
                             ),
-                            backgroundColor: Colors.brown[50],
-                            foregroundColor: Colors.black,
-                            padding: EdgeInsets.all(8.0),
-                          ),
-                          child: Text(
-                            'Answer this Question',
-                            style: TextStyle(fontSize: 15.0),
-                            textAlign: TextAlign.center,
+                            child: Text(
+                              'Answer this Question',
+                              style: TextStyle(fontSize: 15.0),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   ],
-                ],
+                ], // end if statement that checks if the user is signed in
               ],
             ),
           );

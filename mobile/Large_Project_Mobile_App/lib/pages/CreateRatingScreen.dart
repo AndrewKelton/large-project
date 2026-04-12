@@ -36,7 +36,7 @@ class _CreateRatingScreenState extends State<CreateRatingScreen> {
             ),
           ],
         ),
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
       ),
       backgroundColor: Colors.blue,
       body: CreateRatingPage(),
@@ -213,16 +213,19 @@ class _CreateRatingPageState extends State<CreateRatingPage> with RouteAware {
       Map<String, dynamic> decoded = json.decode(ret);
       print(decoded);
       print('decoded["__v"] = ${decoded["__v"]}');
-      if (decoded["__v"] == null) {
+      if (decoded["__v"] == null) { // enter when api throws back an input error
         newMessageText = decoded['message'];
         changeText();
       }
       else {
-// redirect back to the home page
+        // redirect back to the home page by popping the screen off the stack
         print('redirect to home page');
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context);
+        }
       }
     } catch (e) {
-      print('Course questionnaire submit answer error: ${e.toString()}');
+      print('Rating submit answer error: ${e.toString()}');
     }
   }
 

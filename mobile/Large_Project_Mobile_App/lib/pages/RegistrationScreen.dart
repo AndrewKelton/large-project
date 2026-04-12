@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:group7_mobile_app/main.dart';
@@ -25,11 +24,19 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     final data = context.watch<GlobalData>(); // rebuild widget if global data changes
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'COP 4331 Group 7 Large Project',
-          textAlign: TextAlign.center,
+        title: Column(
+          children: [
+            Text(
+              'COP 4331 Group 7 Large Project',
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              'Welcome to KnightRate',
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
       ),
       backgroundColor: Colors.blue,
       body: RegistrationPage(),
@@ -127,7 +134,7 @@ class _RegistrationPageState extends State<RegistrationPage> with RouteAware {
                     'REGISTER',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 16.0,
+                      fontSize: 18.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
@@ -239,81 +246,72 @@ class _RegistrationPageState extends State<RegistrationPage> with RouteAware {
                 ),
               ],
             ),
+            SizedBox(height: 10.0),
             // row for registration button
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget> [
-                RegisterButton(
-                  onPressed: () async {
-                    newMessageText = "";
-                    changeText();
-
-                    // checkout that the two password textfields match
-                    if (passwordController.text.trim() != confirmPasswordController.text.trim()) {
-
-                      newMessageText = "Password entries must match!";
+                SizedBox(
+                  width: 120.0,
+                  child: RegisterButton(
+                    onPressed: () async {
+                      newMessageText = "";
                       changeText();
-                      return;
-                    }
 
-                    String payload = '{"FirstName":"${firstNameController.text.trim()}", '
-                        '              "LastName":"${lastNameController.text.trim()}", '
-                        '              "Email":"${emailAddressController.text.trim()}", '
-                        '              "Username":"${usernameController.text.trim()}", '
-                        '               "Password":"${passwordController.text.trim()}"}';
-                    print(payload);
-                    var userId = -1;
-                    var jsonObject;
+                      // checkout that the two password textfields match
+                      if (passwordController.text.trim() != confirmPasswordController.text.trim()) {
 
-                    try {
-                      String url = 'http://leandrovivares.com/api/register';
-                      String ret = await AppDataPost.getJSON(url, payload);
-                      jsonObject = json.decode(ret);
-                      print(jsonObject);
-                      //userId = jsonObject['id'];
-                    }
-                    catch (e) {
-                      newMessageText = e.toString();
-                      changeText();
-                      return;
-                    }
-/*
-                    if (userId <= 0) {
-                      newMessageText = "Incorrect Login/Password";
-                      changeText();
-                    }
-                    else {
-                      GlobalData.userId = userId;
-                      GlobalData.firstName = jsonObject['firstName'];
-                      GlobalData.lastName = jsonObject['lastName'];
-                      GlobalData.loginName = loginName;
-                      GlobalData.password = password;
-                      Navigator.pushNamed(context, '/user_home');
-                    }
-*/
-                    if (jsonObject.containsKey('message')) {
-                      if (jsonObject['message'] == 'Account created successfully') {
-                        // navigate to login page
-                        Navigator.pushNamed(context, '/login');
-                        newMessageText = "Account created successfully! Redirecting to Login Screen...";
+                        newMessageText = "Password entries must match!";
+                        changeText();
+                        return;
+                      }
+
+                      String payload = '{"First_Name":"${firstNameController.text.trim()}", '
+                          '              "Last_Name":"${lastNameController.text.trim()}", '
+                          '              "Email":"${emailAddressController.text.trim()}", '
+                          '              "Username":"${usernameController.text.trim()}", '
+                          '               "Password":"${passwordController.text.trim()}"}';
+                      print(payload);
+
+                      var jsonObject;
+
+                      try {
+                        String url = 'http://leandrovivares.com/api/register';
+                        String ret = await AppDataPost.getJSON(url, payload);
+                        jsonObject = json.decode(ret);
+                        print(jsonObject);
+                      }
+                      catch (e) {
+                        newMessageText = e.toString();
+                        changeText();
+                        return;
+                      }
+
+                      // check response object to verify successful registrations
+                      if (jsonObject.containsKey('message')) {
+                        if (jsonObject['message'] == 'Account created successfully') {
+                          newMessageText = "Account created successfully! Redirecting to Login Screen...";
+                          changeText();
+                          // delay to allow time for user to read message before redirecting to another page
+                          await Future.delayed(Duration(milliseconds: 1500));
+                          // navigate to login page after popping the current registration page from the stack
+                          Navigator.popAndPushNamed(context, '/login');
+                        }
+                        else {
+                          newMessageText = jsonObject['message'];
+                          changeText();
+                        }
+                      }
+                      else if (jsonObject.containsKey('errors')) {
+                        newMessageText = jsonObject['errors'][0]['msg'];
                         changeText();
                       }
                       else {
-                        newMessageText = jsonObject['message'];
+                        newMessageText = "Unknown Error!";
                         changeText();
                       }
-                    }
-                    else if (jsonObject.containsKey('errors')) {
-                      //print(jsonObject['errors'][0]['msg']);
-                      //print(jsonObject['errors'][0].runtimeType);
-                      newMessageText = jsonObject['errors'][0]['msg'];
-                      changeText();
-                    }
-                    else {
-                      newMessageText = "Unknown Error!";
-                      changeText();
-                    }
-                  },
+                    },
+                  ),
                 ),
               ],
             ),
@@ -325,7 +323,7 @@ class _RegistrationPageState extends State<RegistrationPage> with RouteAware {
                     '$message',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 14.0,
+                      fontSize: 16.0,
                       color: Colors.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -333,30 +331,19 @@ class _RegistrationPageState extends State<RegistrationPage> with RouteAware {
                 ),
               ],
             ),
-            // row for registration page link
+            SizedBox(height: 20.0),
+            // row for login page link
             Row(
               children: [
                 Expanded(
                   child: RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(
-                      style: TextStyle(color: Colors.black),
-                      children: [
-                        TextSpan(text: "Already have an account? Click "),
-                        TextSpan(
-                          text: "here",
-                          style: TextStyle(
-                            color: Colors.indigo[900],
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              Navigator.pushNamed(context, '/login');
-                            },
-                        ),
-                        TextSpan(text: " to Login."),
-                      ],
+                      text: 'Already have an account? Please go back to Login.',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18.0,
+                        height: 1.2,),
                     ),
                   ),
                 ),
@@ -390,7 +377,7 @@ class RegisterButton extends StatelessWidget {
       ),
       child: Text(
         'Sign Me Up!',
-        style: TextStyle(fontSize: 14.0),
+        style: TextStyle(fontSize: 16.0),
       ),
     );
   }

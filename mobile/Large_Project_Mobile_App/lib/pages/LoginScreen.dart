@@ -25,11 +25,19 @@ class _LoginScreenState extends State<LoginScreen> {
     final data = context.watch<GlobalData>(); // rebuild widget if global data changes
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'COP 4331 Group 7 Large Project',
-          textAlign: TextAlign.center,
+        title: Column(
+          children: [
+            Text(
+              'COP 4331 Group 7 Large Project',
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              'Welcome to KnightRate',
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
       ),
       backgroundColor: Colors.blue,
       body: LoginPage(),
@@ -46,8 +54,10 @@ class LoginPage extends StatefulWidget {
 
 // widget for building the login page
 class _LoginPageState extends State<LoginPage> with RouteAware {
-  String message = "";
+  String message1 = ""; // message to describe errors
+  String message2 = ""; // message to notify that temporary password was sent
   String newMessageText = "";
+  String tempPasswordMessage = "";
   // controllers for textfields (objects contain the text inputs)
   late TextEditingController loginController;
   late TextEditingController passwordController;
@@ -79,8 +89,9 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
   void didPopNext() {
     // called when coming back from another page
     setState(() {
-      message = "";
+      message1 = "";
       newMessageText = "";
+      tempPasswordMessage = "";
       loginController.clear();
       passwordController.clear();
     });
@@ -89,7 +100,16 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
   // method to change the state of select widget attributes when called
   void changeText() {
     setState(() {
-      message = newMessageText;
+      message1 = newMessageText;
+      message2 = "";
+    });
+  }
+
+  // method to change the state of select widget attributes when called
+  void changeTempPasswordMessage() {
+    setState(() {
+      message1 = "";
+      message2 = tempPasswordMessage;
     });
   }
 
@@ -111,7 +131,7 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                     'PLEASE LOG IN',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 16.0,
+                      fontSize: 18.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
@@ -120,13 +140,13 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
               ],
             ),
             // row (conditional) for potential error message
-            if (message != '') Row(
+            if (message1 != '') Row(
               children: <Widget> [
                 Expanded(
                   child: Text(
-                    '$message',
+                    '$message1',
                     style: TextStyle(
-                      fontSize: 14.0,
+                      fontSize: 16.0,
                       color: Colors.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -141,9 +161,6 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                   width: 250,
                   child: TextField(
                     controller: loginController,
-                 /*   onChanged: (text) {
-                      loginName = text;
-                    },*/
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
@@ -162,9 +179,6 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                   child: TextField(
                     controller: passwordController,
                     obscureText: true,
-               /*     onChanged: (text) {
-                      password = text;
-                    },*/
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
@@ -175,55 +189,73 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                 ),
               ],
             ),
+            SizedBox(height: 10.0),
             // row for login button
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget> [
-                LoginButton(
-                  onPressed: () async {
-                    newMessageText = "";
-                    changeText();
-                    String username = loginController.text.trim();
-                    String password = passwordController.text.trim();
-                    String payload = '{"Username":"${loginController.text.trim()}", "Password":"${passwordController.text.trim()}"}';
-
-                    print('password = ${password}');
-                    print('payload = ${payload}');
-
-                    var jsonObject;
-
-                    try {
-                      String url = 'http://leandrovivares.com/api/login';
-                      String ret = await AppDataPost.getJSON(url, payload);
-                      jsonObject = json.decode(ret);
-                      print('jsonObject = ${jsonObject}');
-                      context.read<GlobalData>().setUserId(jsonObject['userId']);
-                      print('jsonObject = $jsonObject');
-                    }
-                    catch (e) {
-                      newMessageText = e.toString();
+                SizedBox(
+                  width: 100.0,
+                  child: LoginButton(
+                    onPressed: () async {
+                      newMessageText = "";
                       changeText();
-                      return;
-                    }
+                      String username = loginController.text.trim();
+                      String password = passwordController.text.trim();
+                      String payload = '{"Username":"${loginController.text.trim()}", "Password":"${passwordController.text.trim()}"}';
 
-                    if (jsonObject.containsKey('message')) {
-                      if (jsonObject['message'] == 'Login Successful') {
-                        // navigate to user home page
-                        Navigator.pushNamed(context, '/user_home');
+                      print('password = ${username}');
+                      print('password = ${password}');
+                      print('payload = ${payload}');
+
+                      var jsonObject;
+
+                      try {
+                        String url = 'http://leandrovivares.com/api/login';
+                        String ret = await AppDataPost.getJSON(url, payload);
+                        jsonObject = json.decode(ret);
+                        print('jsonObject = ${jsonObject}');
+                      }
+                      catch (e) {
+                        newMessageText = e.toString();
+                        changeText();
+                        return;
+                      }
+
+                      // check response object to verify successful login
+                      if (jsonObject.containsKey('message')) {
+                        if (jsonObject['message'] == 'Login Successful') {
+                          // set token after successful login
+                          context.read<GlobalData>().setToken(jsonObject['token']);
+
+                          // decode userId from JWT token
+                          final parts = context.read<GlobalData>().token.split('.');
+                          final payload = parts[1];
+                          final decoded = utf8.decode(base64Url.decode(base64Url.normalize(payload)));
+                          final map = jsonDecode(decoded);
+
+                          // set global variable for userId upon successful login
+                          context.read<GlobalData>().setUserId(map['userId']);
+
+                          // navigate to home page while removing everything from the stack before pushing the new route
+                          Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+                          print('userId global: ${context.read<GlobalData>().userId}');
+                        }
+                        else {
+                          newMessageText = jsonObject['message'];
+                          changeText();
+                        }
                       }
                       else {
-                        newMessageText = jsonObject['message'];
+                        newMessageText = 'Unknown Error!';
                         changeText();
                       }
-                    }
-                    else {
-                      newMessageText = 'Unknown Error!';
-                      changeText();
-                    }
-                  },
+                    },
+                  ),
                 ),
               ],
             ),
+            SizedBox(height: 25.0),
             // row for registration page link
             Row(
               children: [
@@ -231,9 +263,12 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                   child: RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18.0,
+                        height: 1.2,),
                       children: [
-                        TextSpan(text: "Don't have an account? Click "),
+                        TextSpan(text: "Don't have an account?\nClick "),
                         TextSpan(
                           text: "here",
                           style: TextStyle(
@@ -253,6 +288,61 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                 ),
               ],
             ),
+            SizedBox(height: 40.0),
+            // row for forgot password page link
+            Row(
+              children: [
+                Expanded(
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18.0,
+                        height: 1.2,),
+                      children: [
+                        TextSpan(text: "Forgot password?\nEnter \'Username\' above then\nclick "),
+                        TextSpan(
+                          text: "here",
+                          style: TextStyle(
+                            color: Colors.indigo[900],
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              // call api that requests temporary password be sent via NodeMailer
+                              // .......
+                              tempPasswordMessage = 'A temporary password has been sent to your email.';
+                              changeTempPasswordMessage();
+                            },
+                        ),
+                        TextSpan(text: " to request a temporary password."),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            // row (conditional) for message notifying that temporary password was sent to email
+            if (message2 != '') ... [
+              SizedBox(height: 25.0),
+              Row(
+                children: <Widget> [
+                  Expanded(
+                    child: Text(
+                      '$message2',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        color: Colors.amber[500],
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ], // end IF statement for temporary password notify
           ],
         ),
       ),
@@ -281,9 +371,11 @@ class LoginButton extends StatelessWidget {
       ),
       child: Text(
         'Login',
-        style: TextStyle(fontSize: 14.0),
+        style: TextStyle(fontSize: 16.0),
       ),
     );
   }
 }
+
+
 
