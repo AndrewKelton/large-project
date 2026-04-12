@@ -18,10 +18,15 @@ const UserSettingsPage = () => {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<{ username?: string; email?: string }>({});
 
   useEffect(() => {
     if (!token || !userId) {
@@ -42,6 +47,8 @@ const UserSettingsPage = () => {
         setUserInfo(data);
         setUsername(data.Username);
         setEmail(data.Email);
+        setFirstName(data.First_Name);
+        setLastName(data.Last_Name);
       } catch {
         setErrorMessage("Network error — could not load account info.");
       } finally {
@@ -60,21 +67,45 @@ const UserSettingsPage = () => {
     setSuccessMessage("");
     setErrorMessage("");
 
-    if (!isValidEmail(email)) {
-      setErrorMessage("Please enter a valid email address.");
+    // Per-field validation
+    const errors: { username?: string; email?: string } = {};
+    if (!username.trim()) errors.username = "Username is required.";
+    if (!email.trim())    errors.email    = "Email is required.";
+    else if (!isValidEmail(email)) errors.email = "Please enter a valid email address.";
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+    setFieldErrors({});
+
+    if (password && password !== confirmPassword) {
+      setErrorMessage("Passwords do not match.");
+      return;
+    }
+
+    if (password && password.length < 5) {
+      setErrorMessage("Password must be at least 5 characters.");
       return;
     }
 
     setSaving(true);
 
     try {
+      const body: Record<string, string> = {
+        Username: username,
+        Email: email,
+        First_Name: firstName,
+        Last_Name: lastName,
+      };
+      if (password) body.Password = password;
+
       const response = await fetch(`/api/updateUser/${userId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ Username: username, Email: email }),
+        body: JSON.stringify(body),
       });
 
       const data = await response.json();
@@ -87,6 +118,10 @@ const UserSettingsPage = () => {
       setUserInfo(data);
       setUsername(data.Username);
       setEmail(data.Email);
+      setFirstName(data.First_Name);
+      setLastName(data.Last_Name);
+      setPassword("");
+      setConfirmPassword("");
       setSuccessMessage("Account updated successfully!");
     } catch {
       setErrorMessage("Network error — could not save changes.");
@@ -155,10 +190,45 @@ const UserSettingsPage = () => {
               Update Info
             </h3>
 
+            <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1rem" }}>
+              <div style={{ flex: 1, textAlign: "left" }}>
+                <label
+                  htmlFor="settings-firstname"
+                  style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
+                >
+                  First Name
+                </label>
+                <input
+                  id="settings-firstname"
+                  type="text"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder="First Name"
+                  style={{ width: "100%", boxSizing: "border-box" }}
+                />
+              </div>
+              <div style={{ flex: 1, textAlign: "left" }}>
+                <label
+                  htmlFor="settings-lastname"
+                  style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
+                >
+                  Last Name
+                </label>
+                <input
+                  id="settings-lastname"
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  placeholder="Last Name"
+                  style={{ width: "100%", boxSizing: "border-box" }}
+                />
+              </div>
+            </div>
+
             <div style={{ marginBottom: "1rem", textAlign: "left" }}>
               <label
                 htmlFor="settings-username"
-                style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem" }}
+                style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
               >
                 New Username
               </label>
@@ -166,17 +236,23 @@ const UserSettingsPage = () => {
                 id="settings-username"
                 type="text"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                className={fieldErrors.username ? "input-error" : ""}
+                onChange={(e) => { setUsername(e.target.value); setFieldErrors((f) => ({ ...f, username: undefined })); }}
                 placeholder="Username"
-                required
+                aria-describedby={fieldErrors.username ? "settings-username-err" : undefined}
+                aria-invalid={!!fieldErrors.username}
+                autoComplete="username"
                 style={{ width: "100%", boxSizing: "border-box" }}
               />
+              {fieldErrors.username && (
+                <p id="settings-username-err" className="field-error-msg">⚠ {fieldErrors.username}</p>
+              )}
             </div>
 
             <div style={{ marginBottom: "1.5rem", textAlign: "left" }}>
               <label
                 htmlFor="settings-email"
-                style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem" }}
+                style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
               >
                 New Email
               </label>
@@ -184,9 +260,58 @@ const UserSettingsPage = () => {
                 id="settings-email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                className={fieldErrors.email ? "input-error" : ""}
+                onChange={(e) => { setEmail(e.target.value); setFieldErrors((f) => ({ ...f, email: undefined })); }}
                 placeholder="Email"
-                required
+                aria-describedby={fieldErrors.email ? "settings-email-err" : undefined}
+                aria-invalid={!!fieldErrors.email}
+                autoComplete="email"
+                style={{ width: "100%", boxSizing: "border-box" }}
+              />
+              {fieldErrors.email && (
+                <p id="settings-email-err" className="field-error-msg">⚠ {fieldErrors.email}</p>
+              )}
+            </div>
+
+            <h3 style={{ marginBottom: "0.5rem", fontWeight: 500 }}>
+              Change Password
+            </h3>
+            <p style={{ margin: "0 0 1rem", fontSize: "0.85rem", color: "var(--text)" }}>
+              Leave blank to keep your current password.
+            </p>
+
+            <div style={{ marginBottom: "1rem", textAlign: "left" }}>
+              <label
+                htmlFor="settings-password"
+                style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
+              >
+                New Password
+              </label>
+              <input
+                id="settings-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="New password"
+                autoComplete="new-password"
+                style={{ width: "100%", boxSizing: "border-box" }}
+              />
+            </div>
+
+            <div style={{ marginBottom: "1.5rem", textAlign: "left" }}>
+              <label
+                htmlFor="settings-confirm-password"
+                style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
+              >
+                Confirm New Password
+              </label>
+              <input
+                id="settings-confirm-password"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm new password"
+                autoComplete="new-password"
                 style={{ width: "100%", boxSizing: "border-box" }}
               />
             </div>

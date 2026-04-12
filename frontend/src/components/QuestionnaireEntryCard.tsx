@@ -89,7 +89,7 @@ function QuestionnaireEntryCard({ entry, courseId, professorId, alreadyAnswered 
   // Answer form view
   if (mode === 'answer') {
     return (
-      <div style={{ position: 'relative', marginBottom: '1rem', padding: '0.75rem', border: '1px solid #4a90d9', borderRadius: '6px' }}>
+      <div className="entry-card">
         {/* Status tag */}
         <span style={{
           position: 'absolute',
@@ -161,7 +161,7 @@ function QuestionnaireEntryCard({ entry, courseId, professorId, alreadyAnswered 
   // Results view
   const hasAnswered = alreadyAnswered || answeredSuccessfully;
   return (
-    <div style={{ position: 'relative', marginBottom: '1rem', padding: '0.75rem', border: '1px solid #ccc', borderRadius: '6px' }}>
+    <div className="entry-card">
       {/* Status tag */}
       {isLoggedIn && (
         <span style={{

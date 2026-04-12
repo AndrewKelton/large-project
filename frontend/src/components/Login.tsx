@@ -9,80 +9,108 @@ function Login({ onSwitchToRegister }: LoginProps) {
   const [username, setUsername] = useState("");
   const [userPassword, setPassword] = useState("");
 
+  // Per-field error state
+  const [fieldErrors, setFieldErrors] = useState<{ username?: string; password?: string }>({});
+
   async function doLogin(event: any): Promise<void> {
     event.preventDefault();
+    setMessage("");
 
-    var obj = { Username: username, Password: userPassword };
-    var js = JSON.stringify(obj);
+    // Validate fields before sending
+    const errors: typeof fieldErrors = {};
+    if (!username.trim()) errors.username = "Username is required.";
+    if (!userPassword) errors.password = "Password is required.";
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+    setFieldErrors({});
 
     try {
       const response = await fetch("/api/login", {
         method: "POST",
-        body: js,
+        body: JSON.stringify({ Username: username, Password: userPassword }),
         headers: { "Content-Type": "application/json" },
       });
 
-      var res = JSON.parse(await response.text());
+      const res = JSON.parse(await response.text());
 
       if (!res.token) {
-        setMessage("User/Password combination incorrect");
+        // Highlight both fields to indicate the combination is wrong
+        setFieldErrors({ username: " ", password: " " });
+        setMessage("Username / password combination incorrect.");
       } else {
         localStorage.setItem("token", res.token);
-        localStorage.setItem("userId", res.userId); //Added storing the user ID for when creating a rating
+        localStorage.setItem("userId", res.userId);
         setMessage("");
         window.location.href = '/HomePage';
       }
-    } catch (error: any) {
+    } catch {
       setMessage("Network error — please try again.");
-      return;
     }
   }
 
-  // set user's login name
-  function handleSetUsername(e: any): void {
-    setUsername(e.target.value);
-  }
-
-  // set user's password
-  function handleSetPassword(e: any): void {
-    setPassword(e.target.value);
-  }
-
-  // return form
   return (
     <div id="loginDiv">
       <span id="inner-title">PLEASE LOG IN</span>
       <br />
-      <input
-        type="text"
-        id="username"
-        placeholder="Username"
-        onChange={handleSetUsername}
-      />
-      <br></br>
-      <input
-        type="password"
-        id="userPassword"
-        placeholder="Password"
-        onChange={handleSetPassword}
-      />
-      <br></br>
+
+      {/* Username */}
+      <div style={{ marginTop: '0.75rem' }}>
+        <input
+          type="text"
+          id="login-username"
+          placeholder="Username"
+          value={username}
+          className={fieldErrors.username ? "input-error" : ""}
+          onChange={(e) => { setUsername(e.target.value); setFieldErrors((f) => ({ ...f, username: undefined })); }}
+          aria-label="Username"
+          aria-describedby={fieldErrors.username ? "login-username-err" : undefined}
+          aria-invalid={!!fieldErrors.username}
+          autoComplete="username"
+        />
+        {fieldErrors.username && fieldErrors.username.trim() && (
+          <p id="login-username-err" className="field-error-msg">⚠ {fieldErrors.username}</p>
+        )}
+      </div>
+
+      {/* Password */}
+      <div style={{ marginTop: '0.75rem' }}>
+        <input
+          type="password"
+          id="login-password"
+          placeholder="Password"
+          value={userPassword}
+          className={fieldErrors.password ? "input-error" : ""}
+          onChange={(e) => { setPassword(e.target.value); setFieldErrors((f) => ({ ...f, password: undefined })); }}
+          aria-label="Password"
+          aria-describedby={fieldErrors.password ? "login-password-err" : undefined}
+          aria-invalid={!!fieldErrors.password}
+          autoComplete="current-password"
+        />
+        {fieldErrors.password && fieldErrors.password.trim() && (
+          <p id="login-password-err" className="field-error-msg">⚠ {fieldErrors.password}</p>
+        )}
+      </div>
+
+      <br />
       <input
         type="submit"
         id="loginButton"
         className="buttons"
         value="Login"
         onClick={doLogin}
+        style={{ marginTop: '0.5rem' }}
       />
+
       {message && (
-        <p style={{ color: '#c0392b', fontSize: '0.85rem', marginTop: '0.5rem' }}>⚠ {message}</p>
+        <p style={{ color: 'var(--error)', fontSize: '0.85rem', marginTop: '0.5rem' }}>⚠ {message}</p>
       )}
+
       <br />
       <p style={{ display: "inline" }}>Don't have an account? Click </p>
-      <button className="link-button" onClick={onSwitchToRegister}>
-        here
-      </button>
-      <p style={{ display: "inline" }}> to make one! </p>
+      <button className="link-button" onClick={onSwitchToRegister}>here</button>
+      <p style={{ display: "inline" }}> to make one!</p>
     </div>
   );
 }
