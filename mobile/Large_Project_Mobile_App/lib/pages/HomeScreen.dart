@@ -247,7 +247,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
                 ),
               ]
               else ... [ // enter if user is signed in
-                // row for logout button
+                // row for log out button
                 SizedBox(
                   height: 50.0,
                   child: Row(
@@ -255,22 +255,50 @@ class _HomePageState extends State<HomePage> with RouteAware {
                     children: <Widget>[
                       Padding(
                         padding: EdgeInsets.only(right: 25.0),
-                        child: CreateLogoutButton(
-                          onPressed: () {
-                            newMessageText = "";
-                            changeText();
-                            print('Logout Button');
-                            // clear global data to reset userId to logged out state
-                            clearGlobalData();
-                            print('userId = ${context.read<GlobalData>().userId}');
-                          },
+                        child: SizedBox(
+                          width: 100.0,
+                          child: CreateLogoutButton(
+                            onPressed: () {
+                              newMessageText = "";
+                              changeText();
+                              print('Logout Button');
+                              // clear global data to reset userId to logged out state
+                              clearGlobalData();
+                              print('userId = ${context.read<GlobalData>().userId}');
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // row for settings button
+                SizedBox(
+                  height: 70.0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.only(right: 25.0),
+                        child: SizedBox(
+                          width: 100.0,
+                          child: CreateSettingsButton(
+                            onPressed: () {
+                              newMessageText = "";
+                              changeText();
+                              print('Settings Button');
+                              // navigate to account settings page
+                              Navigator.pushNamed(context, '/user_settings');
+                              print('userId = ${context.read<GlobalData>().userId}');
+                            },
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
               ], // end of else for login link and logout button
-              SizedBox(height: 50.0),
+              SizedBox(height: 35.0),
               // row for course dropdown label
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:group7_mobile_app/main.dart';
@@ -291,10 +290,12 @@ class _RegistrationPageState extends State<RegistrationPage> with RouteAware {
                       // check response object to verify successful registrations
                       if (jsonObject.containsKey('message')) {
                         if (jsonObject['message'] == 'Account created successfully') {
-                          // navigate to login page after popping the current registration page from the stack
-                          Navigator.popAndPushNamed(context, '/login');
                           newMessageText = "Account created successfully! Redirecting to Login Screen...";
                           changeText();
+                          // delay to allow time for user to read message before redirecting to another page
+                          await Future.delayed(Duration(milliseconds: 1500));
+                          // navigate to login page after popping the current registration page from the stack
+                          Navigator.popAndPushNamed(context, '/login');
                         }
                         else {
                           newMessageText = jsonObject['message'];
@@ -338,26 +339,11 @@ class _RegistrationPageState extends State<RegistrationPage> with RouteAware {
                   child: RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(
+                      text: 'Already have an account? Please go back to Login.',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 18.0,
                         height: 1.2,),
-                      children: [
-                        TextSpan(text: "Already have an account?\nClick "),
-                        TextSpan(
-                          text: "here",
-                          style: TextStyle(
-                            color: Colors.indigo[900],
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              Navigator.pushNamed(context, '/login');
-                            },
-                        ),
-                        TextSpan(text: " to Login."),
-                      ],
                     ),
                   ),
                 ),
