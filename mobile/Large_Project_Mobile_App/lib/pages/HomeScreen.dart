@@ -154,6 +154,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
     context.read<GlobalData>().setSelectedCourse('');
     context.read<GlobalData>().setSelectedProfessorId('');
     context.read<GlobalData>().setSelectedProfessor('');
+    context.read<GlobalData>().setToken('');
   }
 
   @override
@@ -414,7 +415,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
                           print('Selected Professor: ${selectedProfessorName}');
 
                           // navigate to create rating page if user is logged in and hasn't already rated the course
-                          if (context.read<GlobalData>().userId != '-1') { // enter if user is logged in
+                          if (context.read<GlobalData>().userId != '-1' && context.read<GlobalData>().token != '') { // enter if user is logged in
 
                             // check if the user has already rated the course (0='user already rated course'; 1='user didn't already rate'; -1='error with api')
                             int didUserAlreadyRateCourse = await checkIfUserAlreadyRatedCourse();
@@ -461,8 +462,8 @@ class _HomePageState extends State<HomePage> with RouteAware {
                           print('Selected Professor: ${selectedProfessorName}');
 
                           // navigate to create questionnaire page if user is logged in
-                          if (context.read<GlobalData>().userId != '-1') { // enter if user is logged in
-                            Navigator.pushNamed(context, '/create_questionnaire');
+                          if (context.read<GlobalData>().userId != '-1' && context.read<GlobalData>().token != '') { // enter if user is logged in
+                      //      Navigator.pushNamed(context, '/create_questionnaire');
                           }
                           else { // enter if user isn't logged in
                             newMessageText = "Please log in to create a questionnaire.";
