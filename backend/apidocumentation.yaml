@@ -57,6 +57,101 @@ paths:
         '500':
           description: Server error
 
+  /api/auth/2fa/send:
+    post:
+      summary: Send a 2FA code to the user's email
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId]
+              properties:
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: 2FA code sent
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+
+  /api/auth/2fa/verify:
+    post:
+      summary: Verify a 2FA code
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId, code]
+              properties:
+                userId:
+                  type: string
+                code:
+                  type: string
+      responses:
+        '200':
+          description: 2FA verified
+        '400':
+          description: Invalid or expired code
+        '500':
+          description: Server error
+
+  /api/auth/password/reset/request:
+    post:
+      summary: Request a password reset email
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Reset email sent (or silently ignored if email not found)
+        '500':
+          description: Server error
+
+  /api/auth/password/reset/confirm:
+    post:
+      summary: Confirm password reset with token
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, token, newPassword]
+              properties:
+                email:
+                  type: string
+                  format: email
+                token:
+                  type: string
+                newPassword:
+                  type: string
+                  minLength: 5
+      responses:
+        '200':
+          description: Password reset successful
+        '400':
+          description: Invalid or expired token
+        '500':
+          description: Server error
+
   /api/login:
     post:
       summary: Login
@@ -210,7 +305,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [User, Course, Option_A_Count, Option_B_Count, Option_C_Count, Option_D_Count, Option_E_Count]
+              required: [User, Course]
               properties:
                 User:
                   type: string
@@ -532,6 +627,57 @@ paths:
         '500':
           description: Server error
 
+  /api/searchCAP/search:
+    get:
+      summary: Search professor-specific questionnaires by question text
+      tags: [Questionnaires]
+      parameters:
+        - in: query
+          name: query
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: courseId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: professorId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Search results
+        '400':
+          description: Missing query, courseId, or professorId
+        '500':
+          description: Server error
+
+  /api/searchCO/search:
+    get:
+      summary: Search course-only questionnaires by question text
+      tags: [Questionnaires]
+      parameters:
+        - in: query
+          name: query
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: courseId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Search results
+        '400':
+          description: Missing query or courseId
+        '500':
+          description: Server error
+
   # ── User ──────────────────────────────────────────────────────────────────────
 
   /api/userSettings/{userId}:
@@ -546,7 +692,7 @@ paths:
             type: string
       responses:
         '200':
-          description: User object (excluding password)
+          description: User object
           content:
             application/json:
               schema:
@@ -581,6 +727,9 @@ paths:
                   type: string
                 Email:
                   type: string
+                Password:
+                  type: string
+                  minLength: 5
       responses:
         '200':
           description: Updated user object (excluding password)
@@ -621,6 +770,25 @@ paths:
           description: User not found
         '500':
           description: Server error
+
+  /api/ping:
+    get:
+      summary: Health check
+      tags: [Misc]
+      responses:
+        '200':
+          description: Server and database status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: string
+                  database:
+                    type: string
 
 # ── Schemas ───────────────────────────────────────────────────────────────────
 
