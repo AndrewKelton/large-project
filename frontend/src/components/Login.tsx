@@ -2,9 +2,10 @@ import { useState } from "react";
 
 interface LoginProps {
   onSwitchToRegister?: () => void;
+  onForgotPassword?: () => void;
 }
 
-function Login({ onSwitchToRegister }: LoginProps) {
+function Login({ onSwitchToRegister, onForgotPassword }: LoginProps) {
   const [message, setMessage] = useState("");
   const [username, setUsername] = useState("");
   const [userPassword, setPassword] = useState("");
@@ -83,6 +84,8 @@ function Login({ onSwitchToRegister }: LoginProps) {
         here
       </button>
       <p style={{ display: "inline" }}> to make one! </p>
+      <br />
+      <button className="link-button" onClick={onForgotPassword}>Forgot your password?</button>
     </div>
   );
 }

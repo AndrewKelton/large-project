@@ -80,7 +80,7 @@ router.post('/password/reset/request', async (req, res) => {
         user.Reset_Expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
         await user.save();
 
-        const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
+        const resetLink = `${process.env.FRONTEND_URL}/auth?token=${token}&email=${encodeURIComponent(email)}`;
 
         await sendMail({
             to: user.Email,

@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://leandrovivares.com',
+        target: 'http://localhost:3000', // TODO: change to 'http://leandrovivares.com' before merging to staging
         changeOrigin: true,
       }
     }
