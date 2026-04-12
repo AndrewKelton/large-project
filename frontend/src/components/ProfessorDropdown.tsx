@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { Professor } from '../types/index.ts';
+import './Dropdown.css';
 
 interface ProfessorDropdownProps {
   onSelect: (professor: Professor | null) => void;
@@ -37,12 +38,12 @@ function ProfessorDropdown({ onSelect }: ProfessorDropdownProps) {
   }
 
   return (
-    <div>
+    <div className="dropdown-wrapper">
       {loading && <p>Loading...</p>}
 
-      <h3>Professor Dropdown</h3>
+      <label className="dropdown-label">Professor Dropdown</label>
 
-      <select value={selectedProfessorId} onChange={handleSelectedProfessor}>
+      <select className="dropdown-select" value={selectedProfessorId} onChange={handleSelectedProfessor}>
         <option value="">Select Professor</option>
         {professorsList.map(course => (
           <option key={course._id} value={course._id}>
