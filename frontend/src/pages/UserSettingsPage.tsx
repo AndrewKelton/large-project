@@ -230,7 +230,7 @@ const UserSettingsPage = () => {
                 htmlFor="settings-username"
                 style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
               >
-                New Username
+                Username
               </label>
               <input
                 id="settings-username"
@@ -254,7 +254,7 @@ const UserSettingsPage = () => {
                 htmlFor="settings-email"
                 style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
               >
-                New Email
+                Email
               </label>
               <input
                 id="settings-email"
