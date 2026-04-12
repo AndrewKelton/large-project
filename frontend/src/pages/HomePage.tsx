@@ -92,24 +92,27 @@ const HomePage = () => {
       <nav
         aria-label="User account navigation"
         style={{
-          position: "absolute",
+          position: "fixed",
           top: "1rem",
           right: "1rem",
           display: "flex",
-          alignItems: "center",
+          flexDirection: "column",
+          alignItems: "flex-end",
           gap: "0.5rem",
+          zIndex: 100,
         }}
       >
         {!token && (
-          <Link
-            to="/auth"
-            className="nav-pill-link nav-pill-link--primary"
+          <button
+            onClick={() => navigate("/auth")}
+            className="nav-pill-btn"
           >
             Login / Sign Up
-          </Link>
+          </button>
         )}
         {token && (
           <>
+            <Logout />
             <Link
               to="/settings"
               aria-label="Go to account settings"
@@ -117,7 +120,6 @@ const HomePage = () => {
             >
               ⚙ Settings
             </Link>
-            <Logout />
           </>
         )}
       </nav>
