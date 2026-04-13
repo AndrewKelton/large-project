@@ -30,8 +30,8 @@ if(Does The User Have an Existing Account?) then (No)
   :User Clicks the "Register" tab;
   :Register Page Displayed;
   repeat
-  :User Enters Credentials for their New Account (First & Last Names, Email Address, Username, Password);
-  :User Presses "Register" Button to Finalize Registration;
+    :User Enters Credentials for their New Account\n(First & Last Names, Email Address, Username, Password);
+    :User Presses "Register" Button to Finalize Registration;
 
 
     backward: Registration Error Message Displayed;
@@ -58,6 +58,24 @@ repeat while (Username/Password Valid?) is (No) not (Yes)
 repeat
   repeat
     :User's Home Page Displayed;
+    if(Does The User Need to Update An Attribute on Their Account?) is (Yes) then
+      :User Clicks "Settings" Button;
+      :User Settings Page Displayed;
+
+      repeat
+        :User Enters Updates for their Account;
+        :User Presses "Save Changes" Button to Finalize Updates;
+        backward: Update Error Message Displayed;
+
+      repeat while (Is The Entered Information Valid?) is (No) not (Yes)
+
+      :User is Redirected to Home Page;
+      :User's Home Page Displayed;
+
+    else (No)
+
+    endif
+
     :Choose Course from Dropdown List;
     split
       :Choose Professor from Dropdown List;
