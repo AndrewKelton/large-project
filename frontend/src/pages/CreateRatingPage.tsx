@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
+import {useState} from 'react'
 import type { Course, Professor } from '../types/index.ts';
 import CreateRating from '../components/CreateRating.tsx'
 
@@ -11,6 +12,9 @@ const CreateRatingPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as CreateRatingState | null;
+  const course = state?.course;
+  const initialProfessor = state?.professor ?? null;
+  const [selectedProfessor, setSelectedProfessor] = useState<Professor | null>(initialProfessor ?? null);
 
   if (!state?.course) {
     return (
@@ -22,7 +26,6 @@ const CreateRatingPage = () => {
     );
   }
 
-  const { course, professor } = state;
 
   return (
     <div style={{ padding: '2rem 1rem', maxWidth: '740px', margin: '0 auto' }}>
@@ -34,15 +37,15 @@ const CreateRatingPage = () => {
           <div style={{ fontWeight: 700, fontSize: '1.05rem' }}>
             {course.Code} – {course.Name}
           </div>
-          {professor && (
+          {selectedProfessor && (
             <div style={{ fontSize: '0.9rem', color: '#333', marginTop: '0.2rem' }}>
-              Professor: {professor.First_Name} {professor.Last_Name}
+              Professor: {selectedProfessor.First_Name} {selectedProfessor.Last_Name}
             </div>
           )}
         </div>
       </div>
 
-      <CreateRating course={course} professor={professor} onSuccess={() => navigate("/")} />
+      <CreateRating course={course} professor={selectedProfessor} setSelectedProfessor = {setSelectedProfessor} onSuccess={() => navigate("/")} />
 
       <button
         onClick={() => navigate('/')}
