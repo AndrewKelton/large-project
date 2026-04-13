@@ -58,9 +58,14 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
   String message2 = ""; // message to notify that temporary password was sent
   String newMessageText = "";
   String tempPasswordMessage = "";
+  String usernameMessage = "";
+  String passwordMessage = "";
   // controllers for textfields (objects contain the text inputs)
   late TextEditingController loginController;
   late TextEditingController passwordController;
+  // colors for textfield borders
+  Color _borderColor1 = Colors.grey.shade700;
+  Color _borderColor2 = Colors.grey.shade700;
 
   @override
   void initState() {
@@ -92,8 +97,12 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
       message1 = "";
       newMessageText = "";
       tempPasswordMessage = "";
+      usernameMessage = "";
+      passwordMessage = "";
       loginController.clear();
       passwordController.clear();
+      _borderColor1 = Colors.grey.shade700;
+      _borderColor2 = Colors.grey.shade700;
     });
   }
 
@@ -139,22 +148,7 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                 ),
               ],
             ),
-            // row (conditional) for potential error message
-            if (message1 != '') Row(
-              children: <Widget> [
-                Expanded(
-                  child: Text(
-                    '$message1',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      color: Colors.red,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            // row for login name textfield
+            // row for username textfield
             Row (
               children: <Widget> [
                 Container(
@@ -164,13 +158,38 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
-                      border: OutlineInputBorder(),
                       hintText: 'Username',
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: _borderColor1, width: 2.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: _borderColor1, width: 2.0),
+                      ),
                     ),
                   ),
                 )
               ],
             ),
+            // row (conditional) for username required error
+            if (usernameMessage != '') ...[
+              Row(
+                children: <Widget> [
+                  Icon(Icons.warning_rounded, color: Colors.red),
+                  Expanded(
+                    child: Text(
+                      usernameMessage,
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10.0),
+            ],
+            SizedBox(height: 5.0),
             // row for password textfield
             Row(
               children: <Widget> [
@@ -184,11 +203,36 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                       fillColor: Colors.white,
                       border: OutlineInputBorder(),
                       hintText: 'Password',
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: _borderColor2, width: 2.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: _borderColor2, width: 2.0),
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
+            // row (conditional) for password required error
+            if (passwordMessage != '') ...[
+              Row(
+                children: <Widget> [
+                  Icon(Icons.warning_rounded, color: Colors.red),
+                  Expanded(
+                    child: Text(
+                      passwordMessage,
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10.0),
+            ],
             SizedBox(height: 10.0),
             // row for login button
             Row(
@@ -244,6 +288,38 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                         else {
                           newMessageText = jsonObject['message'];
                           changeText();
+                          if (newMessageText == 'Invalid username or password') {
+                            newMessageText = 'Username / password combination incorrect.';
+
+                            if (loginController.text == '') {
+                              _borderColor1 = Colors.red;
+                              usernameMessage = 'Username is required.';
+                            }
+                            else {
+                              _borderColor1 = Colors.grey.shade700;
+                              usernameMessage = '';
+                            }
+
+                            if (passwordController.text == '') {
+                              _borderColor2 = Colors.red;
+                              passwordMessage = 'Password is required.';
+                            }
+                            else {
+                              _borderColor2 = Colors.grey.shade700;
+                              passwordMessage = '';
+                            }
+
+                            if (loginController.text != '' && passwordController.text != '') {
+                              _borderColor1 = Colors.red;
+                              _borderColor2 = Colors.red;
+                              usernameMessage = '';
+                              passwordMessage = '';
+                            }
+
+                            // rebuild this screen
+                            setState(() {});
+                          }
+                          print(newMessageText);
                         }
                       }
                       else {
@@ -251,6 +327,23 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                         changeText();
                       }
                     },
+                  ),
+                ),
+              ],
+            ),
+            // row (conditional) for potential error message
+            if (message1 != '') Row(
+              children: <Widget> [
+                Icon(Icons.warning_rounded, color: Colors.red),
+                Expanded(
+                  child: Text(
+                    '$message1',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -301,9 +394,8 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                         fontSize: 18.0,
                         height: 1.2,),
                       children: [
-                        TextSpan(text: "Forgot password?\nEnter \'Username\' above then\nclick "),
                         TextSpan(
-                          text: "here",
+                          text: "Forgot your password?",
                           style: TextStyle(
                             color: Colors.indigo[900],
                             fontWeight: FontWeight.bold,
@@ -317,7 +409,6 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                               changeTempPasswordMessage();
                             },
                         ),
-                        TextSpan(text: " to request a temporary password."),
                       ],
                     ),
                   ),
