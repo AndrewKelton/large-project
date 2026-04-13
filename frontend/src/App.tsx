@@ -5,6 +5,7 @@ import LoginPage from './pages/AuthPage.tsx';
 import HomePage from './pages/HomePage.tsx';
 import CreateRatingPage from './pages/CreateRatingPage.tsx';
 import CreateQuestionnairePage from './pages/CreateQuestionnairePage.tsx';
+import UserSettingsPage from './pages/UserSettingsPage.tsx';
 import LogoLink from './components/LogoLink.tsx';
 
 function App()
@@ -17,6 +18,7 @@ function App()
         <Route path="/auth" element={<LoginPage />} />
         <Route path="/create-rating" element={<CreateRatingPage />} />
         <Route path="/create-questionnaire" element={<CreateQuestionnairePage />} />
+        <Route path="/settings" element={<UserSettingsPage />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

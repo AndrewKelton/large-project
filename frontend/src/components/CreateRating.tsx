@@ -178,149 +178,135 @@ const CreateRating = ({course, professor = null, onSuccess,}: CreateRatingProps)
 
 
   return (
-    <div>
-      {/* Display the professor information - Selected or not selected*/}
-      {wantsProfessorRating && (
-        <p>
-          <strong>Professor:</strong>{" "}
-          {selectedProfessor
-            ? `${selectedProfessor.First_Name} ${selectedProfessor.Last_Name}`
-            : "Not Selected"}
+    <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+
+      {/* ── Course Rating Section ─────────────────────────────────────── */}
+      <div className="section-card">
+        <div className="section-card__header">
+          📋 Course Rating Questions
+        </div>
+        <p style={{ margin: '0 0 1rem', fontSize: '0.9rem', color: '#444' }}>
+          Rate each item from <strong>1 (Very Poor)</strong> to <strong>5 (Excellent)</strong>.
         </p>
-      )}
-
-      <div>
-              {/* Main headers */}
-         <h3>
-          Please answer the following questions from the dropdown menu, with 1 being the lowest rating, and 5 being the highest rating
-        </h3>
-        <h4>Course Rating Questions</h4>
-
-      {/* Map each dropdown for the course questions to it's place in the database. When a user changes one dropdown, update it in the object*/}
-
-        {Object.entries(COURSE_QUESTIONS).map(([key, questionText]) => (
-          <div key={key}>
-            <label>
-              {questionText}
+        <div className="section-card__body">
+          {Object.entries(COURSE_QUESTIONS).map(([key, questionText], idx) => (
+            <div key={key} className="section-card__row" style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+              <label htmlFor={`course-q-${key}`} style={{ fontWeight: 500, fontSize: '0.95rem' }}>
+                {idx + 1}. {questionText}
+              </label>
               <select
+                id={`course-q-${key}`}
                 value={courseAnswers[key as keyof typeof courseAnswers]}
-                onChange={(e) => {
-                  setCourseAnswers({
-                    ...courseAnswers,
-                    [key]: Number(e.target.value),
-                  });
-                }}
+                onChange={(e) =>
+                  setCourseAnswers({ ...courseAnswers, [key]: Number(e.target.value) })
+                }
+                style={{ maxWidth: '260px' }}
               >
                 <option value="">Select a rating</option>
-                <option value="1"> 1 - Very Poor</option>
-                <option value="2"> 2 - Poor</option>
-                <option value="3"> 3 - Average</option>
-                <option value="4"> 4 - Good</option>
-                <option value="5"> 5 - Excellent</option>
+                <option value="1">1 – Very Poor</option>
+                <option value="2">2 – Poor</option>
+                <option value="3">3 – Average</option>
+                <option value="4">4 – Good</option>
+                <option value="5">5 – Excellent</option>
               </select>
-            </label>
-          </div>
-        ))}
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Checkbox to determine if the user wants to rate a professor. If no, reset all dropdowns for a professor and hide them*/}
-      <br></br>
-      <label>
-        <input
-          type="checkbox"
-          checked={wantsProfessorRating}
-          onChange={(e) => {
-            const isChecked = e.target.checked;
-            setWantsProfessorRating(isChecked);
+      {/* ── Professor toggle ──────────────────────────────────────────── */}
+      <div className="selection-chip-row" style={{ marginBottom: '0.5rem' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontWeight: 500, cursor: 'pointer' }}>
+          <input
+            type="checkbox"
+            checked={wantsProfessorRating}
+            onChange={(e) => {
+              const isChecked = e.target.checked;
+              setWantsProfessorRating(isChecked);
+              if (!isChecked) {
+                setSelectedProfessor(null);
+                setProfessorAnswers({ averageQ6: 0, averageQ7: 0, averageQ8: 0, averageQ9: 0, averageQ10: 0 });
+              }
+            }}
+            style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+          />
+          Would you also like to rate a professor?
+        </label>
+      </div>
 
-            if (!isChecked) {
-              setSelectedProfessor(null);
-              setProfessorAnswers({
-                averageQ6: 0,
-                averageQ7: 0,
-                averageQ8: 0,
-                averageQ9: 0,
-                averageQ10: 0,
-              });
-            }
-          }}
-        />
-        Would you like to also rate a professor?
-      </label>
-      <br></br>
-
-      {/* If a user wants to rate a professor, fetch and map the professors from the database, and then update based on the user's selection */}
+      {/* ── Professor Rating Section ──────────────────────────────────── */}
       {wantsProfessorRating && (
-        <div>
-          <h4>Professor Rating</h4>
+        <div className="section-card">
+          <div className="section-card__header">
+            🎓 Professor Rating Questions
+          </div>
 
-          <label>
-            Select Professor:
+          {/* Professor selector */}
+          <div style={{ marginBottom: '1rem' }}>
+            <label htmlFor="professor-select" style={{ fontWeight: 500, display: 'block', marginBottom: '0.4rem' }}>
+              Select Professor:
+            </label>
             <select
+              id="professor-select"
               value={selectedProfessor?._id ?? ""}
               onChange={(e) => {
                 const selectedId = e.target.value;
-
-                if (!selectedId) {
-                  setSelectedProfessor(null);
-                  resetProfessorAnswers();
-                  return;
-                }
-
-                const matchedProfessor =
-                  professors.find((prof) => prof._id === selectedId) ?? null;
-
-                setSelectedProfessor(matchedProfessor);
+                if (!selectedId) { setSelectedProfessor(null); resetProfessorAnswers(); return; }
+                setSelectedProfessor(professors.find((p) => p._id === selectedId) ?? null);
               }}
+              style={{ maxWidth: '320px' }}
             >
               <option value="">Select a professor</option>
-
               {professors.map((prof) => (
                 <option key={prof._id} value={prof._id}>
                   {prof.First_Name} {prof.Last_Name}
                 </option>
               ))}
             </select>
-          </label>
+          </div>
 
-          <h4>Professor Rating Questions</h4>
-
-      {/* Map each dropdown for the course questions to it's place in the database. When a user changes one dropdown, update it in the object*/}
-          {Object.entries(PROFESSOR_QUESTIONS).map(([key, questionText]) => (
-            <div key={key}>
-              <label>
-                {questionText}
+          <div className="section-card__body">
+            {Object.entries(PROFESSOR_QUESTIONS).map(([key, questionText], idx) => (
+              <div key={key} className="section-card__row" style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                <label htmlFor={`prof-q-${key}`} style={{ fontWeight: 500, fontSize: '0.95rem' }}>
+                  {idx + 1}. {questionText}
+                </label>
                 <select
+                  id={`prof-q-${key}`}
                   value={professorAnswers[key as keyof typeof professorAnswers]}
-                  onChange={(e) => {
-                    setProfessorAnswers({
-                      ...professorAnswers,
-                      [key]: Number(e.target.value),
-                    });
-                  }}
+                  onChange={(e) =>
+                    setProfessorAnswers({ ...professorAnswers, [key]: Number(e.target.value) })
+                  }
+                  style={{ maxWidth: '260px' }}
                 >
                   <option value="">Select a rating</option>
-                  <option value="1"> 1 - Very Poor</option>
-                  <option value="2"> 2 - Poor</option>
-                  <option value="3"> 3 - Average</option>
-                  <option value="4"> 4 - Good</option>
-                  <option value="5"> 5 - Excellent</option>
+                  <option value="1">1 – Very Poor</option>
+                  <option value="2">2 – Poor</option>
+                  <option value="3">3 – Average</option>
+                  <option value="4">4 – Good</option>
+                  <option value="5">5 – Excellent</option>
                 </select>
-              </label>
-            </div>
-          ))}
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
-      {/* Display error or success message*/}
+      {/* ── Feedback & submit ─────────────────────────────────────────── */}
+      {errorMessage && (
+        <p style={{ color: 'var(--error)', fontSize: '0.9rem', marginTop: '0.75rem' }}>⚠ {errorMessage}</p>
+      )}
+      {successMessage && (
+        <p style={{ color: '#2e7d32', fontSize: '0.9rem', marginTop: '0.75rem' }}>✔ {successMessage}</p>
+      )}
 
-      {errorMessage && <p style={{ color: '#c0392b', fontSize: '0.85rem', marginTop: '0.5rem' }}>⚠ {errorMessage}</p>}
-      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
-
-      {/*Display submit button, and then update when clicked */}
-
-      <button type="button" onClick={handleSubmit} disabled={isSubmitting}>
-        {isSubmitting ? "Submitting..." : "Submit Rating"}
+      <button
+        type="button"
+        onClick={handleSubmit}
+        disabled={isSubmitting}
+        style={{ marginTop: '1rem' }}
+      >
+        {isSubmitting ? "Submitting…" : "Submit Rating"}
       </button>
     </div>
   );

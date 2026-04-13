@@ -7,6 +7,48 @@ interface RegisterProps {
   onSwitchToLogin?: () => void;
 }
 
+type FieldErrors = {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  username?: string;
+  password?: string;
+  confirmPassword?: string;
+};
+
+const isValidEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+
+// Defined outside Register so React sees a stable component type across renders.
+// Defining it inside Register would cause it to be recreated on every render,
+// unmounting/remounting the input and losing focus after each keystroke.
+function Field({
+  id, label, type = "text", value, onChange, error, placeholder, autoComplete,
+}: {
+  id: string; label: string; type?: string; value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string; placeholder?: string; autoComplete?: string;
+}) {
+  return (
+    <div style={{ marginTop: '0.75rem' }}>
+      <input
+        id={id}
+        type={type}
+        value={value}
+        placeholder={placeholder}
+        className={error ? "input-error" : ""}
+        onChange={onChange}
+        aria-label={label}
+        aria-describedby={error ? `${id}-err` : undefined}
+        aria-invalid={!!error}
+        autoComplete={autoComplete}
+      />
+      {error && (
+        <p id={`${id}-err`} className="field-error-msg">⚠ {error}</p>
+      )}
+    </div>
+  );
+}
+
 // Main function for completing the registration
 function Register({ onSwitchToLogin }: RegisterProps) {
 
@@ -19,51 +61,41 @@ function Register({ onSwitchToLogin }: RegisterProps) {
   const [isError, setIsError] = useState(false);
   const [ConfirmPassword, setConfirmPassword] = useState("");
   const [Email, setEmail] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
-  // Handler functions to handle input from the user and update the respective variables
-  function handleSetFirstName(e: any): void {
-    setFirstName(e.target.value);
-  }
-
-  function handleSetLastName(e: any): void {
-    setLastName(e.target.value);
-  }
-
-  function handleSetUsername(e: any): void {
-    setUsername(e.target.value);
-  }
-
-  function handleSetPassword(e: any): void {
-    setPassword(e.target.value);
-  }
-
-  function handleConfirmPassword(e: any): void {
-    setConfirmPassword(e.target.value);
-  }
-
-  function handleSetEmail(e: any): void {
-    setEmail(e.target.value);
-  }
+  // Helper: clear a single field's error when the user starts typing
+  const clearField = (key: keyof FieldErrors) =>
+    setFieldErrors((prev) => ({ ...prev, [key]: undefined }));
 
   async function doRegistration(event: any): Promise<void> {
     event.preventDefault();
+    setMessage("");
+    setIsError(false);
 
-    if (FirstName === "" || LastName === "" || Username === "" || Password === "" || ConfirmPassword === "" ||Email === "") {
+    // Build per-field errors
+    const errors: FieldErrors = {};
+    if (!FirstName.trim())      errors.firstName      = "First name is required.";
+    if (!LastName.trim())       errors.lastName       = "Last name is required.";
+    if (!Username.trim())       errors.username       = "Username is required.";
+    if (!Email.trim())          errors.email          = "Email is required.";
+    else if (!isValidEmail(Email)) errors.email       = "Please enter a valid email address.";
+    if (!Password)              errors.password       = "Password is required.";
+    if (!ConfirmPassword)       errors.confirmPassword = "Please confirm your password.";
+    else if (Password && Password !== ConfirmPassword)
+                                errors.confirmPassword = "Passwords do not match.";
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       setIsError(true);
-      setMessage("Please fill out all fields.");
+      setMessage("Please fix the highlighted fields.");
       return;
     }
-
-    if (Password !== ConfirmPassword) {
-      setIsError(true);
-      setMessage("Passwords do not match.");
-      return;
-    }
+    setFieldErrors({});
 
     // Make object variable and stringify for the API
     var obj = {
-      FirstName: FirstName,
-      LastName: LastName,
+      First_Name: FirstName,
+      Last_Name: LastName,
       Email: Email,
       Username: Username,
       Password: Password,
@@ -111,7 +143,6 @@ function Register({ onSwitchToLogin }: RegisterProps) {
           setMessage("Redirecting to Login Screen...");
         }, 2000);
 
-
         // After another 1.5 seconds, switch to login tab
         setTimeout(() => {
           onSwitchToLogin?.();
@@ -126,76 +157,66 @@ function Register({ onSwitchToLogin }: RegisterProps) {
     }
   }
 
-   //Visual elements. For each variable, display it's respective element, and update based on user actions
+  //Visual elements. For each variable, display it's respective element, and update based on user actions
   return (
     <div id="registerDiv">
       <span id="inner-title">REGISTER</span>
-      <br></br>
-      <input
-        type="text"
-        id="FirstName"
-        placeholder="First Name"
-        value = {FirstName}
-        onChange={handleSetFirstName}
+
+      <Field id="reg-first" label="First Name" value={FirstName}
+        placeholder="Enter your first name"
+        error={fieldErrors.firstName}
+        onChange={(e) => { setFirstName(e.target.value); clearField("firstName"); }}
+        autoComplete="given-name"
       />
-      <br></br>
-      <input
-        type="text"
-        id="LastName"
-        placeholder="Last Name"
-        value = {LastName}
-        onChange={handleSetLastName}
+      <Field id="reg-last" label="Last Name" value={LastName}
+        placeholder="Enter your last name"
+        error={fieldErrors.lastName}
+        onChange={(e) => { setLastName(e.target.value); clearField("lastName"); }}
+        autoComplete="family-name"
       />
-      <br></br>
-      <input
-        type="text"
-        id="Email"
-        placeholder="Email Address"
-        value = {Email}
-        onChange={handleSetEmail}
+      <Field id="reg-email" label="Email Address" type="email" value={Email}
+        placeholder="you@example.com"
+        error={fieldErrors.email}
+        onChange={(e) => { setEmail(e.target.value); clearField("email"); }}
+        autoComplete="email"
       />
-      <br></br>
-      <input
-        type="text"
-        id="Username"
-        placeholder="Username"
-        value = {Username}
-        onChange={handleSetUsername}
+      <Field id="reg-username" label="Username" value={Username}
+        placeholder="Choose a username"
+        error={fieldErrors.username}
+        onChange={(e) => { setUsername(e.target.value); clearField("username"); }}
+        autoComplete="username"
       />
-      <br></br>
-      <input
-        type="password"
-        id="Password"
-        placeholder="Password"
-        value = {Password}
-        onChange={handleSetPassword}
+      <Field id="reg-password" label="Password" type="password" value={Password}
+        placeholder="Create a password"
+        error={fieldErrors.password}
+        onChange={(e) => { setPassword(e.target.value); clearField("password"); }}
+        autoComplete="new-password"
       />
-      <br></br>
-      <input
-        type="password"
-        id="Confirmpassword"
+      <Field id="reg-confirm" label="Confirm Password" type="password" value={ConfirmPassword}
         placeholder="Re-enter your password"
-        value = {ConfirmPassword}
-        onChange={handleConfirmPassword}
-      ></input>
-      <br></br>
+        error={fieldErrors.confirmPassword}
+        onChange={(e) => { setConfirmPassword(e.target.value); clearField("confirmPassword"); }}
+        autoComplete="new-password"
+      />
+
       <input
         type="submit"
         id="registerButton"
-        value="Sign Me Up!"
+        value="Register"
         onClick={doRegistration}
+        style={{ marginTop: '1rem' }}
       />
-      <br></br>
+      <br />
       {Message && (
         isError
-          ? <p style={{ color: '#c0392b', fontSize: '0.85rem', marginTop: '0.5rem' }}>⚠ {Message}</p>
+          ? <p style={{ color: 'var(--error)', fontSize: '0.85rem', marginTop: '0.5rem' }}>⚠ {Message}</p>
           : <p style={{ color: '#27ae60', fontSize: '0.85rem', marginTop: '0.5rem' }}>{Message}</p>
       )}
       <br />
-      <p style = {{display: 'inline'}}>Already have an account? Click </p>
+      <p style={{ display: 'inline' }}>Already have an account? Click </p>
       <button className="link-button" onClick={onSwitchToLogin}>here</button>
-      <p style = {{display: 'inline'}}> to Login. </p>
-      <br></br>
+      <p style={{ display: 'inline' }}> to Login.</p>
+      <br />
     </div>
   );
 }
