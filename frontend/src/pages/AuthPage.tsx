@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import PageTitle from '../components/PageTitle.tsx';
 import Login from '../components/Login.tsx';
 import Register from '../components/Registration.tsx';
