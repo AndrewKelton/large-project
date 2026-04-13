@@ -1,6 +1,5 @@
 @startuml
 title Group 7 - Large Project\nActivity Diagram
-
 start
 
 :Generic Home Page Displayed;
