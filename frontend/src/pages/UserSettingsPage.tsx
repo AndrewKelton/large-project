@@ -123,6 +123,12 @@ const UserSettingsPage = () => {
       setPassword("");
       setConfirmPassword("");
       setSuccessMessage("Account updated successfully!");
+
+      setSuccessMessage("Account updated successfully!");
+
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
     } catch {
       setErrorMessage("Network error — could not save changes.");
     } finally {
