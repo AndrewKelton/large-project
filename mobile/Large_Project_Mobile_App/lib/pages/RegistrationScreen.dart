@@ -149,7 +149,8 @@ class _RegistrationPageState extends State<RegistrationPage> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Align(
+      alignment: Alignment.topCenter,
       child: Container(
         width: 250,
         child: SingleChildScrollView(
@@ -157,7 +158,7 @@ class _RegistrationPageState extends State<RegistrationPage> with RouteAware {
             mainAxisAlignment: MainAxisAlignment.start, // center column contents vertically
             crossAxisAlignment: CrossAxisAlignment.center, // center column contents horizontally
             children: <Widget> [
-              SizedBox(height: 150.0),
+              SizedBox(height: 100.0),
               // row for register instruction
               Row(
                 children: <Widget> [
@@ -593,10 +594,12 @@ class _RegistrationPageState extends State<RegistrationPage> with RouteAware {
               // row (conditional) for potential error message
               if (message != '') Row(
                 children: <Widget> [
-                  Icon(
-                    Icons.warning_rounded,
-                    color: message == "Account created successfully! Redirecting to Login Screen..." ? Colors.amber : Colors.red,
-                  ),
+                  if (message != "Account created successfully! Redirecting to Login Screen...") ... [
+                    Icon(
+                      Icons.warning_rounded,
+                      color:  Colors.red,
+                    ),
+                  ],
                   Expanded(
                     child: Text(
                       '$message',
