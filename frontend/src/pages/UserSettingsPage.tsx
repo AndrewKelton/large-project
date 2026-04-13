@@ -26,7 +26,12 @@ const UserSettingsPage = () => {
   const [saving, setSaving] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<{ username?: string; email?: string }>({});
+  const [fieldErrors, setFieldErrors] = useState<{
+    username?: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+  }>({});
 
   useEffect(() => {
     if (!token || !userId) {
@@ -68,10 +73,18 @@ const UserSettingsPage = () => {
     setErrorMessage("");
 
     // Per-field validation
-    const errors: { username?: string; email?: string } = {};
+    const errors: {
+      username?: string;
+      email?: string;
+      firstName?: string;
+      lastName?: string;
+    } = {};
+    if (!firstName.trim()) errors.firstName = "First name is required.";
+    if (!lastName.trim()) errors.lastName = "Last name is required.";
     if (!username.trim()) errors.username = "Username is required.";
-    if (!email.trim())    errors.email    = "Email is required.";
-    else if (!isValidEmail(email)) errors.email = "Please enter a valid email address.";
+    if (!email.trim()) errors.email = "Email is required.";
+    else if (!isValidEmail(email))
+      errors.email = "Please enter a valid email address.";
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       return;
@@ -128,7 +141,7 @@ const UserSettingsPage = () => {
 
       setTimeout(() => {
         navigate("/");
-      }, 2000);
+      }, 1500);
     } catch {
       setErrorMessage("Network error — could not save changes.");
     } finally {
@@ -175,12 +188,18 @@ const UserSettingsPage = () => {
               textAlign: "left",
             }}
           >
-            <p style={{ margin: "0 0 0.5rem", fontSize: "0.85rem", color: "var(--text)" }}>
+            <p
+              style={{
+                margin: "0 0 0.5rem",
+                fontSize: "0.85rem",
+                color: "var(--text)",
+              }}
+            >
               Account Details
             </p>
             <p style={{ margin: "0.25rem 0", color: "var(--text-h)" }}>
-              <strong>Name:</strong>{" "}
-              {userInfo?.First_Name} {userInfo?.Last_Name}
+              <strong>Name:</strong> {userInfo?.First_Name}{" "}
+              {userInfo?.Last_Name}
             </p>
             <p style={{ margin: "0.25rem 0", color: "var(--text-h)" }}>
               <strong>Username:</strong> {userInfo?.Username}
@@ -196,11 +215,18 @@ const UserSettingsPage = () => {
               Update Info
             </h3>
 
-            <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1rem" }}>
+            <div
+              style={{ display: "flex", gap: "0.75rem", marginBottom: "1rem" }}
+            >
               <div style={{ flex: 1, textAlign: "left" }}>
                 <label
                   htmlFor="settings-firstname"
-                  style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
+                  style={{
+                    display: "block",
+                    marginBottom: "0.35rem",
+                    fontSize: "0.9rem",
+                    fontWeight: 500,
+                  }}
                 >
                   First Name
                 </label>
@@ -208,15 +234,28 @@ const UserSettingsPage = () => {
                   id="settings-firstname"
                   type="text"
                   value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
+                  className={fieldErrors.firstName ? "input-error" : ""}
+                  onChange={(e) => {
+                    setFirstName(e.target.value);
+                    setFieldErrors((f) => ({ ...f, firstName: undefined }));
+                  }}
                   placeholder="First Name"
                   style={{ width: "100%", boxSizing: "border-box" }}
                 />
+
+                {fieldErrors.firstName && (
+                  <p className="field-error-msg">⚠ {fieldErrors.firstName}</p>
+                )}
               </div>
               <div style={{ flex: 1, textAlign: "left" }}>
                 <label
                   htmlFor="settings-lastname"
-                  style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
+                  style={{
+                    display: "block",
+                    marginBottom: "0.35rem",
+                    fontSize: "0.9rem",
+                    fontWeight: 500,
+                  }}
                 >
                   Last Name
                 </label>
@@ -224,17 +263,30 @@ const UserSettingsPage = () => {
                   id="settings-lastname"
                   type="text"
                   value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
+                  className={fieldErrors.lastName ? "input-error" : ""}
+                  onChange={(e) => {
+                    setLastName(e.target.value);
+                    setFieldErrors((f) => ({ ...f, lastName: undefined }));
+                  }}
                   placeholder="Last Name"
                   style={{ width: "100%", boxSizing: "border-box" }}
                 />
+
+                {fieldErrors.lastName && (
+                  <p className="field-error-msg">⚠ {fieldErrors.lastName}</p>
+                )}
               </div>
             </div>
 
             <div style={{ marginBottom: "1rem", textAlign: "left" }}>
               <label
                 htmlFor="settings-username"
-                style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
+                style={{
+                  display: "block",
+                  marginBottom: "0.35rem",
+                  fontSize: "0.9rem",
+                  fontWeight: 500,
+                }}
               >
                 Username
               </label>
@@ -243,22 +295,34 @@ const UserSettingsPage = () => {
                 type="text"
                 value={username}
                 className={fieldErrors.username ? "input-error" : ""}
-                onChange={(e) => { setUsername(e.target.value); setFieldErrors((f) => ({ ...f, username: undefined })); }}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                  setFieldErrors((f) => ({ ...f, username: undefined }));
+                }}
                 placeholder="Username"
-                aria-describedby={fieldErrors.username ? "settings-username-err" : undefined}
+                aria-describedby={
+                  fieldErrors.username ? "settings-username-err" : undefined
+                }
                 aria-invalid={!!fieldErrors.username}
                 autoComplete="username"
                 style={{ width: "100%", boxSizing: "border-box" }}
               />
               {fieldErrors.username && (
-                <p id="settings-username-err" className="field-error-msg">⚠ {fieldErrors.username}</p>
+                <p id="settings-username-err" className="field-error-msg">
+                  ⚠ {fieldErrors.username}
+                </p>
               )}
             </div>
 
             <div style={{ marginBottom: "1.5rem", textAlign: "left" }}>
               <label
                 htmlFor="settings-email"
-                style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
+                style={{
+                  display: "block",
+                  marginBottom: "0.35rem",
+                  fontSize: "0.9rem",
+                  fontWeight: 500,
+                }}
               >
                 Email
               </label>
@@ -267,29 +331,47 @@ const UserSettingsPage = () => {
                 type="email"
                 value={email}
                 className={fieldErrors.email ? "input-error" : ""}
-                onChange={(e) => { setEmail(e.target.value); setFieldErrors((f) => ({ ...f, email: undefined })); }}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setFieldErrors((f) => ({ ...f, email: undefined }));
+                }}
                 placeholder="Email"
-                aria-describedby={fieldErrors.email ? "settings-email-err" : undefined}
+                aria-describedby={
+                  fieldErrors.email ? "settings-email-err" : undefined
+                }
                 aria-invalid={!!fieldErrors.email}
                 autoComplete="email"
                 style={{ width: "100%", boxSizing: "border-box" }}
               />
               {fieldErrors.email && (
-                <p id="settings-email-err" className="field-error-msg">⚠ {fieldErrors.email}</p>
+                <p id="settings-email-err" className="field-error-msg">
+                  ⚠ {fieldErrors.email}
+                </p>
               )}
             </div>
 
             <h3 style={{ marginBottom: "0.5rem", fontWeight: 500 }}>
               Change Password
             </h3>
-            <p style={{ margin: "0 0 1rem", fontSize: "0.85rem", color: "var(--text)" }}>
+            <p
+              style={{
+                margin: "0 0 1rem",
+                fontSize: "0.85rem",
+                color: "var(--text)",
+              }}
+            >
               Leave blank to keep your current password.
             </p>
 
             <div style={{ marginBottom: "1rem", textAlign: "left" }}>
               <label
                 htmlFor="settings-password"
-                style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
+                style={{
+                  display: "block",
+                  marginBottom: "0.35rem",
+                  fontSize: "0.9rem",
+                  fontWeight: 500,
+                }}
               >
                 New Password
               </label>
@@ -307,7 +389,12 @@ const UserSettingsPage = () => {
             <div style={{ marginBottom: "1.5rem", textAlign: "left" }}>
               <label
                 htmlFor="settings-confirm-password"
-                style={{ display: "block", marginBottom: "0.35rem", fontSize: "0.9rem", fontWeight: 500 }}
+                style={{
+                  display: "block",
+                  marginBottom: "0.35rem",
+                  fontSize: "0.9rem",
+                  fontWeight: 500,
+                }}
               >
                 Confirm New Password
               </label>
@@ -323,12 +410,24 @@ const UserSettingsPage = () => {
             </div>
 
             {successMessage && (
-              <p style={{ color: "#27ae60", fontSize: "0.9rem", marginBottom: "0.75rem" }}>
+              <p
+                style={{
+                  color: "#27ae60",
+                  fontSize: "0.9rem",
+                  marginBottom: "0.75rem",
+                }}
+              >
                 ✓ {successMessage}
               </p>
             )}
             {errorMessage && (
-              <p style={{ color: "#c0392b", fontSize: "0.85rem", marginBottom: "0.75rem" }}>
+              <p
+                style={{
+                  color: "#c0392b",
+                  fontSize: "0.85rem",
+                  marginBottom: "0.75rem",
+                }}
+              >
                 ⚠ {errorMessage}
               </p>
             )}
