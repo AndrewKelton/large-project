@@ -13,7 +13,7 @@ if (Access an Account?) then (No)
       :Choose Professor from Dropdown Menu for Selected Course;
     split again
     end split
-    :User Views Ratings and Questionaires for Course (and Possible Professor) Selected;
+    :User Views Ratings and Questionaires for Selected Course (and Possible Professor);
     split
       stop
     split again
@@ -29,15 +29,18 @@ endif
 if(Does The User Have an Existing Account?) then (No)
   :User Clicks the "Register" tab;
   :Register Page Displayed;
-  :User Enters Credentials for their New Account (First & Last Names, Email Address, Username, Password);
-
   repeat
+  :User Enters Credentials for their New Account (First & Last Names, Email Address, Username, Password);
+  :User Presses "Register" Button to Finalize Registration;
 
-    backward: User Enters a Different Username;
 
-  repeat while (Is The Entered Username Taken?) is (Yes) not (No)
+    backward: Registration Error Message Displayed;
+
+  repeat while (Is The Entered Information Valid?) is (No) not (Yes)
 
   :User is Sent an Email to Verify their Email Address;
+  :User Account is Created;
+  :Registration Success Message Displayed;
   :User is Redirected to Login Page;
 
 else (Yes)
