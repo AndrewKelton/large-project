@@ -86,6 +86,7 @@ repeat
     :Questionnaire Page Displayed;
     :Create a Multiple-Choice Questionnaire;
     :Press Button "Send";
+    :Success Message Displayed;
 
     if (Professor Selected from\nUser's Home Page?) is (No) then
       :Questionnaire is posted on
@@ -105,12 +106,20 @@ repeat
       :Course+Professor Rating Page Displayed;
     endif
 
+    if(Did The User Change Their Mind About Rating a Professor?) is (Yes) then
+      :Switch The Rating Page Displayed to its Opposite;
+
+    else (No)
+
+    endif
+
     split
       :Answer Questions\nSpecific to Course;
     split again
       :Answer Question\nSpecific to Course+Professor;
     end split
     :Press Button "Submit Rating";
+    :Success Message Displayed;
   end split
 repeat while ()
 
