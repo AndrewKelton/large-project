@@ -12,7 +12,6 @@ const CreateRatingPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as CreateRatingState | null;
-  const course = state?.course;
   const initialProfessor = state?.professor ?? null;
   const [selectedProfessor, setSelectedProfessor] = useState<Professor | null>(initialProfessor ?? null);
 
@@ -25,6 +24,8 @@ const CreateRatingPage = () => {
       </div>
     );
   }
+
+  const course = state.course;
 
 
   return (
