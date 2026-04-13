@@ -17,7 +17,9 @@ class CourseQuestionnaireResults extends StatefulWidget {
 
 class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults> {
 
+  // list of course questionnaire results
   List<Map<String, dynamic>> courseQuestionnaireObjects = [];
+  // list of questionnaires answer by user
   List<String> answeredCourseQuestionnairesList = [];
   // used for pagination
   static const int pageSize = 3;
@@ -126,7 +128,7 @@ class _CourseQuestionnaireResultsState extends State<CourseQuestionnaireResults>
         }).toList().cast<Map<String, dynamic>>();
       });
     } catch (e) {
-      print('Course questionnaire results error: ${e.toString()}');
+      print('Course SEARCH questionnaire results error: ${e.toString()}');
     }
   }
 
