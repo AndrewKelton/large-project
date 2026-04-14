@@ -97,74 +97,83 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         automaticallyImplyLeading: true,
       ),
       backgroundColor: Colors.blue,
-      body: Column(
-        children: [
-          SizedBox(height: 125.0),
-          // title bar
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Forgot Password',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 25.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: Container(
+          width: 250,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: 125.0),
+                // title bar
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Forgot Password',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 25.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10.0),
+                // email text field
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 250,
+                      child: TextField(
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(),
+                          hintText: 'Enter your email address...',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10.0),
+                // submit button
+                ElevatedButton(
+                  onPressed: submitForgotPassword,
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    backgroundColor: Colors.brown[50],
+                    foregroundColor: Colors.black,
+                    padding: EdgeInsets.all(8.0),
+                  ),
+                  child: Text(
+                    'Send Reset Link',
+                    style: TextStyle(fontSize: 15.0),
                   ),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: 10.0),
-          // email text field
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 300,
-                child: TextField(
-                  controller: emailController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(),
-                    hintText: 'Enter your email address...',
+                // message
+                if (message != '') ...[
+                  SizedBox(height: 10.0),
+                  Text(
+                    message,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: messageIsError ? Colors.red : Colors.yellow,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 10.0),
-          // submit button
-          ElevatedButton(
-            onPressed: submitForgotPassword,
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              backgroundColor: Colors.brown[50],
-              foregroundColor: Colors.black,
-              padding: EdgeInsets.all(8.0),
-            ),
-            child: Text(
-              'Send Reset Link',
-              style: TextStyle(fontSize: 15.0),
+                ],
+              ],
             ),
           ),
-          // message
-          if (message != '') ...[
-            SizedBox(height: 10.0),
-            Text(
-              message,
-              style: TextStyle(
-                color: messageIsError ? Colors.red : Colors.yellow,
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }
