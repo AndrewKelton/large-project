@@ -1,7 +1,9 @@
 @startuml
 title Group 7 - Large Project\nActivity Diagram
+
 start
 
+(H)
 :Generic Home Page Displayed;
 
 if (Access an Account?) then (No)
@@ -58,6 +60,16 @@ repeat while (Username/Password Valid?) is (No) not (Yes)
 repeat
   repeat
     :User's Home Page Displayed;
+
+    if(Does The User want to Logout?) is (Yes) then
+      :User Clicks "Logout" Button;
+      (H)
+      detach
+
+    else (No)
+
+    endif
+
     if(Does The User Need to Update An Attribute on Their Account?) is (Yes) then
       :User Clicks "Settings" Button;
       :User Settings Page Displayed;
@@ -140,6 +152,7 @@ repeat
     :Success Message Displayed;
   end split
 repeat while ()
+
 
 stop
 
