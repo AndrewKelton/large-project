@@ -48,7 +48,7 @@ All AI-generated code was reviewed, tested, and modified to meet
 assignment requirements. Final implementation reflects my understanding
 of the concepts.
 
-- Adam Betinsky: Frontend Developer - April 5th, 2026
+- Adam Betinsky: Frontend Developer
 
 ---
 
