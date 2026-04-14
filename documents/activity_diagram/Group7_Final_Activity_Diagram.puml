@@ -37,10 +37,11 @@ if(Does The User Have an Existing Account?) then (No)
 
   repeat while (Is The Entered Information Valid?) is (No) not (Yes)
 
-  :User is Sent an Email to Verify their Email Address;
   :User Account is Created;
   :Registration Success Message Displayed;
   :User is Redirected to Login Page;
+  :User is Sent an Email to Verify their Email Address;
+
 
 else (Yes)
 
