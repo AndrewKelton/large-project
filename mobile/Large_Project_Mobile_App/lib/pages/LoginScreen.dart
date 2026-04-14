@@ -408,8 +408,6 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
 
                                 Navigator.pushNamed(context, '/forgot_password');
 
-                                tempPasswordMessage = 'A temporary password has been sent to your email.';
-                                changeTempPasswordMessage();
                               },
                           ),
                         ],
