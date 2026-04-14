@@ -224,6 +224,17 @@ class _UserSettingsPageState extends State<UserSettingsPage> with RouteAware {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 40.0),
+              // logo image
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16.0),
+                child: Image.asset(
+                  'lib/images/knight-rate-app-logo.png',
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SizedBox(height: 20.0),
               // title heading for the screen
               Text('Account Settings',
                 style: TextStyle(

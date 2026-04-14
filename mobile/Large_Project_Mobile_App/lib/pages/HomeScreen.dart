@@ -299,6 +299,17 @@ class _HomePageState extends State<HomePage> with RouteAware {
                 ),
               ], // end of else for login link and logout button
               SizedBox(height: 35.0),
+              // logo image
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16.0),
+                child: Image.asset(
+                  'lib/images/knight-rate-app-logo.png',
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SizedBox(height: 20.0),
               // row for course dropdown label
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
