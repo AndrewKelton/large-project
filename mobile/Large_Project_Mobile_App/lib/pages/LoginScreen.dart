@@ -405,8 +405,9 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                // call api that requests temporary password be sent via NodeMailer
-                                // .......
+
+                                Navigator.pushNamed(context, '/forgot_password');
+
                                 tempPasswordMessage = 'A temporary password has been sent to your email.';
                                 changeTempPasswordMessage();
                               },
