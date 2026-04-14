@@ -134,6 +134,17 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
             crossAxisAlignment: CrossAxisAlignment.center, // center column contents horizontally
             children: <Widget> [
               SizedBox(height: 100.0),
+              // logo image
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16.0),
+                child: Image.asset(
+                  'lib/images/knight-rate-app-logo.png',
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SizedBox(height: 20.0),
               // row for login instruction
               Row(
                 children: <Widget> [

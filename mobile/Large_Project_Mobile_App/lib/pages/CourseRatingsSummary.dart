@@ -56,13 +56,13 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
       jsonObjectCourseRatings = json.decode(ret);
 
       setState(() {
-        numCourseRatings = jsonObjectCourseRatings["totalRatings"];
+        numCourseRatings = jsonObjectCourseRatings["totalRatings"] ?? 0;
         courseRatingsList = [
-          jsonObjectCourseRatings["averageQ1"].toDouble(),
-          jsonObjectCourseRatings["averageQ2"].toDouble(),
-          jsonObjectCourseRatings["averageQ3"].toDouble(),
-          jsonObjectCourseRatings["averageQ4"].toDouble(),
-          jsonObjectCourseRatings["averageQ5"].toDouble(),
+          (jsonObjectCourseRatings["averageQ1"] ?? 0).toDouble(),
+          (jsonObjectCourseRatings["averageQ2"] ?? 0).toDouble(),
+          (jsonObjectCourseRatings["averageQ3"] ?? 0).toDouble(),
+          (jsonObjectCourseRatings["averageQ4"] ?? 0).toDouble(),
+          (jsonObjectCourseRatings["averageQ5"] ?? 0).toDouble(),
         ];
       });
 
