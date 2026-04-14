@@ -1,35 +1,6 @@
 # Large Project Group 7
 KnightRate is a UCF-focused course and professor review platform for students to rate and discover classes.
 
-## AI Assistance Disclosure
-
-This project was developed with assistance from generative AI tools:
-
-- **Tool**: ChatGPT 5.1 (OpenAI)
-- **Dates**: April 4, 2026
-- **Scope**: Generate App Logo
-- **Use**: Used Chat to generate a logo for the "KnightRate" app.
-
-- **Tool**: Claude Sonnet 4.6 (Anthropic)
-- **Dates**: March 21 - April 13, 2026
-- **Scope**: Function desgin, formatting, and React/TypeScript standards
-- **Use**: Collaborated with Claude throughout the project to help understand
-how to implement functions in TypeScript/React. For example, charts, updating
-states "onChange"(s), etc.
-
-- **Tool**: Claude Sonnet 4.6 (Anthropic)
-- **Dates**: April 10 - April 12, 2026
-- **Scope**: CSS Styling on Web App
-- **Use**: Collaborated with Claude to help me match the styling of the mobile
-app, given the context of the mobile app's layout and color schemes.
-
-All AI-generated code was reviewed, tested, and modified to meet
-assignment requirements. Final implementation reflects my understanding
-of the concepts.
-
-- Andrew Kelton Frontend Developer
-
-
 ## Git Workflow
 
 Follow this workflow when contributing to the project:
