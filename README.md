@@ -1,6 +1,6 @@
 # Large Project Group 7
 KnightRate is a UCF-focused course and professor review platform for students to rate and discover classes.
- 
+
 ## Git Workflow
 
 Follow this workflow when contributing to the project:

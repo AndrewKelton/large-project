@@ -159,6 +159,17 @@ class _RegistrationPageState extends State<RegistrationPage> with RouteAware {
             crossAxisAlignment: CrossAxisAlignment.center, // center column contents horizontally
             children: <Widget> [
               SizedBox(height: 100.0),
+              // logo image
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16.0),
+                child: Image.asset(
+                  'lib/images/knight-rate-app-logo.png',
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SizedBox(height: 20.0),
               // row for register instruction
               Row(
                 children: <Widget> [
@@ -477,10 +488,10 @@ class _RegistrationPageState extends State<RegistrationPage> with RouteAware {
                         if (jsonObject.containsKey('message')) {
                           resetInputMessages();
                           if (jsonObject['message'] == 'Account created successfully') {
-                            newMessageText = "Account created successfully! Redirecting to Login Screen...";
+                            newMessageText = "Please check your email for a verification link. Redirecting to Login Screen...";
                             changeText();
                             // delay to allow time for user to read message before redirecting to another page
-                            await Future.delayed(Duration(milliseconds: 1500));
+                            await Future.delayed(Duration(milliseconds: 2500));
                             // navigate to login page after popping the current registration page from the stack
                             Navigator.popAndPushNamed(context, '/login');
                           }
@@ -594,7 +605,7 @@ class _RegistrationPageState extends State<RegistrationPage> with RouteAware {
               // row (conditional) for potential error message
               if (message != '') Row(
                 children: <Widget> [
-                  if (message != "Account created successfully! Redirecting to Login Screen...") ... [
+                  if (message != "Please check your email for a verification link. Redirecting to Login Screen...") ... [
                     Icon(
                       Icons.warning_rounded,
                       color:  Colors.red,
@@ -606,7 +617,7 @@ class _RegistrationPageState extends State<RegistrationPage> with RouteAware {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 16.0,
-                        color: message == "Account created successfully! Redirecting to Login Screen..." ? Colors.amber : Colors.red,
+                        color: message == "Please check your email for a verification link. Redirecting to Login Screen..." ? Colors.amber : Colors.red,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
