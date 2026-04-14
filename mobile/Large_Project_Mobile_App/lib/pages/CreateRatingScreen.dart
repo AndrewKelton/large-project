@@ -202,7 +202,7 @@ class _CreateRatingPageState extends State<CreateRatingPage> with RouteAware {
         }
       }
     } catch (e) {
-      print('Course questionnaire submit answer error: ${e.toString()}');
+      print('Rating submit answer error: ${e.toString()}');
     }
   }
 

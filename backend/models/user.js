@@ -12,7 +12,8 @@ const UserSchema = new Schema({
     },
     Username: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     Password: {
         type: String,
@@ -20,7 +21,9 @@ const UserSchema = new Schema({
     },
     Email: {
         type: String,
-        required: true
+        required: true,
+        unique: true,
+        lowercase: true
     },
 
     // Reference Entries

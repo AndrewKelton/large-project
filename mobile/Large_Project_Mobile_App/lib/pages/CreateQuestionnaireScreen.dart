@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'package:group7_mobile_app/main.dart';
 import 'package:group7_mobile_app/utils/getAPI.dart';
 import 'package:group7_mobile_app/utils/GlobalData.dart';
-import 'package:group7_mobile_app/pages/RatingForm.dart';
 import 'package:provider/provider.dart';
 
 
@@ -153,7 +151,6 @@ class _CreateQuestionnairePageState extends State<CreateQuestionnairePage> with 
     });
 
     try {
-      String url = 'http://leandrovivares.com/api/professors';
       String ret = await AppDataPost.getJSON('http://leandrovivares.com/api/createQuestionnaire', payload);
 
       Map<String, dynamic> decoded = jsonDecode(ret);

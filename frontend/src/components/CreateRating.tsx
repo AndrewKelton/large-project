@@ -9,15 +9,13 @@ import { COURSE_QUESTIONS, PROFESSOR_QUESTIONS} from "../constants/ratingQuestio
 interface CreateRatingProps {
   course: Course;
   professor?: Professor | null;
+  setSelectedProfessor: (professor: Professor | null) => void;
   onSuccess: () => void;
 }
 
 // Main function to create a rating. Takes in a object of the create rating interface
-const CreateRating = ({course, professor = null, onSuccess,}: CreateRatingProps) => {
-  const [wantsProfessorRating, setWantsProfessorRating] = useState(!!professor);
-  const [selectedProfessor, setSelectedProfessor] = useState<Professor | null>(
-    professor,
-  );
+const CreateRating = ({course, professor = null, setSelectedProfessor, onSuccess,}: CreateRatingProps) => {
+const [wantsProfessorRating, setWantsProfessorRating] = useState(!!professor);
 
   // Declare useState variables
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -54,7 +52,6 @@ const CreateRating = ({course, professor = null, onSuccess,}: CreateRatingProps)
     averageQ10: 0,
   });
 
-
   // Function to get all of the professors in the database, only runs if the user has the professor option selected
   useEffect(() => {
     const fetchProfessors = async () => {
@@ -88,7 +85,7 @@ const CreateRating = ({course, professor = null, onSuccess,}: CreateRatingProps)
 
     // If the user wants to rate a professor, follow similar logic for the courses, but always ensure a specific professor is selected too
     if (wantsProfessorRating) {
-      if (!selectedProfessor) {
+      if (!professor) {
         setErrorMessage("Please select a professor.");
         return;
       }
@@ -113,7 +110,7 @@ const CreateRating = ({course, professor = null, onSuccess,}: CreateRatingProps)
       // Add in the user ID, course ID, and professor information (dependent on a user)
       User: userId,
       Course: course._id,
-      Professor: wantsProfessorRating && selectedProfessor ? selectedProfessor._id : null,
+      Professor: wantsProfessorRating && professor ? professor._id : null,
 
       // Store the user's responses to the class questions
       Option_A_Count: courseAnswers.averageQ1,
@@ -225,8 +222,8 @@ const CreateRating = ({course, professor = null, onSuccess,}: CreateRatingProps)
               setWantsProfessorRating(isChecked);
               if (!isChecked) {
                 setSelectedProfessor(null);
-                setProfessorAnswers({ averageQ6: 0, averageQ7: 0, averageQ8: 0, averageQ9: 0, averageQ10: 0 });
-              }
+                resetProfessorAnswers();
+              } 
             }}
             style={{ width: '18px', height: '18px', cursor: 'pointer' }}
           />
@@ -248,7 +245,7 @@ const CreateRating = ({course, professor = null, onSuccess,}: CreateRatingProps)
             </label>
             <select
               id="professor-select"
-              value={selectedProfessor?._id ?? ""}
+              value={professor?._id ?? ""}
               onChange={(e) => {
                 const selectedId = e.target.value;
                 if (!selectedId) { setSelectedProfessor(null); resetProfessorAnswers(); return; }

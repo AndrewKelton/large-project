@@ -4,6 +4,7 @@ import 'package:group7_mobile_app/utils/GlobalData.dart';
 import 'dart:convert';
 import 'package:provider/provider.dart';
 import 'dart:math';
+import 'dart:async';
 
 class ProfessorQuestionnaireResults extends StatefulWidget {
   final String courseId;
@@ -24,10 +25,17 @@ class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireRe
   // used for pagination
   static const int pageSize = 3;
   int currentPage = 0;
+  // controllers for textfields (objects contain the text inputs)
+  late TextEditingController searchController;
+  // message related to questionnaire
+  String questionnaireMessage = '';
+  // timer to make sure that some amount of time has passed before using onChange property of textfield
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
+    searchController = TextEditingController();
     loadProfessorQuestionnaires();
     if (context.read<GlobalData>().userId != '-1') {
       getAnsweredProfessorQuestionnaires();
@@ -39,14 +47,24 @@ class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireRe
     super.didUpdateWidget(oldWidget);
     if (oldWidget.courseId != widget.courseId || oldWidget.professorId != widget.professorId) {
       setState(() {
+        currentPage = 0;
         professorQuestionnaireObjects = [];
         answeredProfessorQuestionnairesList = [];
       });
+      questionnaireMessage = '';
+      searchController.clear();
       loadProfessorQuestionnaires();
       if (context.read<GlobalData>().userId != '-1') {
         getAnsweredProfessorQuestionnaires();
       }
     }
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    searchController.dispose();
+    super.dispose();
   }
 
   // function to get the professor ratings from database
@@ -63,6 +81,10 @@ class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireRe
       setState(() {
         // only reset to 0 if no restore page is passed as an argument
         currentPage = restorePage ?? 0;
+        int numQuestionnaires = questionnaires.length;
+        if (numQuestionnaires == 0) {
+          questionnaireMessage = 'No Questionnaire Yet - Check back later!';
+        }
         professorQuestionnaireObjects = questionnaires.map((q) {
           return {
             "questionnaire_id": q["_id"],
@@ -74,9 +96,41 @@ class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireRe
           };
         }).toList().cast<Map<String, dynamic>>();
       });
-
     } catch (e) {
       print('Professor questionnaire results error: ${e.toString()}');
+    }
+  }
+
+  // function to get the SEARCHED professor ratings from database
+  void loadSearchProfessorQuestionnaires({int? restorePage}) async {
+    String courseId = widget.courseId.trim();
+    String professorId = widget.professorId.trim();
+    String url = "http://leandrovivares.com/api/searchCAP/search?query=${searchController.text}&courseId=${courseId}&professorId=${professorId}";
+    try {
+      String ret = await AppDataGet.getJSON(url);
+      Map<String, dynamic> decoded = json.decode(ret);
+      List<dynamic> questionnaires = decoded["results"];
+
+      setState(() {
+        // only reset to 0 if no restore page is passed as an argument
+        currentPage = restorePage ?? 0;
+        int numQuestionnaires = questionnaires.length;
+        if (numQuestionnaires == 0) {
+          questionnaireMessage = 'No questions match \"${searchController.text}\"';
+        }
+        professorQuestionnaireObjects = questionnaires.map((q) {
+          return {
+            "questionnaire_id": q["_id"],
+            "question": q["Question"],
+            "options": {"A": q["Option_A"], "B": q["Option_B"], "C": q["Option_C"], "D": q["Option_D"]},
+            "counts": {"A": q["Option_A_Count"], "B": q["Option_B_Count"], "C": q["Option_C_Count"], "D": q["Option_D_Count"]},
+            "_showQuestions": false,
+            "answerMessage": '',
+          };
+        }).toList().cast<Map<String, dynamic>>();
+      });
+    } catch (e) {
+      print('Professor SEARCH questionnaire results error: ${e.toString()}');
     }
   }
 
@@ -91,10 +145,8 @@ class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireRe
       List<dynamic> answered = decoded["answeredQuestionnaires"];
 
       setState(() {
-        currentPage = 0;
         answeredProfessorQuestionnairesList = List<String>.from(answered.map((item) => item.toString()));;
       });
-
     } catch (e) {
       print('Answered course+professor questionnaire list error: ${e.toString()}');
     }
@@ -110,24 +162,77 @@ class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireRe
     return Column(
       children: [
         // title bar
-        if (professorQuestionnaireObjects.isNotEmpty) ...[
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Professor Questionnaire Results',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 25.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Professor Questionnaire Results',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
-            ],
+            ),
+          ],
+        ),
+        SizedBox(height: 5.0),
+        // row for search textfield
+        Row (
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget> [
+            SizedBox(
+              width: 300,
+              child: TextField(
+                  controller: searchController,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(),
+                    hintText: 'Search professor questions...',
+                  ),
+                  onChanged: (value) {
+                    if (_debounce?.isActive ?? false) {
+                      _debounce!.cancel();
+                    }
+                    _debounce = Timer(const Duration(milliseconds: 500), () {
+                      print('Search text changed: $value');
+                      if (searchController.text != '') {
+                        questionnaireMessage = '';
+                        // load only the questionnaires matching the search textfield if not blank
+                        loadSearchProfessorQuestionnaires();
+                      }
+                      else {
+                        setState(() {
+                          questionnaireMessage = '';
+                          // load complete list of questionnaires if the search textfield is blank
+                          loadProfessorQuestionnaires();
+                        });
+                      }
+                    });
+                  }
+              ),
+            )
+          ],
+        ),
+        // row for potential error message after clicking search questionnaires
+        if (questionnaireMessage != '') ... [
+          SizedBox(height: 20.0),
+          Text(
+              questionnaireMessage,
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+              )
           ),
-          SizedBox(height: 5.0),
-        ],
+        ], // end of IF statement for displaying error message
+
+
+
+
+        SizedBox(height: 5.0),
         // questionnaire cards
         ...pageSlice.asMap().entries.map((entry) {
           // localIndex refers to pageSlice, globalIndex refers to professorQuestionnaireObjects
@@ -201,8 +306,14 @@ class _ProfessorQuestionnaireResultsState extends State<ProfessorQuestionnaireRe
                       print(message);
                       professorQuestionnaireObjects[curIndex]["_showQuestions"] = !professorQuestionnaireObjects[curIndex]["_showQuestions"];
                       if (message == 'Response recorded successfully') {
+
                         professorQuestionnaireObjects[curIndex]["answerMessage"] = '';
-                        loadProfessorQuestionnaires(restorePage: pageToRestore);
+                        if (searchController.text == '') { // enter when there isn't search text
+                          loadProfessorQuestionnaires(restorePage: pageToRestore);
+                        }
+                        else { // enter when there is search text
+                          loadSearchProfessorQuestionnaires(restorePage: pageToRestore);
+                        }
                         getAnsweredProfessorQuestionnaires();
                       }
                       else {

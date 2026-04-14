@@ -110,8 +110,10 @@ function Login({ onSwitchToRegister, onForgotPassword }: LoginProps) {
 
       <br />
       <p style={{ display: "inline" }}>Don't have an account? Click </p>
-      <button className="link-button" onClick={onSwitchToRegister}>here</button>
-      <p style={{ display: "inline" }}> to make one!</p>
+      <button className="link-button" onClick={onSwitchToRegister}>
+        here
+      </button>
+      <p style={{ display: "inline" }}> to make one! </p>
       <br />
       <button className="link-button" onClick={onForgotPassword}>Forgot your password?</button>
     </div>
