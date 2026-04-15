@@ -167,9 +167,9 @@ function CourseQuestionnaireResultsComponent({ course }: CourseQuestionnaireResu
 
       {!isSearching && questionnaires.length > 0 && (
         <>
-          {pageSlice.map((entry, idx) => (
+          {pageSlice.map((entry) => (
             <QuestionnaireEntryCard
-              key={idx}
+              key={entry._id}
               entry={entry}
               courseId={course._id}
               professorId={null}
