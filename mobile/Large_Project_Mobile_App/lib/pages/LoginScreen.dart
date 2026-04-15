@@ -25,11 +25,19 @@ class _LoginScreenState extends State<LoginScreen> {
     final data = context.watch<GlobalData>(); // rebuild widget if global data changes
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'COP 4331 Group 7 Large Project',
-          textAlign: TextAlign.center,
+        title: Column(
+          children: [
+            Text(
+              'COP 4331 Group 7 Large Project',
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              'Welcome to KnightRate',
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
       ),
       backgroundColor: Colors.blue,
       body: LoginPage(),
@@ -46,11 +54,18 @@ class LoginPage extends StatefulWidget {
 
 // widget for building the login page
 class _LoginPageState extends State<LoginPage> with RouteAware {
-  String message = "";
+  String message1 = ""; // message to describe errors
+  String message2 = ""; // message to notify that temporary password was sent
   String newMessageText = "";
+  String tempPasswordMessage = "";
+  String usernameMessage = "";
+  String passwordMessage = "";
   // controllers for textfields (objects contain the text inputs)
   late TextEditingController loginController;
   late TextEditingController passwordController;
+  // colors for textfield borders
+  Color _borderColor1 = Colors.grey.shade700;
+  Color _borderColor2 = Colors.grey.shade700;
 
   @override
   void initState() {
@@ -79,174 +94,351 @@ class _LoginPageState extends State<LoginPage> with RouteAware {
   void didPopNext() {
     // called when coming back from another page
     setState(() {
-      message = "";
+      message1 = "";
       newMessageText = "";
+      tempPasswordMessage = "";
+      usernameMessage = "";
+      passwordMessage = "";
       loginController.clear();
       passwordController.clear();
+      _borderColor1 = Colors.grey.shade700;
+      _borderColor2 = Colors.grey.shade700;
     });
   }
 
   // method to change the state of select widget attributes when called
   void changeText() {
     setState(() {
-      message = newMessageText;
+      message1 = newMessageText;
+      message2 = "";
+    });
+  }
+
+  // method to change the state of select widget attributes when called
+  void changeTempPasswordMessage() {
+    setState(() {
+      message1 = "";
+      message2 = tempPasswordMessage;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Align(
+      alignment: Alignment.topCenter,
       child: Container(
         width: 250,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start, // center column contents vertically
-          crossAxisAlignment: CrossAxisAlignment.center, // center column contents horizontally
-          children: <Widget> [
-            SizedBox(height: 150.0),
-            // row for login instruction
-            Row(
-              children: <Widget> [
-                Expanded(
-                  child: Text(
-                    'PLEASE LOG IN',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start, // center column contents vertically
+            crossAxisAlignment: CrossAxisAlignment.center, // center column contents horizontally
+            children: <Widget> [
+              SizedBox(height: 100.0),
+              // row for login instruction
+              Row(
+                children: <Widget> [
+                  Expanded(
+                    child: Text(
+                      'PLEASE LOG IN',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            // row (conditional) for potential error message
-            if (message != '') Row(
-              children: <Widget> [
-                Expanded(
-                  child: Text(
-                    '$message',
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      color: Colors.red,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            // row for login name textfield
-            Row (
-              children: <Widget> [
-                Container(
-                  width: 250,
-                  child: TextField(
-                    controller: loginController,
-                 /*   onChanged: (text) {
-                      loginName = text;
-                    },*/
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(),
-                      hintText: 'Username',
-                    ),
-                  ),
-                )
-              ],
-            ),
-            // row for password textfield
-            Row(
-              children: <Widget> [
-                Container(
-                  width: 250,
-                  child: TextField(
-                    controller: passwordController,
-                    obscureText: true,
-               /*     onChanged: (text) {
-                      password = text;
-                    },*/
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(),
-                      hintText: 'Password',
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            // row for login button
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget> [
-                LoginButton(
-                  onPressed: () async {
-                    newMessageText = "";
-                    changeText();
-                    String payload = '{"Username":"${loginController.text.trim()}", "Password":"${passwordController.text.trim()}"}';
-                    var jsonObject;
-
-                    try {
-                      String url = 'http://leandrovivares.com/api/login';
-                      String ret = await AppDataPost.getJSON(url, payload);
-                      jsonObject = json.decode(ret);
-                      print(jsonObject);
-                      context.read<GlobalData>().setUserId(jsonObject['userId']);
-                    }
-                    catch (e) {
-                      newMessageText = e.toString();
-                      changeText();
-                      return;
-                    }
-
-                    if (jsonObject.containsKey('message')) {
-                      if (jsonObject['message'] == 'Login successful') {
-                        // navigate to user home page
-                        Navigator.pushNamed(context, '/user_home');
-                      }
-                      else {
-                        newMessageText = jsonObject['message'];
-                        changeText();
-                      }
-                    }
-                    else {
-                      newMessageText = 'Unknown Error!';
-                      changeText();
-                    }
-                  },
-                ),
-              ],
-            ),
-            // row for registration page link
-            Row(
-              children: [
-                Expanded(
-                  child: RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      style: TextStyle(color: Colors.black),
-                      children: [
-                        TextSpan(text: "Don't have an account? Click "),
-                        TextSpan(
-                          text: "here",
-                          style: TextStyle(
-                            color: Colors.indigo[900],
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              Navigator.pushNamed(context, '/register');
-                            },
+                ],
+              ),
+              // row for username textfield
+              Row (
+                children: <Widget> [
+                  Container(
+                    width: 250,
+                    child: TextField(
+                      controller: loginController,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        hintText: 'Username',
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: _borderColor1, width: 2.0),
                         ),
-                        TextSpan(text: " to make one!"),
-                      ],
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: _borderColor1, width: 2.0),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              // row (conditional) for username required error
+              if (usernameMessage != '') ...[
+                Row(
+                  children: <Widget> [
+                    Icon(Icons.warning_rounded, color: Colors.red),
+                    Expanded(
+                      child: Text(
+                        usernameMessage,
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10.0),
+              ],
+              SizedBox(height: 5.0),
+              // row for password textfield
+              Row(
+                children: <Widget> [
+                  Container(
+                    width: 250,
+                    child: TextField(
+                      controller: passwordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(),
+                        hintText: 'Password',
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: _borderColor2, width: 2.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: _borderColor2, width: 2.0),
+                        ),
+                      ),
                     ),
                   ),
+                ],
+              ),
+              // row (conditional) for password required error
+              if (passwordMessage != '') ...[
+                Row(
+                  children: <Widget> [
+                    Icon(Icons.warning_rounded, color: Colors.red),
+                    Expanded(
+                      child: Text(
+                        passwordMessage,
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
+                SizedBox(height: 10.0),
               ],
-            ),
-          ],
+              SizedBox(height: 10.0),
+              // row for login button
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget> [
+                  SizedBox(
+                    width: 100.0,
+                    child: LoginButton(
+                      onPressed: () async {
+                        newMessageText = "";
+                        changeText();
+                        String username = loginController.text.trim();
+                        String password = passwordController.text.trim();
+                        String payload = '{"Username":"${loginController.text.trim()}", "Password":"${passwordController.text.trim()}"}';
+
+                        print('password = ${username}');
+                        print('password = ${password}');
+                        print('payload = ${payload}');
+
+                        var jsonObject;
+
+                        try {
+                          String url = 'http://leandrovivares.com/api/login';
+                          String ret = await AppDataPost.getJSON(url, payload);
+                          jsonObject = json.decode(ret);
+                          print('jsonObject = ${jsonObject}');
+                        }
+                        catch (e) {
+                          newMessageText = e.toString();
+                          changeText();
+                          return;
+                        }
+
+                        // check response object to verify successful login
+                        if (jsonObject.containsKey('message')) {
+                          if (jsonObject['message'] == 'Login Successful') {
+                            // set token after successful login
+                            context.read<GlobalData>().setToken(jsonObject['token']);
+
+                            // decode userId from JWT token
+                            final parts = context.read<GlobalData>().token.split('.');
+                            final payload = parts[1];
+                            final decoded = utf8.decode(base64Url.decode(base64Url.normalize(payload)));
+                            final map = jsonDecode(decoded);
+
+                            // set global variable for userId upon successful login
+                            context.read<GlobalData>().setUserId(map['userId']);
+
+                            // navigate to home page while removing everything from the stack before pushing the new route
+                            Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+                            print('userId global: ${context.read<GlobalData>().userId}');
+                          }
+                          else {
+                            newMessageText = jsonObject['message'];
+                            changeText();
+                            if (newMessageText == 'Invalid username or password') {
+                              newMessageText = 'Username / password combination incorrect.';
+
+                              if (loginController.text == '') {
+                                _borderColor1 = Colors.red;
+                                usernameMessage = 'Username is required.';
+                              }
+                              else {
+                                _borderColor1 = Colors.grey.shade700;
+                                usernameMessage = '';
+                              }
+
+                              if (passwordController.text == '') {
+                                _borderColor2 = Colors.red;
+                                passwordMessage = 'Password is required.';
+                              }
+                              else {
+                                _borderColor2 = Colors.grey.shade700;
+                                passwordMessage = '';
+                              }
+
+                              if (loginController.text != '' && passwordController.text != '') {
+                                _borderColor1 = Colors.red;
+                                _borderColor2 = Colors.red;
+                                usernameMessage = '';
+                                passwordMessage = '';
+                              }
+
+                              // rebuild this screen
+                              setState(() {});
+                            }
+                            print(newMessageText);
+                          }
+                        }
+                        else {
+                          newMessageText = 'Unknown Error!';
+                          changeText();
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              // row (conditional) for potential error message
+              if (message1 != '') Row(
+                children: <Widget> [
+                  Icon(Icons.warning_rounded, color: Colors.red),
+                  Expanded(
+                    child: Text(
+                      '$message1',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 25.0),
+              // row for registration page link
+              Row(
+                children: [
+                  Expanded(
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18.0,
+                          height: 1.2,),
+                        children: [
+                          TextSpan(text: "Don't have an account?\nClick "),
+                          TextSpan(
+                            text: "here",
+                            style: TextStyle(
+                              color: Colors.indigo[900],
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.pushNamed(context, '/register');
+                              },
+                          ),
+                          TextSpan(text: " to make one!"),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 40.0),
+              // row for forgot password page link
+              Row(
+                children: [
+                  Expanded(
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18.0,
+                          height: 1.2,),
+                        children: [
+                          TextSpan(
+                            text: "Forgot your password?",
+                            style: TextStyle(
+                              color: Colors.indigo[900],
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                // call api that requests temporary password be sent via NodeMailer
+                                // .......
+                                tempPasswordMessage = 'A temporary password has been sent to your email.';
+                                changeTempPasswordMessage();
+                              },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              // row (conditional) for message notifying that temporary password was sent to email
+              if (message2 != '') ... [
+                SizedBox(height: 25.0),
+                Row(
+                  children: <Widget> [
+                    Expanded(
+                      child: Text(
+                        '$message2',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          color: Colors.amber[500],
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ], // end IF statement for temporary password notify
+              SizedBox(height: 100.0),
+            ],
+          ),
         ),
       ),
     );
@@ -274,9 +466,11 @@ class LoginButton extends StatelessWidget {
       ),
       child: Text(
         'Login',
-        style: TextStyle(fontSize: 14.0),
+        style: TextStyle(fontSize: 16.0),
       ),
     );
   }
 }
+
+
 

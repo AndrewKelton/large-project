@@ -21,7 +21,13 @@ router.post('/', [
         .isLength({ min: 5 }).withMessage('Password must be at least 5 characters.'),
     body('Email')
         .isEmail().withMessage('Must be a valid email!')
-        .normalizeEmail()
+        .normalizeEmail(),
+    body('First_Name')
+        .notEmpty().withMessage('First name is required!')
+        .trim(),
+    body('Last_Name')
+        .notEmpty().withMessage('Last name is required!')
+        .trim()
 ], async (req, res) => {
 
     const errors = validationResult(req);
@@ -30,8 +36,8 @@ router.post('/', [
     }
 
     try {
-        const { Username, Password, Email } = req.body;
-
+        const { First_Name, Last_Name, Username, Password, Email } = req.body;
+ 
         // Check if username exists
         const existingUsername = await User.findOne({ Username });
         if (existingUsername) {

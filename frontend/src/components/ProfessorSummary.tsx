@@ -81,28 +81,12 @@ function ProfessorSummary({ professor, course }: ProfessorSummaryProps) {
   }
 
   return (
-    <div>
-      <h3>Professor Summary</h3>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
-        padding: '0.75rem 1rem',
-        marginBottom: '0.75rem',
-        backgroundColor: '#eef4fc',
-        border: '1px solid #4a90d9',
-        borderRadius: '8px',
-      }}>
+    <div className="section-card">
+      <div className="section-card__header">Professor Summary</div>
+
+      <div className="selection-chip-row">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-          <span style={{
-            backgroundColor: '#4a90d9',
-            color: '#fff',
-            fontWeight: 'bold',
-            fontSize: '1rem',
-            padding: '0.3rem 0.65rem',
-            borderRadius: '6px',
-            whiteSpace: 'nowrap',
-          }}>
+          <span className="selection-chip">
             {professor.First_Name} {professor.Last_Name}
           </span>
           {professorRatings !== null && (
@@ -147,7 +131,7 @@ function ProfessorSummary({ professor, course }: ProfessorSummaryProps) {
         <span style={{
           marginLeft: 'auto',
           fontSize: '0.75rem',
-          color: '#4a90d9',
+          color: 'var(--appbar)',
           fontWeight: '600',
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
@@ -157,10 +141,10 @@ function ProfessorSummary({ professor, course }: ProfessorSummaryProps) {
       </div>
 
       {professorRatings !== null ? (
-        <div style={{ border: '1px solid #ccc', borderRadius: '6px', padding: '0.75rem' }}>
+        <div className="section-card__body">
           <h4 style={{ marginTop: 0 }}>Professor Ratings ({professorRatings.totalProfessorRatings} total)</h4>
-          {(Object.keys(PROFESSOR_QUESTIONS) as Array<keyof typeof PROFESSOR_QUESTIONS>).map((key, idx, arr) => (
-            <div key={key} style={{ paddingBottom: '0.6rem', marginBottom: '0.6rem', borderBottom: idx < arr.length - 1 ? '1px solid #eee' : 'none' }}>
+          {(Object.keys(PROFESSOR_QUESTIONS) as Array<keyof typeof PROFESSOR_QUESTIONS>).map((key) => (
+            <div key={key} className="section-card__row">
               <p style={{ fontWeight: 'bold', marginBottom: '0.4rem' }}>{PROFESSOR_QUESTIONS[key]}</p>
               <StarRating value={professorRatings[key]} />
             </div>

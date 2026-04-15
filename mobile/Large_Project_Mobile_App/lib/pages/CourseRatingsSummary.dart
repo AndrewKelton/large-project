@@ -11,42 +11,10 @@ class CourseRatingsSummary extends StatefulWidget {
   final String courseId;
 
   // constructor
-  const CourseRatingsSummary({required this.courseId});
+  const CourseRatingsSummary({super.key, required this.courseId});
 
   @override
   State<CourseRatingsSummary> createState() => _CourseRatingsSummaryState();
-}
-
-// this widget holds the question, numeric rating value, and shaded stars for q1->q5
-Widget _RatingCard(String question, double rating) {
-  double ParsedRating = rating ?? 0;
-
-  return Container(
-      width: double.infinity,
-      margin: EdgeInsets.symmetric(vertical: 6.0),
-      padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(7.5),
-        border: Border.all(color: Colors.grey.shade300, width: 1.5),
-      ),
-      child: Column(
-          children: [
-            Text(question, textAlign: TextAlign.center, style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),
-            SizedBox(height: 4.0),
-            Text('$rating / 5', textAlign: TextAlign.center, style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold, )),
-            SizedBox(height: 4.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(5, (index) {
-                if (index < ParsedRating.floor()) return Icon(Icons.star, color: Colors.black);
-                if (index < ParsedRating) return Icon(Icons.star_half, color: Colors.black);
-                return Icon(Icons.star_border, color: Colors.black);
-              }),
-            )
-          ]
-      )
-  );
 }
 
 // custom class for displaying course ratings summary
@@ -147,4 +115,36 @@ class _CourseRatingsSummaryState extends State<CourseRatingsSummary> {
       ],
     );
   }
+}
+
+// this widget holds the question, numeric rating value, and shaded stars for q1->q5
+Widget _RatingCard(String question, double rating) {
+  double ParsedRating = rating ?? 0;
+
+  return Container(
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(vertical: 6.0),
+      padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(7.5),
+        border: Border.all(color: Colors.grey.shade300, width: 1.5),
+      ),
+      child: Column(
+          children: [
+            Text(question, textAlign: TextAlign.center, style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),
+            SizedBox(height: 4.0),
+            Text('$rating / 5', textAlign: TextAlign.center, style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold, )),
+            SizedBox(height: 4.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(5, (index) {
+                if (index < ParsedRating.floor()) return Icon(Icons.star, color: Colors.black);
+                if (index < ParsedRating) return Icon(Icons.star_half, color: Colors.black);
+                return Icon(Icons.star_border, color: Colors.black);
+              }),
+            )
+          ]
+      )
+  );
 }

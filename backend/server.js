@@ -46,6 +46,12 @@ app.use('/api/fetchCO', fetchCO);
 const createQuestionnaireRouter = require('./api/createQuestionnaire.js');
 app.use('/api/createQuestionnaire', createQuestionnaireRouter);
 
+const userSettingsRouter = require('./api/userSettings.js');
+app.use('/api/userSettings', userSettingsRouter);
+
+const updateUserRouter = require('./api/updateUser.js');
+app.use('/api/updateUser', updateUserRouter);
+
 const respondToCAP = require('./api/respondToCAP.js');
 app.use('/api/respondToCAP', respondToCAP);
 

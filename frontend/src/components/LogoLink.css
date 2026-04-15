@@ -7,7 +7,11 @@
     border: none;
     padding: 0;
     cursor: pointer;
-    line-height: 0;
+    line-height: normal;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
 }
 
 #logo-img {
@@ -20,4 +24,24 @@
 #logo-link:hover #logo-img {
     transform: scale(1.18);
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+#logo-home-label {
+    line-height: 1;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #ffffff;
+    background: rgba(25, 118, 210, 0.85);
+    padding: 2px 8px;
+    border-radius: 10px;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+#logo-link:hover #logo-home-label {
+    opacity: 1;
+    transform: translateY(0);
 }
