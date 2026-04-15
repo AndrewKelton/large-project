@@ -118,7 +118,7 @@ of the concepts.
 
 - Name: Leandro Vivares (Backend and Mobile Developer)
 
-## Mobile
+## Database
 This project was developed with assistance from generative AI tools:
 
 - **Tool**: Claude 4.6 (Anthropic)
@@ -131,3 +131,9 @@ This project was developed with assistance from generative AI tools:
 4. Generated JSONs ~100 across several collections for testing and demonstration purposes
 5. Helped with bash commands for creating backups and snapshots of the database for data recovery
 6. Aided in creating relationships between collections and removing redundancies
+
+All AI-generated code was reviewed, tested, and modified to meet
+assignment requirements. Final implementation reflects my understanding
+of the concepts.
+
+- Name: Leandro Vivares Database Developer
