@@ -117,3 +117,17 @@ assignment requirements. Final implementation reflects my understanding
 of the concepts.
 
 - Name: Leandro Vivares (Backend and Mobile Developer)
+
+## Mobile
+This project was developed with assistance from generative AI tools:
+
+- **Tool**: Claude 4.6 (Anthropic)
+- **Dates**: April 2, 2026 to April 14, 2026
+- **Scope**:  Used in helping with MongoDB structure, design, and queries
+- **Use**: (see below)
+1. Used to generate queries to sanitize database via find() and deleteMany() queries,
+2. Used to generate proper mongoose models for proper typing and sound validation
+3. Translated MySQL concepts to MongoDB (i.e. document -> object, collection -> table, database = database)
+4. Generated JSONs ~100 across several collections for testing and demonstration purposes
+5. Helped with bash commands for creating backups and snapshots of the database for data recovery
+6. Aided in creating relationships between collections and removing redundancies
