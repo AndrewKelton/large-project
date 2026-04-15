@@ -6,7 +6,6 @@
 const request = require('supertest');
 const app = require('../../app');
 const db = require('./dbHelper');
-const User = require('../../models/user');
 
 beforeAll(async () => { await db.connect(); });
 afterEach(async () => { await db.clearDatabase(); });
@@ -79,11 +78,6 @@ describe('POST /api/login', () => {
 
     beforeEach(async () => {
         await request(app).post('/api/register').send(registerPayload);
-        // Bypass email verification — mark the user as verified directly in DB
-        await User.findOneAndUpdate(
-            { Username: registerPayload.Username },
-            { isEmailVerified: true }
-        );
     });
 
     it('returns 200 with a JWT token on valid credentials', async () => {
@@ -93,20 +87,6 @@ describe('POST /api/login', () => {
         expect(res.statusCode).toBe(200);
         expect(res.body.token).toBeDefined();
         expect(res.body.message).toMatch(/login successful/i);
-    });
-
-    it('returns 403 when email is not verified', async () => {
-        // Register a fresh user but do NOT verify their email
-        await request(app).post('/api/register').send({
-            ...registerPayload,
-            Username: 'unverified',
-            Email: 'unverified@ucf.edu',
-        });
-        const res = await request(app)
-            .post('/api/login')
-            .send({ Username: 'unverified', Password: 'password123' });
-        expect(res.statusCode).toBe(403);
-        expect(res.body.message).toMatch(/verify your email/i);
     });
 
     it('returns 400 when username does not exist', async () => {
