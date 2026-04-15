@@ -81,13 +81,13 @@ class _ProfessorRatingsSummaryState extends State<ProfessorRatingsSummary> {
       jsonObjectProfessorRatings = json.decode(ret);
 
       setState (() {
-        numProfessorRatings = jsonObjectProfessorRatings["totalProfessorRatings"];
+        numProfessorRatings = jsonObjectProfessorRatings["totalProfessorRatings"] ?? 0;
         professorRatingsList = [
-          jsonObjectProfessorRatings["averageQ6"].toDouble(),
-          jsonObjectProfessorRatings["averageQ7"].toDouble(),
-          jsonObjectProfessorRatings["averageQ8"].toDouble(),
-          jsonObjectProfessorRatings["averageQ9"].toDouble(),
-          jsonObjectProfessorRatings["averageQ10"].toDouble(),
+          (jsonObjectProfessorRatings["averageQ6"] ?? 0).toDouble(),
+          (jsonObjectProfessorRatings["averageQ7"] ?? 0).toDouble(),
+          (jsonObjectProfessorRatings["averageQ8"] ?? 0).toDouble(),
+          (jsonObjectProfessorRatings["averageQ9"] ?? 0).toDouble(),
+          (jsonObjectProfessorRatings["averageQ10"] ?? 0).toDouble(),
         ];
       });
       print(numProfessorRatings);
