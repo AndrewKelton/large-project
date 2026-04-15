@@ -22,6 +22,14 @@ states "onChange"(s), etc.
 - **Use**: Collaborated with Claude to help me match the styling of the mobile
 app, given the context of the mobile app's layout and color schemes.
 
+- **Tool**: Claude Sonnet 4.6 (Anthropic)
+- **Dates**: April 15, 2026
+- **Scope**: Generate Unit + Integration Tests
+- **Use**: Gave Claude the task to generate Integration and Unit Tests for
+the frontend and backend, including mail tests, button tests, overall functionality,
+and workflow of the program. Specified to use the bottom-up approach, testing:
+mongoose -> route handling -> integration tests -> frontend components.
+
 All AI-generated code was reviewed, tested, and modified to meet
 assignment requirements. Final implementation reflects my understanding
 of the concepts.
