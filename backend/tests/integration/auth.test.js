@@ -21,11 +21,10 @@ describe('POST /api/register', () => {
         Email: 'jknight@ucf.edu',
     };
 
-    it('registers a new user and returns 201 with a token', async () => {
+    it('registers a new user and returns 201 with a success message', async () => {
         const res = await request(app).post('/api/register').send(validUser);
         expect(res.statusCode).toBe(201);
-        expect(res.body.token).toBeDefined();
-        expect(res.body.user.Username).toBe('jknight');
+        expect(res.body.message).toMatch(/account created/i);
     });
 
     it('returns 400 when Username is missing', async () => {

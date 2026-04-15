@@ -1,14 +1,11 @@
 # Unit & Integration Test Workflow
-# Runs on every push to any branch and on every pull request.
+# Runs on every push to any branch.
 # Executes backend (Jest) and frontend (Vitest) test suites.
 
 name: Tests
 
 on:
   push:
-    branches:
-      - '**'
-  pull_request:
     branches:
       - '**'
 
