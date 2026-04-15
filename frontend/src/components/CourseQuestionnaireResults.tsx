@@ -174,7 +174,7 @@ function CourseQuestionnaireResultsComponent({ course }: CourseQuestionnaireResu
               courseId={course._id}
               professorId={null}
               alreadyAnswered={answeredIds.has(entry._id)}
-              onAnswered={fetchResults}
+              onAnswered={() => window.location.reload()}
             />
           ))}
           {totalPages > 1 && (
