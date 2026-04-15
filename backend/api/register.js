@@ -60,7 +60,7 @@ router.post('/', [
         user.Email_Verification_Expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
         await user.save();
 
-        const verifyLink = `${process.env.BACKEND_URL}/api/register/verify-email?token=${verifyToken}`;
+        const verifyLink = `${req.protocol}://${req.get('host')}/api/register/verify-email?token=${verifyToken}`;
         await sendMail({
             to: Email,
             subject: 'Verify your KnightRate email',
