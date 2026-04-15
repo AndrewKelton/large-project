@@ -198,7 +198,7 @@ class _UserSettingsPageState extends State<UserSettingsPage> with RouteAware {
       }
       else {
         print('Account settings successfully saved');
-        updateSuccessMessage('Account updated successfully!\nRedirecting to Home Screen...');
+        updateSuccessMessage('Account updated successfully!');
         updateErrorMessage('');
         // delay to allow time for user to read message before redirecting to another page
         await Future.delayed(Duration(milliseconds: 1500));

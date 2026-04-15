@@ -6,7 +6,6 @@ import 'package:group7_mobile_app/pages/CreateRatingScreen.dart';
 import 'package:group7_mobile_app/pages/CreateQuestionnaireScreen.dart';
 import 'package:group7_mobile_app/pages/UserSettingsScreen.dart';
 import 'package:group7_mobile_app/pages/Loading.dart';
-import 'package:group7_mobile_app/pages/ForgotPasswordScreen.dart';
 import 'package:group7_mobile_app/utils/GlobalData.dart';
 import 'package:provider/provider.dart';
 
@@ -24,7 +23,6 @@ void main() => runApp(ChangeNotifierProvider(
       '/create_rating': (context) => CreateRatingScreen(),
       '/create_questionnaire': (context) => CreateQuestionnaireScreen(),
       '/user_settings': (context) => UserSettingsScreen(),
-      '/forgot_password': (context) => ForgotPassword(),
     },
     navigatorObservers: [routeObserver],
   ),
