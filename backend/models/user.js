@@ -41,6 +41,11 @@ const UserSchema = new Schema({
     TwoFA_Code: { type: String },
     TwoFA_Expires: { type: Date },
 
+    // Email Verification
+    isEmailVerified: { type: Boolean, default: false },
+    Email_Verification_Token: { type: String },
+    Email_Verification_Expires: { type: Date },
+
     // Password Reset Token Data
     Reset_Token: { type: String },
     Reset_Expires: { type: Date },
