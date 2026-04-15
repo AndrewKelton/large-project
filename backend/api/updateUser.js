@@ -25,7 +25,10 @@ router.put('/:userId', async (req, res) => {
         if (Email !== undefined) updateFields.Email = Email;
         if (First_Name !== undefined) updateFields.First_Name = First_Name;
         if (Last_Name !== undefined) updateFields.Last_Name = Last_Name;
-        if (Password) updateFields.Password = await bcrypt.hash(Password, 10);
+        if (Password) {
+            if (Password.length < 5) return res.status(400).json({ message: 'Password must be at least 5 characters' });
+            updateFields.Password = await bcrypt.hash(Password, 10);
+        }
 
         const updated = await User.findByIdAndUpdate(
             req.params.userId,
