@@ -81,13 +81,39 @@ of the concepts.
 
 This project was developed with assistance from generative AI tools:
 
-- **Tool**:
-- **Dates**:
-- **Scope**:
-- **Use**:
+- **Tool**: Claude 4.6 (Anthropic)
+- **Dates**: March 31, 2026 to April 14, 2026
+- **Scope**:  Used to aide with developing dart code for flutter 
+- **Use**: (see below)
+1.  Generated code for Timer object on a textfield that was used to call the search API following some specified time after the last keyboard event.
+2.  Generated code for using RouteObserver object and inheriting RouteAware to allow the program to listen for route changes that could then be used to re-build and/or clear textfields when using the back button in the appBar.
+3.  Generated code for the pagination feature on the course and course+professor questionnaire results diplays on the home screen.  Originally the mobile app was programmed to display the entire list of questionnaire results on the screen.  AI was used to find a way to incorporate pagination with minimal changes to the original code.
+4.  Generate code for radio button form template used on the create rating page.
+5.  Generate code for creating a widget key and passing it through a constructor to force a page re-build.
+6.  Generate code for the GlobalData class in a way that allowed the inheritance of ChangeNotifier, which creates a listener for when global data is read or set.
 
 All AI-generated code was reviewed, tested, and modified to meet
 assignment requirements. Final implementation reflects my understanding
 of the concepts.
 
-- Name: Mobile Developer
+- Name: Phillip Lintereur (Mobile Developer and PM)
+
+---
+
+- **Tool**: Claude 4.6 (Anthropic)
+- **Dates**: March 31, 2026 to April 14, 2026
+- **Scope**:  Used to aide with developing dart code for flutter 
+- **Use**: (see below)
+1. Aided in understanding difference between state class vs widget class in Dart
+2. Generated code for container backgrounds for displaying rating/questionnaire information
+3. Generated code for scaling widgets and color schemes
+4. Generated code for displaying empty stars, half stars, and full stars in rows
+5. Generated code for percent bars on questionnaire cards in columns
+6. General debugging when unintended behavior occurred
+7. Deciphering of error messages and stack traces from Dart SDK.
+
+All AI-generated code was reviewed, tested, and modified to meet
+assignment requirements. Final implementation reflects my understanding
+of the concepts.
+
+- Name: Leandro Vivares (Backend and Mobile Developer)
