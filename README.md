@@ -1,5 +1,7 @@
 # Large Project Group 7
-KnightRate is a UCF-focused course and professor review platform for students to rate and discover classes.
+KnightRate is a UCF-focused course and professor review platform for students to rate and discover classes. 
+## App Description
+The app consists of a web and mobile component.  The web and mobile components have the same functionalities and are intended to follow a similar layout and style theme.  The app is a course/professor assessment app that was built as part of the Large Project for the UCF course COP 4331 during the Spring 2026 semester.  The app allows both registered and unregister users access, but provides less functionality to unregistered users.  Users can select a course or course+professor pair and view ratings summaries of the selected course or course+professor pair.  Also displayed with the ratings summaries are a list of multiple-choice questionnaires (under both the course-only and course+professor pair sections), and a summary of past responses, that registered users have created through the app.  Othser registered user can respond to these multiple-choice questionnaires provided they have rated that course or course+professor pair, didn’t create the questionnaire, and haven’t already responded to the questionnaire.  Registered users can also create ratings for a selected course-only or course+professor pair.  Unregistered user only have the ability to view ratings summaries and questionnaire results.
 
 ## AI Assistance Disclosure
 
