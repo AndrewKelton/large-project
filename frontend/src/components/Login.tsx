@@ -36,7 +36,9 @@ function Login({ onSwitchToRegister, onForgotPassword }: LoginProps) {
 
       const res = JSON.parse(await response.text());
 
-      if (!res.token) {
+      if (response.status === 403) {
+        setMessage("Please verify your email before logging in.");
+      } else if (!res.token) {
         // Highlight both fields to indicate the combination is wrong
         setFieldErrors({ username: " ", password: " " });
         setMessage("Username / password combination incorrect.");
