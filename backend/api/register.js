@@ -37,7 +37,7 @@ router.post('/', [
 
     try {
         const { First_Name, Last_Name, Username, Password, Email } = req.body;
- 
+
         // Check if username exists
         const existingUsername = await User.findOne({ Username });
         if (existingUsername) {
@@ -52,7 +52,7 @@ router.post('/', [
 
         // Hash password and create the user
         const hashedPassword = await bcrypt.hash(Password, 10);
-        const user = await User.create({ Username, Password: hashedPassword, Email });
+        const user = await User.create({ First_Name, Last_Name, Username, Password: hashedPassword, Email });
 
         // Generate email verification token and send verification email
         const verifyToken = crypto.randomBytes(32).toString('hex');
