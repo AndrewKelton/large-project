@@ -25,6 +25,11 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ message: 'Invalid username or password' });
         }
 
+        // Email verification check
+        if (!user.isEmailVerified) {
+            return res.status(403).json({ message: 'Please verify your email before logging in.' });
+        }
+
         // Create JWT token
         const token = jwt.sign(
             { userId: user._id, username: user.Username },

@@ -19,9 +19,15 @@ const transporter = nodemailer.createTransport({
 
 const { Resend } = require('resend');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY
+    ? new Resend(process.env.RESEND_API_KEY)
+    : null;
 
 async function sendMail({ to, subject, text }) {
+    if (!resend) {
+        console.warn('sendMail: RESEND_API_KEY not set — skipping email send.');
+        return;
+    }
     const result = await resend.emails.send({
         from: 'group7knightrate@leandrovivares.com',
         to,
