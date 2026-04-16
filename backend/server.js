@@ -12,7 +12,7 @@ app.use(express.json());
 
 // allow requests from the front-end origin
 const corsOptions = {
-        origin: ['http://leandrovivares.com', 'https://leandrovivares.com', 'http://localhost', 'http://localhost:5173'],
+        origin: ['http://leandrovivares.com', 'http://localhost', 'http://localhost:5173'],
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization'],
         credentials: true

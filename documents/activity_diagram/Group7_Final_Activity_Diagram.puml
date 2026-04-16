@@ -1,0 +1,159 @@
+@startuml
+title Group 7 - Large Project\nActivity Diagram
+
+start
+
+(H)
+:Generic Home Page Displayed;
+
+if (Access an Account?) then (No)
+
+  repeat
+    :Choose Course from Dropdown Menu;
+    split
+      :Choose Professor from Dropdown Menu for Selected Course;
+    split again
+    end split
+    :User Views Ratings and Questionaires for Selected Course (and Possible Professor);
+    split
+      stop
+    split again
+    end split
+  repeat while (Continue Browsing Without an Account?) is (Yes) not (No)
+
+else (Yes)
+
+endif
+
+:Press "Login/Sign Up" Button;
+
+if(Does The User Have an Existing Account?) then (No)
+  :User Clicks the "Register" tab;
+  :Register Page Displayed;
+  repeat
+    :User Enters Credentials for their New Account\n(First & Last Names, Email Address, Username, Password);
+    :User Presses "Register" Button to Finalize Registration;
+
+
+    backward: Registration Error Message Displayed;
+
+  repeat while (Is The Entered Information Valid?) is (No) not (Yes)
+
+  :User Account is Created;
+  :Registration Success Message Displayed;
+  :User is Redirected to Login Page;
+  :User is Sent an Email to Verify their Email Address;
+
+
+else (Yes)
+
+endif
+
+repeat
+  :Login Page Displayed;
+  :User Enters Username and Password;
+  :User Clicks Signin Button;
+  :Username/Password Validation;
+  backward: Login Error Message Displayed;
+repeat while (Username/Password Valid?) is (No) not (Yes)
+
+repeat
+  repeat
+    :User's Home Page Displayed;
+
+    if(Does The User want to Logout?) is (Yes) then
+      :User Clicks "Logout" Button;
+      (H)
+      detach
+
+    else (No)
+
+    endif
+
+    if(Does The User Need to Update An Attribute on Their Account?) is (Yes) then
+      :User Clicks "Settings" Button;
+      :User Settings Page Displayed;
+
+      repeat
+        :User Enters Updates for their Account;
+        :User Presses "Save Changes" Button to Finalize Updates;
+        backward: Update Error Message Displayed;
+
+      repeat while (Is The Entered Information Valid?) is (No) not (Yes)
+
+      :User is Redirected to Home Page;
+      :User's Home Page Displayed;
+
+    else (No)
+
+    endif
+
+    :Choose Course from Dropdown List;
+    split
+      :Choose Professor from Dropdown List;
+    split again
+    end split
+    split
+      :Respond to\nMultiple-Choice\nQuestionnaires;
+      if (Professor Selected?) is (No) then
+        if(Has User rated Course?) is (No) then
+          :User cannot\nanswer questionnaire;
+        else (Yes)
+          :User's response is valid;
+        endif
+      else (Yes)
+        if (Has User rated\nCourse+Professor Pair?) is (No) then
+          :User cannot\nanswer questionnaire;
+        else (Yes)
+          :User's response is valid;
+        endif
+      endif
+    split again
+    end split
+  repeat while ()
+  split
+    :Press Button "Create a Questionnaire";
+    :Questionnaire Page Displayed;
+    :Create a Multiple-Choice Questionnaire;
+    :Press Button "Send";
+    :Success Message Displayed;
+
+    if (Professor Selected from\nUser's Home Page?) is (No) then
+      :Questionnaire is posted on
+      Home Page when the
+      course is selected.;
+    else (Yes)
+      :Questionnaire is posted on
+      Home Page when the
+      course+professor pair
+      is selected.;
+    endif
+  split again
+    :Press Button "Create Rating";
+    if (Professor Selected from\nUser's Home Page?) is (No) then
+      :Course Rating Page Displayed;
+    else (Yes)
+      :Course+Professor Rating Page Displayed;
+    endif
+
+    if(Did The User Change Their Mind About Rating a Professor?) is (Yes) then
+      :Switch The Rating Page Displayed to its Opposite;
+
+    else (No)
+
+    endif
+
+    split
+      :Answer Questions\nSpecific to Course;
+    split again
+      :Answer Question\nSpecific to Course+Professor;
+    end split
+    :Press Button "Submit Rating";
+    :Success Message Displayed;
+  end split
+repeat while ()
+
+
+stop
+
+@enduml

@@ -6,3 +6,4 @@ build/
 logs/
 *.log
 **/.DS_Store
+documents/activity_diagram/plantuml-asl-1.2026.2.jar

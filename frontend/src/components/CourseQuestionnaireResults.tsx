@@ -1,16 +1,20 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import type { Course, CourseQuestionnaireResults, QuestionnaireEntry } from '../types/index.ts';
-import QuestionnaireEntryCard from './QuestionnaireEntryCard.tsx';
+import { useState, useEffect, useCallback, useRef } from "react";
+import type {
+  Course,
+  CourseQuestionnaireResults,
+  QuestionnaireEntry,
+} from "../types/index.ts";
+import QuestionnaireEntryCard from "./QuestionnaireEntryCard.tsx";
 
 const PAGE_SIZE = 3;
 const SEARCH_DEBOUNCE_MS = 400;
 
 // Decode the userId from the stored JWT
 function getUserIdFromToken(): string | null {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (!token) return null;
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const payload = JSON.parse(atob(token.split(".")[1]));
     return payload.userId ?? null;
   } catch {
     return null;
@@ -21,12 +25,18 @@ interface CourseQuestionnaireResultsProps {
   course: Course | null;
 }
 
-function CourseQuestionnaireResultsComponent({ course }: CourseQuestionnaireResultsProps) {
-  const [results, setResults] = useState<CourseQuestionnaireResults | null>(null);
+function CourseQuestionnaireResultsComponent({
+  course,
+}: CourseQuestionnaireResultsProps) {
+  const [results, setResults] = useState<CourseQuestionnaireResults | null>(
+    null,
+  );
   const [answeredIds, setAnsweredIds] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(0);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<QuestionnaireEntry[] | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<
+    QuestionnaireEntry[] | null
+  >(null);
   const [isSearching, setIsSearching] = useState(false);
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -51,46 +61,51 @@ function CourseQuestionnaireResultsComponent({ course }: CourseQuestionnaireResu
   }, [course]);
 
   // Search questionnaires by query
-  const runSearch = useCallback(async (query: string) => {
-    if (!course || !query.trim()) {
-      setSearchResults(null);
-      setIsSearching(false);
-      return;
-    }
-    setIsSearching(true);
-    try {
-      const response = await fetch(`/api/searchCO/search?query=${encodeURIComponent(query.trim())}&courseId=${course._id}`);
-      if (!response.ok) {
-        setSearchResults([]);
+  const runSearch = useCallback(
+    async (query: string) => {
+      if (!course || !query.trim()) {
+        setSearchResults(null);
+        setIsSearching(false);
         return;
       }
-      const data = await response.json();
-      // search api returns raw mongoose docs, need to normalize
-      // { Options: {A,B,C,D}, Counts: {A,B,C,D} }
-      const normalized = (data.results ?? []).map((q: any) => ({
-        _id: q._id,
-        Question: q.Question,
-        Options: {
-          A: q.Option_A ?? null,
-          B: q.Option_B ?? null,
-          C: q.Option_C ?? null,
-          D: q.Option_D ?? null,
-        },
-        Counts: {
-          A: q.Option_A_Count ?? null,
-          B: q.Option_B_Count ?? null,
-          C: q.Option_C_Count ?? null,
-          D: q.Option_D_Count ?? null,
-        },
-      }));
-      setSearchResults(normalized);
-    } catch (error: any) {
-      console.error(error);
-      setSearchResults([]);
-    } finally {
-      setIsSearching(false);
-    }
-  }, [course]);
+      setIsSearching(true);
+      try {
+        const response = await fetch(
+          `/api/searchCO/search?query=${encodeURIComponent(query.trim())}&courseId=${course._id}`,
+        );
+        if (!response.ok) {
+          setSearchResults([]);
+          return;
+        }
+        const data = await response.json();
+        // search api returns raw mongoose docs, need to normalize
+        // { Options: {A,B,C,D}, Counts: {A,B,C,D} }
+        const normalized = (data.results ?? []).map((q: any) => ({
+          _id: q._id,
+          Question: q.Question,
+          Options: {
+            A: q.Option_A ?? null,
+            B: q.Option_B ?? null,
+            C: q.Option_C ?? null,
+            D: q.Option_D ?? null,
+          },
+          Counts: {
+            A: q.Option_A_Count ?? null,
+            B: q.Option_B_Count ?? null,
+            C: q.Option_C_Count ?? null,
+            D: q.Option_D_Count ?? null,
+          },
+        }));
+        setSearchResults(normalized);
+      } catch (error: any) {
+        console.error(error);
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    },
+    [course],
+  );
 
   // Debounce search input
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,7 +125,7 @@ function CourseQuestionnaireResultsComponent({ course }: CourseQuestionnaireResu
 
   useEffect(() => {
     setCurrentPage(0);
-    setSearchQuery('');
+    setSearchQuery("");
     setSearchResults(null);
     fetchResults();
   }, [fetchResults]);
@@ -122,10 +137,14 @@ function CourseQuestionnaireResultsComponent({ course }: CourseQuestionnaireResu
 
     const fetchAnswered = async () => {
       try {
-        const response = await fetch(`/api/user/${userId}/answered-questionnaires`);
+        const response = await fetch(
+          `/api/user/${userId}/answered-questionnaires`,
+        );
         if (!response.ok) return;
         const data = await response.json();
-        setAnsweredIds(new Set(data.answeredQuestionnaires.map((id: any) => id.toString())));
+        setAnsweredIds(
+          new Set(data.answeredQuestionnaires.map((id: any) => id.toString())),
+        );
       } catch (error: any) {
         console.error(error);
       }
@@ -144,13 +163,16 @@ function CourseQuestionnaireResultsComponent({ course }: CourseQuestionnaireResu
     ? (searchResults ?? [])
     : (results?.Questionnaires ?? []);
   const totalPages = Math.ceil(questionnaires.length / PAGE_SIZE);
-  const pageSlice = questionnaires.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
+  const pageSlice = questionnaires.slice(
+    currentPage * PAGE_SIZE,
+    (currentPage + 1) * PAGE_SIZE,
+  );
 
   return (
     <div className="section-card">
       <div className="section-card__header">Course Questionnaire Results</div>
 
-      <div style={{ marginBottom: '0.75rem' }}>
+      <div style={{ marginBottom: "0.75rem" }}>
         <input
           type="text"
           placeholder="Search course questions…"
@@ -159,42 +181,66 @@ function CourseQuestionnaireResultsComponent({ course }: CourseQuestionnaireResu
         />
       </div>
 
-      {isSearching && <p style={{ fontSize: '0.85rem', color: '#666' }}>Searching…</p>}
+      {isSearching && (
+        <p style={{ fontSize: "0.85rem", color: "#666" }}>Searching…</p>
+      )}
 
       {!isSearching && isSearchActive && questionnaires.length === 0 && (
-        <p style={{ fontSize: '0.85rem', color: '#888' }}>No questions match &ldquo;{searchQuery}&rdquo;</p>
+        <p style={{ fontSize: "0.85rem", color: "#888" }}>
+          No questions match &ldquo;{searchQuery}&rdquo;
+        </p>
       )}
 
       {!isSearching && questionnaires.length > 0 && (
         <>
-          {pageSlice.map((entry, idx) => (
+          {pageSlice.map((entry) => (
             <QuestionnaireEntryCard
-              key={idx}
+              key={entry._id}
               entry={entry}
               courseId={course._id}
               professorId={null}
               alreadyAnswered={answeredIds.has(entry._id)}
-              onAnswered={fetchResults}
+              onAnswered={() => {
+                fetchResults();
+                setAnsweredIds((prev) => new Set(prev).add(entry._id));
+              }}
             />
           ))}
           {totalPages > 1 && (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginTop: '0.75rem' }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "1rem",
+                marginTop: "0.75rem",
+              }}
+            >
               <button
-                onClick={() => setCurrentPage(p => p - 1)}
+                onClick={() => setCurrentPage((p) => p - 1)}
                 disabled={currentPage === 0}
                 aria-label="Previous page"
-                style={{ fontSize: '1.2rem', padding: '0.25rem 0.75rem', cursor: currentPage === 0 ? 'not-allowed' : 'pointer' }}
+                style={{
+                  fontSize: "1.2rem",
+                  padding: "0.25rem 0.75rem",
+                  cursor: currentPage === 0 ? "not-allowed" : "pointer",
+                }}
               >
                 &#8592;
               </button>
-              <span style={{ fontSize: '0.9rem' }}>
+              <span style={{ fontSize: "0.9rem" }}>
                 {currentPage + 1} / {totalPages}
               </span>
               <button
-                onClick={() => setCurrentPage(p => p + 1)}
+                onClick={() => setCurrentPage((p) => p + 1)}
                 disabled={currentPage === totalPages - 1}
                 aria-label="Next page"
-                style={{ fontSize: '1.2rem', padding: '0.25rem 0.75rem', cursor: currentPage === totalPages - 1 ? 'not-allowed' : 'pointer' }}
+                style={{
+                  fontSize: "1.2rem",
+                  padding: "0.25rem 0.75rem",
+                  cursor:
+                    currentPage === totalPages - 1 ? "not-allowed" : "pointer",
+                }}
               >
                 &#8594;
               </button>
