@@ -4,6 +4,12 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
     
     // User information
+    First_Name: {
+        type: String
+    },
+    Last_Name: {
+        type: String
+    },
     Username: {
         type: String,
         required: true,
@@ -18,12 +24,6 @@ const UserSchema = new Schema({
         required: true,
         unique: true,
         lowercase: true
-    },
-    First_Name: {
-        type: String
-    },
-    Last_Name: {
-        type: String
     },
 
     // Reference Entries
@@ -43,6 +43,11 @@ const UserSchema = new Schema({
     // 2-Factor Authentication Data
     TwoFA_Code: { type: String },
     TwoFA_Expires: { type: Date },
+
+    // Email Verification
+    isEmailVerified: { type: Boolean, default: false },
+    Email_Verification_Token: { type: String },
+    Email_Verification_Expires: { type: Date },
 
     // Password Reset Token Data
     Reset_Token: { type: String },
