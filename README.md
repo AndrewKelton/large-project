@@ -3,35 +3,6 @@ KnightRate is a UCF-focused course and professor review platform for students to
 ## App Description
 The app consists of a web and mobile component. The web and mobile components have the same functionalities and are intended to follow a similar layout and style theme. The app is a course/professor assessment app that was built as part of the Large Project for the UCF course COP 4331 during the Spring 2026 semester. The app allows both registered and unregister users access, but provides less functionality to unregistered users. Users can select a course or course+professor pair and view ratings summaries of the selected course or course+professor pair. Also displayed with the ratings summaries are a list of multiple-choice questionnaires (under both the course-only and course+professor pair sections), and a summary of past responses, that registered users have created through the app. Other registered user can respond to these multiple-choice questionnaires provided they have rated that course or course+professor pair, didn’t create the questionnaire, and haven’t already responded to the questionnaire. Registered users can also create ratings for a selected course-only or course+professor pair. Unregistered user only have the ability to view ratings summaries and questionnaire results.
 
-## AI Assistance Disclosure
-
-This project was developed with assistance from generative AI tools:
-
-- **Tool**: ChatGPT 5.1 (OpenAI)
-- **Dates**: April 4, 2026
-- **Scope**: Generate App Logo
-- **Use**: Used Chat to generate a logo for the "KnightRate" app.
-
-- **Tool**: Claude Sonnet 4.6 (Anthropic)
-- **Dates**: March 21 - April 13, 2026
-- **Scope**: Function desgin, formatting, and React/TypeScript standards
-- **Use**: Collaborated with Claude throughout the project to help understand
-how to implement functions in TypeScript/React. For example, charts, updating
-states "onChange"(s), etc.
-
-- **Tool**: Claude Sonnet 4.6 (Anthropic)
-- **Dates**: April 10 - April 12, 2026
-- **Scope**: CSS Styling on Web App
-- **Use**: Collaborated with Claude to help me match the styling of the mobile
-app, given the context of the mobile app's layout and color schemes.
-
-All AI-generated code was reviewed, tested, and modified to meet
-assignment requirements. Final implementation reflects my understanding
-of the concepts.
-
-- Andrew Kelton Frontend Developer
-
-
 ## Git Workflow
 
 Follow this workflow when contributing to the project:
