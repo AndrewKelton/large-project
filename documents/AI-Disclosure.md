@@ -64,16 +64,20 @@ of the concepts.
 
 This project was developed with assistance from generative AI tools:
 
-- **Tool**:
-- **Dates**:
-- **Scope**:
-- **Use**:
+- **Tool**: Claude Sonnet 4.6 (Anthropic)
+- **Dates**: March 21, 2026 - April 14, 2026
+- **Scope**: Used to aide with development of APIs and debugging
+- **Use**: (see below)
+  1. Sonnet 4.6 helped in understanding how to build MERN stack APIs, as I was totally unfamiliar.
+  2. Gave me ideas about how to proceed with multiple elements of implementation for the APIs.
+  3. Aided in the logical elements of register and login functionalities, as well as createRating and professor + courseID creation and how those interact to pull information from the DB.
+  4. Helped debug issues with NodeMailer in the initial email verification implementation and generated code to modify mailman.js and register + login.js to use Resend instead.
 
 All AI-generated code was reviewed, tested, and modified to meet
 assignment requirements. Final implementation reflects my understanding
 of the concepts.
 
-- Name: Backend Developer
+- JC Gallo: API Developer
 
 ---
 
