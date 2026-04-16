@@ -14,7 +14,7 @@ void main() => runApp(ChangeNotifierProvider(
   child: MaterialApp(
     initialRoute: '/home',
     title: 'KnightRate',
-    debugShowCheckedModeBanner: true,
+    debugShowCheckedModeBanner: false,
     routes: {
       '/': (context) => Loading(),
       '/login': (context) => LoginScreen(),
