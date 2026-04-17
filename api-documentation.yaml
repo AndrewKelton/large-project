@@ -1,0 +1,1235 @@
+openapi: 3.0.0
+info:
+  title: KnightRate API
+  version: 2.0.0
+  description: API documentation for KnightRate — Group 7's Large Project
+
+servers:
+  - url: http://leandrovivares.com
+    description: Production server
+  - url: http://localhost:3000
+    description: Local development
+
+tags:
+  - name: Authentication
+    description: Register, login, 2FA, email verification, and password reset
+  - name: Courses
+    description: Course management
+  - name: Professors
+    description: Professor management
+  - name: Ratings
+    description: Submit and retrieve course/professor ratings
+  - name: Questionnaires
+    description: Create, fetch, respond to, and search questionnaires
+  - name: User
+    description: User profile and activity
+  - name: Misc
+    description: Health check
+
+paths:
+
+  # ── Authentication ────────────────────────────────────────────────────────────
+
+  /api/register:
+    post:
+      summary: Register a new user
+      description: >
+        Creates a new account and sends a verification email.
+        The user must click the link in that email before they can log in.
+        No JWT is returned on registration.
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            example:
+              Username: jdoe
+              Password: secret123
+              Email: jdoe@example.com
+              First_Name: John
+              Last_Name: Doe
+      responses:
+        '201':
+          description: Account created — verification email sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Account created successfully. Please check your email to verify your account.
+        '400':
+          description: Validation error, username already taken, or email already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+
+  /api/register/verify-email:
+    get:
+      summary: Verify email address
+      description: >
+        Called via the link in the verification email.
+        Redirects to the frontend login page with ?verified=true on success
+        or ?verified=false if the token is missing/expired.
+      tags: [Authentication]
+      parameters:
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+          description: Email verification token from the registration email
+      responses:
+        '302':
+          description: Redirect to frontend login page
+        '500':
+          description: Server error
+
+  /api/login:
+    post:
+      summary: Login
+      description: >
+        Returns a JWT (1 h expiry) and the userId on success.
+        Fails with 403 if the user has not yet verified their email.
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [Username, Password]
+              properties:
+                Username:
+                  type: string
+                Password:
+                  type: string
+            example:
+              Username: jdoe
+              Password: secret123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Login Successful
+                  token:
+                    type: string
+                    description: JWT — expires in 1 hour
+                  userId:
+                    type: string
+        '400':
+          description: Invalid username or password
+        '403':
+          description: Email not verified
+        '500':
+          description: Server error
+
+  /api/auth/2fa/send:
+    post:
+      summary: Send a 2FA code
+      description: Generates a 6-digit code (expires in 5 minutes) and emails it to the user.
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId]
+              properties:
+                userId:
+                  type: string
+            example:
+              userId: 64abc123def456789012
+      responses:
+        '200':
+          description: 2FA code sent
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+
+  /api/auth/2fa/verify:
+    post:
+      summary: Verify a 2FA code
+      description: Validates the 6-digit code. The code is cleared after a successful verification.
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId, code]
+              properties:
+                userId:
+                  type: string
+                code:
+                  type: string
+                  minLength: 6
+                  maxLength: 6
+            example:
+              userId: 64abc123def456789012
+              code: "482910"
+      responses:
+        '200':
+          description: 2FA verified
+        '400':
+          description: 2FA not initialized, code expired, or invalid code
+        '500':
+          description: Server error
+
+  /api/auth/password/reset/request:
+    post:
+      summary: Request a password reset email
+      description: >
+        Sends a reset link to the given email (valid for 1 hour).
+        Always returns the same message regardless of whether the email exists.
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+            example:
+              email: jdoe@example.com
+      responses:
+        '200':
+          description: Reset email sent (or silently ignored if email not found)
+        '500':
+          description: Server error
+
+  /api/auth/password/reset/confirm:
+    post:
+      summary: Confirm password reset with token
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, token, newPassword]
+              properties:
+                email:
+                  type: string
+                  format: email
+                token:
+                  type: string
+                newPassword:
+                  type: string
+                  minLength: 5
+            example:
+              email: jdoe@example.com
+              token: a1b2c3d4e5f6...
+              newPassword: newSecret123
+      responses:
+        '200':
+          description: Password reset successful
+        '400':
+          description: Invalid or expired reset token
+        '500':
+          description: Server error
+
+  # ── Courses ───────────────────────────────────────────────────────────────────
+
+  /api/courses:
+    get:
+      summary: Get all courses
+      tags: [Courses]
+      responses:
+        '200':
+          description: List of all courses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+        '500':
+          description: Server error
+    post:
+      summary: Add a course
+      tags: [Courses]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [Name, Code]
+              properties:
+                Name:
+                  type: string
+                Code:
+                  type: string
+            example:
+              Name: Data Structures
+              Code: COP3502
+      responses:
+        '201':
+          description: Course created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        '400':
+          description: Name and Code are required
+        '500':
+          description: Server error
+
+  # ── Professors ────────────────────────────────────────────────────────────────
+
+  /api/professors:
+    get:
+      summary: Get all professors
+      tags: [Professors]
+      responses:
+        '200':
+          description: List of all professors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Professor'
+        '500':
+          description: Server error
+    post:
+      summary: Add a professor
+      tags: [Professors]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [First_Name, Last_Name]
+              properties:
+                First_Name:
+                  type: string
+                Last_Name:
+                  type: string
+            example:
+              First_Name: Jane
+              Last_Name: Smith
+      responses:
+        '201':
+          description: Professor created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Professor'
+        '400':
+          description: First name and last name are required
+        '500':
+          description: Server error
+
+  /api/professors/course/{courseId}:
+    get:
+      summary: Get professors by course
+      tags: [Professors]
+      parameters:
+        - in: path
+          name: courseId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of professors who teach this course
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Professor'
+        '500':
+          description: Server error
+
+  # ── Ratings ───────────────────────────────────────────────────────────────────
+
+  /api/ratings:
+    post:
+      summary: Submit a rating
+      description: >
+        Submits course ratings (Q1–Q5).
+        To also rate the professor, set Professor_Rated: true and supply a Professor id
+        along with Q6–Q10 (Option_F_Count through Option_J_Count).
+        A user may only rate a given course once.
+      tags: [Ratings]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RatingRequest'
+            example:
+              User: 64abc123def456789012
+              Course: 64abc123def456789013
+              Option_A_Count: 4
+              Option_B_Count: 3
+              Option_C_Count: 5
+              Option_D_Count: 4
+              Option_E_Count: 3
+      responses:
+        '201':
+          description: Rating created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rating'
+        '400':
+          description: User and Course are required, or user has already rated this course
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+
+  /api/ratings/course/{courseId}:
+    get:
+      summary: Get raw ratings for a course
+      tags: [Ratings]
+      parameters:
+        - in: path
+          name: courseId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Array of raw rating objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rating'
+        '500':
+          description: Server error
+
+  /api/ratings/course/{courseId}/professor/{professorId}:
+    get:
+      summary: Get raw ratings for a course + professor pair
+      tags: [Ratings]
+      parameters:
+        - in: path
+          name: courseId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: professorId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Array of raw rating objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rating'
+        '500':
+          description: Server error
+
+  /api/fetchRatings/course/{courseId}:
+    get:
+      summary: Get averaged course ratings (Q1–Q5)
+      tags: [Ratings]
+      parameters:
+        - in: path
+          name: courseId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Averaged course ratings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseRatingAverages'
+        '404':
+          description: No ratings found
+        '500':
+          description: Server error
+
+  /api/fetchRatings/course/{courseId}/professor/{professorId}:
+    get:
+      summary: Get averaged professor ratings (Q6–Q10)
+      tags: [Ratings]
+      parameters:
+        - in: path
+          name: courseId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: professorId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Averaged professor ratings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfessorRatingAverages'
+        '404':
+          description: No professor ratings found
+        '500':
+          description: Server error
+
+  # ── Questionnaires ────────────────────────────────────────────────────────────
+
+  /api/createQuestionnaire:
+    post:
+      summary: Create a questionnaire
+      description: >
+        Creates a multiple-choice questionnaire for a course (and optionally a professor).
+        Option_A and Option_B are required; Option_C and Option_D are optional.
+        Omit Professor (or set null) for a course-only questionnaire.
+      tags: [Questionnaires]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateQuestionnaireRequest'
+            example:
+              User: 64abc123def456789012
+              Course: 64abc123def456789013
+              Question: How was the workload for this course?
+              Option_A: Very heavy
+              Option_B: Manageable
+              Option_C: Light
+              Option_D: Very light
+      responses:
+        '201':
+          description: Questionnaire created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Questionnaire'
+        '400':
+          description: Missing question, missing options, or missing User/Course
+        '500':
+          description: Server error
+
+  /api/fetchCO/course/{courseId}:
+    get:
+      summary: Get course-only questionnaires
+      description: Returns the course info and all questionnaires where Professor is null.
+      tags: [Questionnaires]
+      parameters:
+        - in: path
+          name: courseId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Course and its questionnaires
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FetchCOResponse'
+        '404':
+          description: Course not found
+        '500':
+          description: Server error
+
+  /api/fetchCAP/course/{courseId}/professor/{professorId}:
+    get:
+      summary: Get course + professor questionnaires
+      description: Returns the course, professor, and all questionnaires assigned to both.
+      tags: [Questionnaires]
+      parameters:
+        - in: path
+          name: courseId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: professorId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Course, professor, and their questionnaires
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FetchCAPResponse'
+        '404':
+          description: Course or professor not found
+        '500':
+          description: Server error
+
+  /api/respondToCO/{questionnaireId}/respond:
+    post:
+      summary: Respond to a course-only questionnaire
+      description: >
+        Records a response (A–D) for a course-only questionnaire (Professor = null).
+        Prerequisites: user must have rated the course, not answered this questionnaire before,
+        and cannot answer their own questionnaire.
+      tags: [Questionnaires]
+      parameters:
+        - in: path
+          name: questionnaireId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RespondRequest'
+            example:
+              userId: 64abc123def456789012
+              response: B
+      responses:
+        '200':
+          description: Response recorded successfully
+        '400':
+          description: Invalid response, option does not exist, or wrong questionnaire type
+        '403':
+          description: Own questionnaire, already answered, or course not rated
+        '404':
+          description: Questionnaire or user not found
+        '500':
+          description: Server error
+
+  /api/respondToCAP/{questionnaireId}/respond:
+    post:
+      summary: Respond to a course + professor questionnaire
+      description: >
+        Records a response (A–D) for a professor-specific questionnaire.
+        Prerequisites: user must have rated the course AND rated the professor for that course,
+        not answered before, and cannot answer their own questionnaire.
+      tags: [Questionnaires]
+      parameters:
+        - in: path
+          name: questionnaireId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RespondRequest'
+            example:
+              userId: 64abc123def456789012
+              response: A
+      responses:
+        '200':
+          description: Response recorded successfully
+        '400':
+          description: Invalid response, option does not exist, or wrong questionnaire type
+        '403':
+          description: Own questionnaire, already answered, course not rated, or professor not rated
+        '404':
+          description: Questionnaire or user not found
+        '500':
+          description: Server error
+
+  /api/searchCO/search:
+    get:
+      summary: Search course-only questionnaires
+      description: Case-insensitive partial-text search. Only returns questionnaires where Professor is null.
+      tags: [Questionnaires]
+      parameters:
+        - in: query
+          name: query
+          required: true
+          schema:
+            type: string
+          example: workload
+        - in: query
+          name: courseId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchCOResponse'
+        '400':
+          description: Missing query or courseId
+        '500':
+          description: Server error
+
+  /api/searchCAP/search:
+    get:
+      summary: Search course + professor questionnaires
+      description: Case-insensitive partial-text search. Only returns questionnaires assigned to the given professor and course.
+      tags: [Questionnaires]
+      parameters:
+        - in: query
+          name: query
+          required: true
+          schema:
+            type: string
+          example: exam
+        - in: query
+          name: courseId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: professorId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchCAPResponse'
+        '400':
+          description: Missing query, courseId, or professorId
+        '500':
+          description: Server error
+
+  # ── User ──────────────────────────────────────────────────────────────────────
+
+  /api/userSettings/{userId}:
+    get:
+      summary: Get user profile
+      tags: [User]
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Full user object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+
+  /api/updateUser/{userId}:
+    put:
+      summary: Update user profile
+      description: >
+        All fields are optional — only send what you want to change.
+        Password is hashed before saving. Returns the updated user without the password field.
+      tags: [User]
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Username:
+                  type: string
+                Email:
+                  type: string
+                  format: email
+                First_Name:
+                  type: string
+                Last_Name:
+                  type: string
+                Password:
+                  type: string
+                  minLength: 5
+            example:
+              First_Name: Jonathan
+              Email: jonathan.doe@example.com
+      responses:
+        '200':
+          description: Updated user object (password excluded)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Username taken, email registered, or password too short
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+
+  /api/user/{userId}/answered-questionnaires:
+    get:
+      summary: Get answered questionnaire IDs for a user
+      tags: [User]
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of questionnaire ObjectIds the user has already answered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answeredQuestionnaires:
+                    type: array
+                    items:
+                      type: string
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+
+  # ── Misc ──────────────────────────────────────────────────────────────────────
+
+  /api/ping:
+    get:
+      summary: Health check
+      tags: [Misc]
+      responses:
+        '200':
+          description: Server is running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: string
+                  database:
+                    type: string
+
+# ── Schemas ───────────────────────────────────────────────────────────────────
+
+components:
+  schemas:
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+        First_Name:
+          type: string
+        Last_Name:
+          type: string
+        Username:
+          type: string
+        Email:
+          type: string
+          format: email
+        isEmailVerified:
+          type: boolean
+        Date_Created:
+          type: string
+          format: date-time
+        Answered_Questionnaires:
+          type: array
+          items:
+            type: string
+        Rated_Courses:
+          type: array
+          items:
+            type: string
+        Rated_Courses_Professors:
+          type: array
+          items:
+            type: object
+            properties:
+              Course:
+                type: string
+              Professor:
+                type: string
+
+    Course:
+      type: object
+      properties:
+        _id:
+          type: string
+        Name:
+          type: string
+        Code:
+          type: string
+
+    Professor:
+      type: object
+      properties:
+        _id:
+          type: string
+        First_Name:
+          type: string
+        Last_Name:
+          type: string
+
+    RegisterRequest:
+      type: object
+      required: [Username, Password, Email, First_Name, Last_Name]
+      properties:
+        Username:
+          type: string
+        Password:
+          type: string
+          minLength: 5
+        Email:
+          type: string
+          format: email
+        First_Name:
+          type: string
+        Last_Name:
+          type: string
+
+    RatingRequest:
+      type: object
+      required: [User, Course]
+      properties:
+        User:
+          type: string
+        Course:
+          type: string
+        Professor:
+          type: string
+          nullable: true
+        Professor_Rated:
+          type: boolean
+          default: false
+        Option_A_Count:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Q1
+        Option_B_Count:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Q2
+        Option_C_Count:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Q3
+        Option_D_Count:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Q4
+        Option_E_Count:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Q5
+        Option_F_Count:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Q6 — professor rating
+        Option_G_Count:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Q7 — professor rating
+        Option_H_Count:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Q8 — professor rating
+        Option_I_Count:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Q9 — professor rating
+        Option_J_Count:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Q10 — professor rating
+
+    Rating:
+      type: object
+      properties:
+        _id:
+          type: string
+        User:
+          type: string
+        Course:
+          type: string
+        Professor:
+          type: string
+          nullable: true
+        Professor_Rated:
+          type: boolean
+        Option_A_Count:
+          type: integer
+        Option_B_Count:
+          type: integer
+        Option_C_Count:
+          type: integer
+        Option_D_Count:
+          type: integer
+        Option_E_Count:
+          type: integer
+        Option_F_Count:
+          type: integer
+        Option_G_Count:
+          type: integer
+        Option_H_Count:
+          type: integer
+        Option_I_Count:
+          type: integer
+        Option_J_Count:
+          type: integer
+
+    CourseRatingAverages:
+      type: object
+      properties:
+        totalRatings:
+          type: integer
+        averageQ1:
+          type: number
+          format: float
+        averageQ2:
+          type: number
+          format: float
+        averageQ3:
+          type: number
+          format: float
+        averageQ4:
+          type: number
+          format: float
+        averageQ5:
+          type: number
+          format: float
+
+    ProfessorRatingAverages:
+      type: object
+      properties:
+        totalProfessorRatings:
+          type: integer
+        averageQ6:
+          type: number
+          format: float
+        averageQ7:
+          type: number
+          format: float
+        averageQ8:
+          type: number
+          format: float
+        averageQ9:
+          type: number
+          format: float
+        averageQ10:
+          type: number
+          format: float
+
+    CreateQuestionnaireRequest:
+      type: object
+      required: [User, Course, Question, Option_A, Option_B]
+      properties:
+        User:
+          type: string
+        Course:
+          type: string
+        Professor:
+          type: string
+          nullable: true
+        Question:
+          type: string
+        Option_A:
+          type: string
+        Option_B:
+          type: string
+        Option_C:
+          type: string
+          nullable: true
+        Option_D:
+          type: string
+          nullable: true
+
+    Questionnaire:
+      type: object
+      properties:
+        _id:
+          type: string
+        User:
+          type: string
+        Course:
+          type: string
+        Professor:
+          type: string
+          nullable: true
+        Question:
+          type: string
+        Option_A:
+          type: string
+        Option_B:
+          type: string
+        Option_C:
+          type: string
+          nullable: true
+        Option_D:
+          type: string
+          nullable: true
+        Option_A_Count:
+          type: integer
+        Option_B_Count:
+          type: integer
+        Option_C_Count:
+          type: integer
+          nullable: true
+        Option_D_Count:
+          type: integer
+          nullable: true
+
+    QuestionnaireFormatted:
+      type: object
+      description: Shape returned by fetchCO and fetchCAP
+      properties:
+        _id:
+          type: string
+        Question:
+          type: string
+        Options:
+          type: object
+          properties:
+            A:
+              type: string
+              nullable: true
+            B:
+              type: string
+              nullable: true
+            C:
+              type: string
+              nullable: true
+            D:
+              type: string
+              nullable: true
+        Counts:
+          type: object
+          properties:
+            A:
+              type: integer
+              nullable: true
+            B:
+              type: integer
+              nullable: true
+            C:
+              type: integer
+              nullable: true
+            D:
+              type: integer
+              nullable: true
+        User:
+          $ref: '#/components/schemas/User'
+        Course:
+          $ref: '#/components/schemas/Course'
+
+    FetchCOResponse:
+      type: object
+      properties:
+        Course:
+          $ref: '#/components/schemas/Course'
+        Questionnaires:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionnaireFormatted'
+
+    FetchCAPResponse:
+      type: object
+      properties:
+        Course:
+          $ref: '#/components/schemas/Course'
+        Professor:
+          $ref: '#/components/schemas/Professor'
+        Questionnaires:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionnaireFormatted'
+
+    RespondRequest:
+      type: object
+      required: [userId, response]
+      properties:
+        userId:
+          type: string
+        response:
+          type: string
+          enum: [A, B, C, D]
+
+    SearchCOResponse:
+      type: object
+      properties:
+        query:
+          type: string
+        courseId:
+          type: string
+        count:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Questionnaire'
+
+    SearchCAPResponse:
+      type: object
+      properties:
+        query:
+          type: string
+        courseId:
+          type: string
+        professorId:
+          type: string
+        count:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Questionnaire'
